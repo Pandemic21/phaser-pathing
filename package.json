@@ -1,25 +1,26 @@
 {
-  "name": "phaser-pathing",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Pandemic21/phaser-pathing.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/Pandemic21/phaser-pathing/issues"
-  },
-  "homepage": "https://github.com/Pandemic21/phaser-pathing#readme",
-  "dependencies": {
-    "easystarjs": "^0.4.4",
-    "express": "^4.17.1",
-    "phaser": "^3.55.2"
-  }
+    "name": "phaser-pathing",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "start": "node run.js",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Pandemic21/phaser-pathing.git"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/Pandemic21/phaser-pathing/issues"
+    },
+    "homepage": "https://github.com/Pandemic21/phaser-pathing#readme",
+    "dependencies": {
+        "easystarjs": "^0.4.4",
+        "express": "^4.17.1",
+        "phaser": "^3.55.2"
+    }
 }

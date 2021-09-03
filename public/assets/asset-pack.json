@@ -1,0 +1,43 @@
+{
+  "section1": {
+    "files": [
+      {
+        "url": "public/assets/enemyBlack5.png",
+        "type": "image",
+        "key": "enemyBlack5"
+      },
+      {
+        "url": "public/js/game.js",
+        "type": "sceneFile",
+        "key": "game"
+      },
+      {
+        "url": "public/assets/isaac.png",
+        "type": "image",
+        "key": "isaac"
+      },
+      {
+        "url": "public/assets/spaceShips_001.png",
+        "type": "image",
+        "key": "spaceShips_001"
+      },
+      {
+        "url": "public/assets/star_gold.png",
+        "type": "image",
+        "key": "star_gold"
+      },
+      {
+        "url": "public/assets/fireball.png",
+        "type": "image",
+        "key": "fireball"
+      }
+    ]
+  },
+  "meta": {
+    "app": "Phaser Editor 2D - Asset Pack Editor",
+    "contentType": "phasereditor2d.pack.core.AssetContentType",
+    "url": "https://phasereditor2d.com",
+    "version": 2,
+    "showAllFilesInBlocks": false
+  }
+}
