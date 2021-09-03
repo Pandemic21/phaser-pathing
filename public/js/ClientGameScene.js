@@ -11,7 +11,7 @@ export default class ClientGameScene extends Phaser.Scene {
         this.load.image('isaacImg', './assets/sliced/creatures_24x24/oryx_16bit_fantasy_creatures_04.png');
         this.load.image('isaacBreathe', './assets/sliced/creatures_24x24/oryx_16bit_fantasy_creatures_22.png')
 
-        this.load.image('wall', './assets/sliced/world_24x24/oryx_16bit_fantasy_world_217.png');
+        this.load.image('orb', './assets/sliced/fx_24x24/oryx_16bit_fantasy_fx2_42.png');
         this.load.image('movementClick', './assets/sliced/fx_24x24/oryx_16bit_fantasy_fx2_53.png');
 
 
@@ -39,18 +39,10 @@ export default class ClientGameScene extends Phaser.Scene {
         const tileset = map.addTilesetImage('oryx_world', 'base_tiles')
 
         // "Ground" layer will be first
-        map.createLayer('Ground', tileset);
+        let ground = map.createLayer('Ground', tileset);
 
         // "Trees" layer will be second
         let treesLayer = map.createLayer('Trees', tileset);
-
-        // add visual debug to the trees (and where they collide)
-        const debugGraphics = this.add.graphics().setAlpha(0.75);
-        treesLayer.renderDebug(debugGraphics, {
-            tileColor: null, // Color of non-colliding tiles
-            collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
-            faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
-        });
 
 
         ////////////////
@@ -88,6 +80,13 @@ export default class ClientGameScene extends Phaser.Scene {
                 // TODO: something here
             }
         }, this);
+
+
+        ////////////
+        // Player //
+        ////////////
+
+        let player = this.physics.add.sprite(50, 50, 'orb')
     }
 
 
