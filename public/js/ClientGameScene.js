@@ -21,6 +21,13 @@ export default class ClientGameScene extends Phaser.Scene {
         this.load.image('movementClick', './assets/sliced/fx_24x24/oryx_16bit_fantasy_fx2_53.png');
 
 
+        ///////////
+        // Audio //
+        ///////////
+
+        this.load.audio('movementClickSound', "./assets/sounds/Bluezone_BC0268_switch_button_click_small_005.wav");
+
+
         /////////
         // Map //
         /////////
@@ -270,6 +277,8 @@ export default class ClientGameScene extends Phaser.Scene {
         const DURATION = 0.5 * 1000
         let clickImg = this.add.image(destination.x, destination.y, 'movementClick');
         clickImg.setScale(2.5, 2.5)
+
+        this.sound.play('movementClickSound');
 
         // this deletes the image after <ms> DURATION
         setTimeout(() => {
