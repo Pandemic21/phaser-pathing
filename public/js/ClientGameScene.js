@@ -55,10 +55,13 @@ export default class ClientGameScene extends Phaser.Scene {
         // Player //
         ////////////
 
-        //let player = this.physics.add.sprite(50, 50, 'orb')
-        let player = this.physics.add.sprite(50, 50, 'isaacImg')
 
         const PLAYER_SPEED = 120
+
+        //let player = this.physics.add.sprite(50, 50, 'orb') // this is the orb graphic
+        let player = this.physics.add.sprite(50, 50, 'isaacImg') // this is the mage graphic
+
+        player.body.velocity.normalize().scale(50);
 
         // make "Trees" layer collidable with player
         treesLayer.setCollisionByExclusion([-1]);
