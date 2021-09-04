@@ -104,6 +104,7 @@ export default class ClientGameScene extends Phaser.Scene {
         // declare the camera
         this.controls = new Phaser.Cameras.Controls.SmoothedKeyControl(controlConfig);
         this.camera = this.cameras.main;
+        this.camera.setBounds(0, 0, this.MAP_WIDTH_PIXELS, this.MAP_HEIGHT_PIXELS)
 
 
         /////////////
@@ -135,6 +136,11 @@ export default class ClientGameScene extends Phaser.Scene {
         // Listener Config (e.g. spacebar, click) //
         ////////////////////////////////////////////
 
+        // spacebar re-centers the camera on the player
+        this.input.keyboard.on('keyup-SPACE', (keyPress) => {
+            this.eventEmitter.emit('drawRuneSlots', keyPress);
+        })
+
         // pan the camera around with the mouse
         this.input.on('pointermove', (pointer) => {
             // the is not holding RMB, stop panning the camera
@@ -152,10 +158,10 @@ export default class ClientGameScene extends Phaser.Scene {
         this.input.on('pointerdown', (pointer) => {
             // if RMB (right click)
             if (pointer.rightButtonDown()) {
-
+                // do stuff
             }
 
-            // if LMB (left click)
+            // else it's LMB, move the player to the destination
             else {
                 let destination = {
                     x: this.input.mousePointer.x,
