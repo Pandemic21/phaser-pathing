@@ -51,8 +51,6 @@ export default class ClientGameScene extends Phaser.Scene {
         let treesLayer = map.createStaticLayer('Trees', tileset);
 
 
-
-
         ////////////
         // Player //
         ////////////
@@ -65,24 +63,6 @@ export default class ClientGameScene extends Phaser.Scene {
         // make "Trees" layer collidable with player
         treesLayer.setCollisionByExclusion([-1]);
         this.physics.add.collider(player, treesLayer);
-
-
-        ////////////////
-        // Animations //
-        ////////////////
-
-        this.anims.create({
-            key: 'breathe',
-            frames: [{
-                    key: 'isaacBreathe'
-                },
-                {
-                    key: 'isaacImg'
-                }
-            ],
-            frameRate: 4,
-            repeat: -1
-        })
 
 
         ////////////////////////////////////////////
@@ -100,35 +80,31 @@ export default class ClientGameScene extends Phaser.Scene {
 
             // if LMB (left click)
             else {
-                // TODO: something here
                 let destination = {
                     x: this.input.mousePointer.x,
                     y: this.input.mousePointer.y
                 }
 
                 // draw the "click to move" image for a bit
-                const DURATION = 0.5*1000 // image duration in ms
-                let clickImg = this.add.image(destination.x, destination.y, 'movementClick');
-                clickImg.setScale(2,2)
+                this.drawMovementDestinationImage(destination)
 
-                setTimeout (() => {
-                    clickImg.destroy()
-                }, DURATION)
-
-                // the map is 24x24 pixels.
-                // the pathable map is double in size, so the pizel size is half (12x12)
-                // this translates where the user clicked (in raw pixel location) to where they clicked on the 12x12 map
+                // each tile on the map is 24x24 pixels
+                // the pathable map has double the amount of tiles but is the same width/height, so the pixel size for each tile is half (12x12)
+                // this translates where the user clicked (raw pixel location on the screen) to where they clicked on the 12x12 tile map/array
                 destination.x = Math.floor((destination.x + 0.5) / 12);
                 destination.y = Math.floor((destination.y + 0.5) / 12);
 
+                // this does the same as above, but for the player's current position
                 let tmpPlayerPosition = {
-                    x: Math.floor((player.x + 0.5) / 12),   // this translates the player's current real position (in pixels) to
-                    y: Math.floor((player.y + 0.5) / 12)    // its position in the pathable tile array
+                    x: Math.floor((player.x + 0.5) / 12), // this translates the player's current real position (in pixels) to
+                    y: Math.floor((player.y + 0.5) / 12) // its position in the pathable tile array
                 }
 
                 console.log('moving from: (' + tmpPlayerPosition.x + ", " + tmpPlayerPosition.y + ")");
                 console.log('-------> to: (' + destination.x + ", " + destination.y + ")");
 
+                // this tells easystar to find a path from (tmpPlayerPosition.x, tmpPlayerPosition.y) --> (destination.x, destination.y)
+                // note that those (x, y) coords are on the higher res, pathable tile map
                 this.easystar.findPath(tmpPlayerPosition.x, tmpPlayerPosition.y, destination.x, destination.y, (path) => {
                     if (path === null) {
                         console.warn("Path was not found.");
@@ -143,11 +119,11 @@ export default class ClientGameScene extends Phaser.Scene {
                             tweens.push({
                                 targets: player,
                                 x: {
-                                    value: ex * 12, // ex * [tile width] * [doubled because the tilemap is double big]
+                                    value: ex * 12, // this translates it from the 12x12 pixel tile map to the larger tile map
                                     duration: PLAYER_SPEED
                                 },
                                 y: {
-                                    value: ey * 12,
+                                    value: ey * 12, // this translates it from the 12x12 pixel tile map to the larger tile map
                                     duration: PLAYER_SPEED
                                 }
                             });
@@ -175,7 +151,7 @@ export default class ClientGameScene extends Phaser.Scene {
             for (let j = 0; j < map.width * 2; j++) { // width*2 to double the times to path on
 
                 // there are twice as many pathable tiles are visual tiles.
-                // this function translates the double-ly large pathable tiles into the half-as-big map tiles, to find the tree
+                // this algorithm translates the current pathable tile to the larger, collidable tile
                 let parentX = Math.floor((j + 0.5) / 2)
                 let parentY = Math.floor((i + 0.5) / 2)
 
@@ -193,26 +169,10 @@ export default class ClientGameScene extends Phaser.Scene {
         console.log("easystarArray height: " + easystarArray.length)
         console.log(treesLayer)
 
-
-        /*
-        for (let i = 0; i < map.height; i++) {
-            let arr = []
-            for (let j = 0; j < map.width; j++) {
-                if (treesLayer.getTileAt(j, i) !== null) {
-                    arr.push(1); // if there is a tree, arr[j] = 1
-                } else {
-                    arr.push(0); // if there is NOT a tree, arr[j] = 0
-                }
-
-            }
-            easystarArray.push(arr);
-        }
-        */
-
         this.easystar.setGrid(easystarArray);
         this.easystar.setAcceptableTiles(0);
         this.easystar.enableDiagonals();
-        //this.easystar.enableCornerCutting();
+        //this.easystar.enableCornerCutting();  // this is interesting, but the player moves faster on the diagonals than the straightaways with it enabled
     }
 
 
@@ -245,5 +205,17 @@ export default class ClientGameScene extends Phaser.Scene {
         this.scene.tweens.timeline({
             tweens: tweens
         });
+    }
+
+    drawMovementDestinationImage(destination) {
+        // image duration in ms
+        const DURATION = 0.5 * 1000
+        let clickImg = this.add.image(destination.x, destination.y, 'movementClick');
+        clickImg.setScale(2, 2)
+
+        // this deletes the image after <ms> DURATION
+        setTimeout(() => {
+            clickImg.destroy()
+        }, DURATION)
     }
 }
