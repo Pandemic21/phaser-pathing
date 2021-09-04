@@ -26,7 +26,9 @@ export default class ClientGameScene extends Phaser.Scene {
         /////////
 
         this.load.image("base_tiles", "../assets/maps/oryx_world.png")
-        this.load.tilemapTiledJSON("tilemap", "../assets/maps/forest_map_small_v2.json")
+
+        //this.load.tilemapTiledJSON("tilemap", "../assets/maps/forest_map_small_v2.json")
+        this.load.tilemapTiledJSON("tilemap", "../assets/maps/forest_map_100x100_v1.json")
     }
 
     create() {
