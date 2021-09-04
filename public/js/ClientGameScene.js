@@ -278,7 +278,7 @@ export default class ClientGameScene extends Phaser.Scene {
         let clickImg = this.add.image(destination.x, destination.y, 'movementClick');
         clickImg.setScale(2.5, 2.5)
 
-        this.sound.play('movementClickSound');
+        this.sound.play('movementClickSound', {volume: 0.25});
 
         // this deletes the image after <ms> DURATION
         setTimeout(() => {
