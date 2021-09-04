@@ -135,19 +135,24 @@ export default class ClientGameScene extends Phaser.Scene {
         // Listener Config (e.g. spacebar, click) //
         ////////////////////////////////////////////
 
+        // pan the camera around with the mouse
+        this.input.on('pointermove', (pointer) => {
+            // the is not holding RMB, stop panning the camera
+            if (!pointer.rightButtonDown()) return;
+
+            // adjust the camera
+            const SCROLL_SPEED = 2
+
+            // SCROLL_SPEED adjusts how fast the camera moves
+            this.camera.scrollX -= (pointer.x - pointer.prevPosition.x) / this.camera.zoom * SCROLL_SPEED;
+            this.camera.scrollY -= (pointer.y - pointer.prevPosition.y) / this.camera.zoom * SCROLL_SPEED;
+        });
+
         // Mouse (left and right mouse click)
         this.input.on('pointerdown', (pointer) => {
             // if RMB (right click)
             if (pointer.rightButtonDown()) {
-                // pan the camera around with the mouse
-                this.input.on('pointermove', (pointer) => {
-                    // the player release RMB, stop panning the camera
-                    if (!pointer.rightButtonDown()) return;
 
-                    // adjust the camera
-                    this.camera.scrollX -= (pointer.x - pointer.prevPosition.x) / this.camera.zoom;
-                    this.camera.scrollY -= (pointer.y - pointer.prevPosition.y) / this.camera.zoom;
-                });
             }
 
             // if LMB (left click)
