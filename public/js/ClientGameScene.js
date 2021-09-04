@@ -52,27 +52,32 @@ export default class ClientGameScene extends Phaser.Scene {
         // "Trees" layer will be second
         let treesLayer = map.createStaticLayer('Trees', tileset);
 
+        // map height and width in raw pixels (used for minimap)
+        this.MAP_WIDTH_PIXELS = map.width * map.tildWidth
+        this.MAP_HEIGHT_PIXELS = map.height * map.tileHeight
+
 
         ////////////
         // Player //
         ////////////
 
-        const PLAYER_SPEED = 120
+        const PLAYER_SPEED = 50 // lower is faster
 
         //let player = this.physics.add.sprite(50, 50, 'orb') // this is the orb graphic
-        let player = this.physics.add.sprite(50, 50, 'isaacImg') // this is the mage graphic
+        this.player = this.physics.add.sprite(50, 50, 'isaacImg') // this is the mage graphic
 
-        player.body.velocity.normalize().scale(50);
+        // player.body.velocity.normalize().scale(50);
 
         // make "Trees" layer collidable with player
         treesLayer.setCollisionByExclusion([-1]);
-        this.physics.add.collider(player, treesLayer);
+        this.physics.add.collider(this.player, treesLayer);
 
 
         ////////////
         // Camera //
         ////////////
 
+        // setup camera config
         const cursors = this.input.keyboard.createCursorKeys();
 
         const controlConfig = {
@@ -88,9 +93,34 @@ export default class ClientGameScene extends Phaser.Scene {
             maxSpeed: 1.0
         };
 
+        // declare the camera
         this.controls = new Phaser.Cameras.Controls.SmoothedKeyControl(controlConfig);
-
         this.camera = this.cameras.main;
+
+
+        /////////////
+        // Minimap //
+        /////////////
+
+        // constants and variables
+        this.SCREEN_WIDTH = 800
+        this.SCREEN_HEIGHT = 600
+
+        this.MINIMAP_WIDTH = this.SCREEN_WIDTH / 4
+        this.MINIMAP_HEIGHT = this.SCREEN_HEIGHT / 4
+        this.MINIMAP_ZOOM = 0.2
+        this.MINIMAP_X = this.SCREEN_WIDTH - this.MINIMAP_WIDTH    // right side of the screen
+        this.MINIMAP_Y = this.SCREEN_HEIGHT - this.MINIMAP_HEIGHT  // bottom of the screen
+
+        // declare this.minimap
+        this.minimap = this.cameras.add(
+            this.MINIMAP_X,
+            this.MINIMAP_Y,
+            this.MINIMAP_WIDTH,
+            this.MINIMAP_HEIGHT)
+            .setZoom(0.2)
+            .setName('mini')
+            .setBackgroundColor(0x002244)
 
 
         ////////////////////////////////////////////
@@ -99,11 +129,17 @@ export default class ClientGameScene extends Phaser.Scene {
 
         // Mouse (left and right mouse click)
         this.input.on('pointerdown', (pointer) => {
-            const MOVEMENT_SPEED = 150
-
             // if RMB (right click)
             if (pointer.rightButtonDown()) {
-                // do something if you want
+                // pan the camera around with the mouse
+                this.input.on('pointermove', (pointer) => {
+                    // the player release RMB, stop panning the camera
+                    if (!pointer.rightButtonDown()) return;
+
+                    // adjust the camera
+                    this.camera.scrollX -= (pointer.x - pointer.prevPosition.x) / this.camera.zoom;
+                    this.camera.scrollY -= (pointer.y - pointer.prevPosition.y) / this.camera.zoom;
+                });
             }
 
             // if LMB (left click)
@@ -121,8 +157,8 @@ export default class ClientGameScene extends Phaser.Scene {
 
                 // this does the same as above, but for the player's current position
                 let tmpPlayerPosition = {
-                    x: Math.floor((player.x + 0.5) / 12), // this translates the player's current real position (in pixels) to
-                    y: Math.floor((player.y + 0.5) / 12) // its position in the pathable tile array
+                    x: Math.floor((this.player.x + 0.5) / 12), // this translates the player's current real position (in pixels) to
+                    y: Math.floor((this.player.y + 0.5) / 12) // its position in the pathable tile array
                 }
 
                 // draw the "click to move" image and debug console logs
@@ -148,7 +184,7 @@ export default class ClientGameScene extends Phaser.Scene {
                             var ex = path[i + 1].x;
                             var ey = path[i + 1].y;
                             tweens.push({
-                                targets: player,
+                                targets: this.player,
                                 x: {
                                     value: ex * 12, // this translates it from the 12x12 pixel tile map to the larger tile map
                                     duration: PLAYER_SPEED
@@ -212,37 +248,22 @@ export default class ClientGameScene extends Phaser.Scene {
     ////////////
 
     update(time, delta) {
+        // camera arrow keys update
         this.controls.update(delta);
+
+        // minimap scrolling update
+        this.minimap.scrollX = this.player.x
+        this.minimap.scrollY = this.player.y
+
+        // this makes the minimap ccamera follow with Phaser.Math.Clamp, which would be interesting: https://rexrainbow.github.io/phaser3-rex-notes/docs/site/clamp/
+        // this.minimap.scrollX = Phaser.Math.Clamp(this.player.x - this.MINIMAP_WIDTH / 2, 0, 800);
+        // this.minimap.scrollY = Phaser.Math.Clamp(this.player.y - this.MINIMAP_HEIGHT / 2, 0, 10000);
     }
 
 
     //////////////////////
     // Custom Functions //
     //////////////////////
-
-    moveCharacter(player, destination, path) {
-        // Sets up a list of tweens, one for each tile to walk, that will be chained by the timeline
-        var tweens = [];
-        for (var i = 0; i < path.length - 1; i++) {
-            var ex = path[i + 1].x;
-            var ey = path[i + 1].y;
-            tweens.push({
-                targets: player,
-                x: {
-                    value: ex * Game.map.tileWidth,
-                    duration: 200
-                },
-                y: {
-                    value: ey * Game.map.tileHeight,
-                    duration: 200
-                }
-            });
-        }
-
-        this.scene.tweens.timeline({
-            tweens: tweens
-        });
-    }
 
     drawMovementDestinationImage(destination) {
         // image duration in ms
