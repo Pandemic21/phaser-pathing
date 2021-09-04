@@ -211,7 +211,7 @@ export default class ClientGameScene extends Phaser.Scene {
         // image duration in ms
         const DURATION = 0.5 * 1000
         let clickImg = this.add.image(destination.x, destination.y, 'movementClick');
-        clickImg.setScale(2, 2)
+        clickImg.setScale(2.5, 2.5)
 
         // this deletes the image after <ms> DURATION
         setTimeout(() => {
