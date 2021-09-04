@@ -3,6 +3,10 @@ export default class ClientGameScene extends Phaser.Scene {
         super();
     }
 
+    init (easystar) {
+        this.easystar = easystar
+    }
+
     preload() {
         ////////////
         // Images //
@@ -87,6 +91,13 @@ export default class ClientGameScene extends Phaser.Scene {
         ////////////
 
         let player = this.physics.add.sprite(50, 50, 'orb')
+
+
+        ////////////////////
+        // BEGIN EASYSTAR //
+        ////////////////////
+
+        console.log(this.easystar)
     }
 
 

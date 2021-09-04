@@ -5,6 +5,8 @@
 import ClientGameScene from './ClientGameScene.js';
 let clientGameScene = new ClientGameScene();
 
+let easystar = new EasyStar.js();
+
 /////////////////
 // Phaser Init //
 /////////////////
@@ -35,6 +37,6 @@ game.canvas.oncontextmenu = function(e) {
 }
 
 game.scene.add('clientGameScene', clientGameScene)
-game.scene.start('clientGameScene')
+game.scene.start('clientGameScene', easystar)   // pass the easystar variable to the game scene
 
 console.log("Complete.")
