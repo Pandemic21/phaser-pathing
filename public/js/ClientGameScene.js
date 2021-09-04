@@ -88,7 +88,7 @@ export default class ClientGameScene extends Phaser.Scene {
 
         this.controls = new Phaser.Cameras.Controls.SmoothedKeyControl(controlConfig);
 
-        const cam = this.cameras.main;
+        this.camera = this.cameras.main;
 
 
         ////////////////////////////////////////////
@@ -111,20 +111,23 @@ export default class ClientGameScene extends Phaser.Scene {
                     y: this.input.mousePointer.y
                 }
 
-                // draw the "click to move" image for a bit
-                this.drawMovementDestinationImage(destination)
-
                 // each tile on the map is 24x24 pixels
                 // the pathable map has double the amount of tiles but is the same width/height, so the pixel size for each tile is half (12x12)
                 // this translates where the user clicked (raw pixel location on the screen) to where they clicked on the 12x12 tile map/array
-                destination.x = Math.floor((destination.x + 0.5) / 12);
-                destination.y = Math.floor((destination.y + 0.5) / 12);
+                destination.x = Math.floor((this.camera.scrollX + destination.x + 0.5) / 12)
+                destination.y = Math.floor((this.camera.scrollY + destination.y + 0.5) / 12)
 
                 // this does the same as above, but for the player's current position
                 let tmpPlayerPosition = {
                     x: Math.floor((player.x + 0.5) / 12), // this translates the player's current real position (in pixels) to
                     y: Math.floor((player.y + 0.5) / 12) // its position in the pathable tile array
                 }
+
+                // draw the "click to move" image and debug console logs
+                this.drawMovementDestinationImage({
+                    x: this.input.mousePointer.x + this.camera.scrollX,
+                    y: this.input.mousePointer.y + this.camera.scrollY
+                })
 
                 console.log('moving from: (' + tmpPlayerPosition.x + ", " + tmpPlayerPosition.y + ")");
                 console.log('-------> to: (' + destination.x + ", " + destination.y + ")");
