@@ -55,7 +55,6 @@ export default class ClientGameScene extends Phaser.Scene {
         // Player //
         ////////////
 
-
         const PLAYER_SPEED = 120
 
         //let player = this.physics.add.sprite(50, 50, 'orb') // this is the orb graphic
@@ -66,6 +65,30 @@ export default class ClientGameScene extends Phaser.Scene {
         // make "Trees" layer collidable with player
         treesLayer.setCollisionByExclusion([-1]);
         this.physics.add.collider(player, treesLayer);
+
+
+        ////////////
+        // Camera //
+        ////////////
+
+        const cursors = this.input.keyboard.createCursorKeys();
+
+        const controlConfig = {
+            camera: this.cameras.main,
+            left: cursors.left,
+            right: cursors.right,
+            up: cursors.up,
+            down: cursors.down,
+            zoomIn: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q),
+            zoomOut: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E),
+            acceleration: 0.06,
+            drag: 0.0005,
+            maxSpeed: 1.0
+        };
+
+        this.controls = new Phaser.Cameras.Controls.SmoothedKeyControl(controlConfig);
+
+        const cam = this.cameras.main;
 
 
         ////////////////////////////////////////////
@@ -183,8 +206,14 @@ export default class ClientGameScene extends Phaser.Scene {
     // Update //
     ////////////
 
-    update() {}
+    update(time, delta) {
+        this.controls.update(delta);
+    }
 
+
+    //////////////////////
+    // Custom Functions //
+    //////////////////////
 
     moveCharacter(player, destination, path) {
         // Sets up a list of tweens, one for each tile to walk, that will be chained by the timeline
