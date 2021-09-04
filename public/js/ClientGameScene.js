@@ -18,6 +18,8 @@ export default class ClientGameScene extends Phaser.Scene {
         this.load.image('orb', './assets/sliced/fx_24x24/oryx_16bit_fantasy_fx2_42.png');
         this.load.image('movementClick', './assets/sliced/fx_24x24/oryx_16bit_fantasy_fx2_53.png');
 
+        this.load.image('movementClick', './assets/sliced/fx_24x24/oryx_16bit_fantasy_fx2_53.png');
+
 
         /////////
         // Map //
@@ -55,8 +57,10 @@ export default class ClientGameScene extends Phaser.Scene {
         // Player //
         ////////////
 
-        let player = this.physics.add.sprite(50, 50, 'orb')
-        const PLAYER_SPEED = 100
+        //let player = this.physics.add.sprite(50, 50, 'orb')
+        let player = this.physics.add.sprite(50, 50, 'isaacImg')
+
+        const PLAYER_SPEED = 120
 
         // make "Trees" layer collidable with player
         treesLayer.setCollisionByExclusion([-1]);
@@ -102,6 +106,15 @@ export default class ClientGameScene extends Phaser.Scene {
                     y: this.input.mousePointer.y
                 }
 
+                // draw the "click to move" image for a bit
+                const DURATION = 0.5*1000 // image duration in ms
+                let clickImg = this.add.image(destination.x, destination.y, 'movementClick');
+                clickImg.setScale(2,2)
+
+                setTimeout (() => {
+                    clickImg.destroy()
+                }, DURATION)
+
                 // the map is 24x24 pixels.
                 // the pathable map is double in size, so the pizel size is half (12x12)
                 // this translates where the user clicked (in raw pixel location) to where they clicked on the 12x12 map
@@ -109,8 +122,8 @@ export default class ClientGameScene extends Phaser.Scene {
                 destination.y = Math.floor((destination.y + 0.5) / 12);
 
                 let tmpPlayerPosition = {
-                    x: Math.floor((player.x + 0.5) / 12),
-                    y: Math.floor((player.y + 0.5) / 12)
+                    x: Math.floor((player.x + 0.5) / 12),   // this translates the player's current real position (in pixels) to
+                    y: Math.floor((player.y + 0.5) / 12)    // its position in the pathable tile array
                 }
 
                 console.log('moving from: (' + tmpPlayerPosition.x + ", " + tmpPlayerPosition.y + ")");
@@ -138,7 +151,6 @@ export default class ClientGameScene extends Phaser.Scene {
                                     duration: PLAYER_SPEED
                                 }
                             });
-                            console.log("ex, ey: (" + ex + ", " + ey + ")")
                         }
 
                         this.tweens.timeline({
@@ -200,6 +212,7 @@ export default class ClientGameScene extends Phaser.Scene {
         this.easystar.setGrid(easystarArray);
         this.easystar.setAcceptableTiles(0);
         this.easystar.enableDiagonals();
+        //this.easystar.enableCornerCutting();
     }
 
 
