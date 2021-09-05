@@ -7,14 +7,15 @@ const express = require('express');
 // frameworks + middleware
 
 // default port is 8081, but if it's in "/opt/magegame-dev/" it should listen on the dev port (8082)
-let port = 8081;
+let port = 8083;
 if (__dirname.includes("-dev")) {
-    port = 8082;
+    port = port + 1;
 }
 
+const protocol = 'http://'
 const fqdn = 'localhost';
 const uri = "/";
-const url = fqdn + ':' + port + uri;
+const url = protocol + fqdn + ':' + port + uri;
 
 const app = express();
 const http = require('http')
