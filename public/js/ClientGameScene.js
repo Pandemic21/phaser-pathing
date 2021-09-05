@@ -118,15 +118,15 @@ export default class ClientGameScene extends Phaser.Scene {
         this.MINIMAP_WIDTH = this.SCREEN_WIDTH / 4
         this.MINIMAP_HEIGHT = this.SCREEN_HEIGHT / 4
         this.MINIMAP_ZOOM = 0.2
-        this.MINIMAP_X = this.SCREEN_WIDTH - this.MINIMAP_WIDTH    // right side of the screen
-        this.MINIMAP_Y = this.SCREEN_HEIGHT - this.MINIMAP_HEIGHT  // bottom of the screen
+        this.MINIMAP_X = this.SCREEN_WIDTH - this.MINIMAP_WIDTH // right side of the screen
+        this.MINIMAP_Y = this.SCREEN_HEIGHT - this.MINIMAP_HEIGHT // bottom of the screen
 
         // declare this.minimap
         this.minimap = this.cameras.add(
-            this.MINIMAP_X,
-            this.MINIMAP_Y,
-            this.MINIMAP_WIDTH,
-            this.MINIMAP_HEIGHT)
+                this.MINIMAP_X,
+                this.MINIMAP_Y,
+                this.MINIMAP_WIDTH,
+                this.MINIMAP_HEIGHT)
             .setZoom(0.2)
             .setName('mini')
             .setBackgroundColor(0x002244)
@@ -140,6 +140,20 @@ export default class ClientGameScene extends Phaser.Scene {
         this.input.keyboard.on('keyup-SPACE', (keyPress) => {
             this.camera.scrollX = this.player.x - this.SCREEN_WIDTH / 2
             this.camera.scrollY = this.player.y - this.SCREEN_HEIGHT / 2
+        })
+
+        // toggle follscreen on keypress: F
+        this.input.keyboard.on('keyup-F', (keyPress) => {
+            // if it's fullscreen already, toggle fullscreen off
+            if (this.scale.isFullscreen) {
+                this.scale.stopFullscreen();
+                this.camera.setZoom(1)
+            }
+            // if it's not fullscreen, toggle fullscreen on
+            else {
+                this.scale.startFullscreen();
+                this.camera.setZoom(2)
+            }
         })
 
         // pan the camera around with the mouse
@@ -292,7 +306,9 @@ export default class ClientGameScene extends Phaser.Scene {
         clickImg.setScale(2.5, 2.5)
 
         //this.sound.play('movementClickSound', {volume: 0.25});
-        this.sound.play('movementClickBlip', {volume: 0.01});
+        this.sound.play('movementClickBlip', {
+            volume: 0.01
+        });
 
 
         // this deletes the image after <ms> DURATION
