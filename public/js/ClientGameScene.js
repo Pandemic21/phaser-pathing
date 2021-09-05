@@ -156,29 +156,30 @@ export default class ClientGameScene extends Phaser.Scene {
             }
         });
 
+        // this is called by server.js whenever a new player joins
         this.socket.on('newPlayerJoined', (newPlayer) => {
             console.log("New player joined: " + newPlayer.id)
-            // add the new player to "this.players"
+
+            // add the new player to "<array> this.players"
             this.players.push(newPlayer)
 
             // draw the new player's mage
             newPlayer.mage = this.physics.add.sprite(newPlayer.mage.x, newPlayer.mage.y, 'isaacImg')
         });
 
+        // this is called by server.js whenever a player issues a move order to their mage
         this.socket.on('setNewMovement', (movementInfo) => {
             console.log('setting movement for player: ' + movementInfo.requesterId)
 
             // if this is telling us to set our own movement, ignore it
             if (movementInfo.requesterId == this.myId) return false;
 
-
-
-            // take "<str> movementInfo.requesterId" and use that to find the player who requested to move
+            // take "<str> movementInfo.requesterId" and use that to find the player who ordered their mage to move
             let requesterPlayer = this.players.find((player) => {
                 return player.id == movementInfo.requesterId;
             })
 
-            // to through "<array> movementInfo.tweens" and replace "targets: this.player" with the requesting player's mage
+            // go through "<array> movementInfo.tweens" and replace "targets: this.player" with the requesting player's mage
             for (let k=0; k<movementInfo.tweens.length; k++) {
                 movementInfo.tweens[k].targets = requesterPlayer.mage
             }

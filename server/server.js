@@ -56,7 +56,7 @@ class ServerGameScene extends Phaser.Scene {
 
         // players array. A "player" is a connection to the server's listening socket.io port.
         // the "mage" is the little guy running around the screen.
-        // each "player" has a <obj> mage { x, y } where x and y are the mage's current position.
+        // each "player" has "<obj> mage", which is a Phaser physics object
         this.players = []
 
         // on Socket.io connection
@@ -87,6 +87,13 @@ class ServerGameScene extends Phaser.Scene {
             socket.broadcast.emit('newPlayerJoined', newPlayer)
 
 
+            /* this is called by ClientGameScene.js when the player orders their mage to move
+            movementInfo = {
+                requesterId: this.myId, // <str> ID of the player who made the movement order
+                path,                   // <array> easystar path the mage will take
+                tweens                  // <array> the tweens for mage movement
+            }
+            */
             socket.on('tryNewMovement', (movementInfo) => {
                 console.log("tryNewMovement for: " + movementInfo.requesterId)
                 // TODO: this is where we would perform server-side validation
@@ -99,15 +106,7 @@ class ServerGameScene extends Phaser.Scene {
                 socket.broadcast.emit('setNewMovement', movementInfo)
             })
 
-
-
-
-            /*  Function: "disconnect"
-            *    Triggered: on socket disconnect (e.g. player left game)
-            *    Result:
-            *        - tells clients to remove the player from their screen
-            *        - disconnects the server side socket
-            */
+            // this is called when a player disconencts
             socket.on('disconnect', (() => {
                 console.log('user disconnected: ' + socket.id);
 
@@ -121,23 +120,13 @@ class ServerGameScene extends Phaser.Scene {
     }
 
 
+    ////////////
+    // Update //
+    ////////////
+    
     update(time, delta) {
         this.gameTime += delta;
         const socket = window.io;
-
-        // // emit isaac movement
-        // var x = player.x;
-        // var y = player.y;
-        //
-        // // send the new position to all clients
-        // socket.emit('setIsaacMovement', {
-        //     isaacRot: r,
-        //     isaacX: x,
-        //     isaacY: y,
-        //     playerId: player.name,
-        //     hp,
-        //     burning
-        // });
     }
 
 
