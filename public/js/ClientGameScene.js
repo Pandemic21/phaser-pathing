@@ -1,3 +1,4 @@
+
 export default class ClientGameScene extends Phaser.Scene {
     constructor() {
         super();
@@ -60,6 +61,7 @@ export default class ClientGameScene extends Phaser.Scene {
 
         // "Trees" layer will be second
         let treesLayer = map.createStaticLayer('Trees', tileset);
+
 
         // map height and width in raw pixels (used for minimap)
         this.MAP_WIDTH_PIXELS = map.width * map.tildWidth
@@ -128,10 +130,10 @@ export default class ClientGameScene extends Phaser.Scene {
 
         // declare this.minimap
         this.minimap = this.cameras.add(
-                this.MINIMAP_X,
-                this.MINIMAP_Y,
-                this.MINIMAP_WIDTH,
-                this.MINIMAP_HEIGHT)
+            this.MINIMAP_X,
+            this.MINIMAP_Y,
+            this.MINIMAP_WIDTH,
+            this.MINIMAP_HEIGHT)
             .setZoom(0.2)
             .setName('mini')
             .setBackgroundColor(0x002244)
@@ -192,6 +194,18 @@ export default class ClientGameScene extends Phaser.Scene {
                 destination.x = Math.floor((this.camera.scrollX + destination.x + 0.5) / 12)
                 destination.y = Math.floor((this.camera.scrollY + destination.y + 0.5) / 12)
 
+                // if a tree is clicked, search for a clickable one.
+                if (easystarArray[destination.y][destination.x] === 1) {
+                    let newDest = this.findNearbyWalkablePoint(destination.x, destination.y, easystarArray);
+                    console.log('newDest:', newDest);
+                    // if we found a clickable one, replace the bad click
+                    if (newDest !== undefined) {
+                        console.log('made it here, and is clickable = ' + easystarArray[newDest.y][newDest.x] === 0)
+                        destination.x = newDest.x;
+                        destination.y = newDest.y
+                    }
+                }
+
                 // this does the same as above, but for the player's current position
                 let tmpPlayerPosition = {
                     x: Math.floor((this.player.x + 0.5) / 12), // this translates the player's current real position (in pixels) to
@@ -251,7 +265,7 @@ export default class ClientGameScene extends Phaser.Scene {
 
         for (let i = 0; i < map.height * 2; i++) { // height*2 to double the times to path on
             let arr = []
-
+            let oneMore = false; // used to fix visual issue of walking on trees on the right side
             for (let j = 0; j < map.width * 2; j++) { // width*2 to double the times to path on
 
                 // there are twice as many pathable tiles are visual tiles.
@@ -259,8 +273,13 @@ export default class ClientGameScene extends Phaser.Scene {
                 let parentX = Math.floor((j + 0.5) / 2)
                 let parentY = Math.floor((i + 0.5) / 2)
 
+
                 if (treesLayer.getTileAt(parentX, parentY) !== null) {
                     arr.push(1); // if there is a tree, arr[j] = 1
+                    oneMore = true
+                } else if (oneMore) {
+                    arr.push(1);
+                    oneMore = false; // additionally, if there is a tree 1 half-tile to the left, arr[j] = 1
                 } else {
                     arr.push(0); // if there is NOT a tree, arr[j] = 0
                 }
@@ -271,12 +290,12 @@ export default class ClientGameScene extends Phaser.Scene {
 
         console.log("easystarArray width: " + easystarArray[0].length)
         console.log("easystarArray height: " + easystarArray.length)
-        console.log(treesLayer)
+        console.log(treesLayer);
 
         this.easystar.setGrid(easystarArray);
         this.easystar.setAcceptableTiles(0);
         this.easystar.enableDiagonals();
-        //this.easystar.enableCornerCutting();  // this is interesting, but the player moves faster on the diagonals than the straightaways with it enabled
+        this.easystar.disableCornerCutting();  // this stops us from pathing into trees
     }
 
 
@@ -301,6 +320,59 @@ export default class ClientGameScene extends Phaser.Scene {
     //////////////////////
     // Custom Functions //
     //////////////////////
+
+    //Could potentially do this recursively to always find a point, but it already feels solid this way.
+    findNearbyWalkablePoint(x, y, easystarArray) {
+        let destVec = new Phaser.Math.Vector2(x, y)
+        let destLook = destVec.clone()
+        let destLookArr = []
+
+        if(easystarArray[destVec.y][destVec.x] === 0){
+            return destVec;
+        }
+        else {
+            destLookArr.push(destLook.add(Phaser.Math.Vector2.UP));
+            if (easystarArray[destLook.y][destLook.x] === 0) {
+                return destLook;
+            }
+            destLook = destVec.clone()
+            destLookArr.push(destLook.add(Phaser.Math.Vector2.DOWN));
+            if (easystarArray[destLook.y][destLook.x] === 0) {
+                return destLook;
+            }
+            destLook = destVec.clone()
+            destLookArr.push(destLook.add(Phaser.Math.Vector2.LEFT));
+            if (easystarArray[destLook.y][destLook.x] === 0) {
+                return destLook;
+            }
+            destLook = destVec.clone()
+            destLookArr.push(destLook.add(Phaser.Math.Vector2.RIGHT));
+            if (easystarArray[destLook.y][destLook.x] === 0) {
+                return destLook;
+            }
+            destLook = destVec.clone()
+            destLookArr.push(destLook.add(Phaser.Math.Vector2.UP).add(Phaser.Math.Vector2.RIGHT));
+            if (easystarArray[destLook.y][destLook.x] === 0) {
+                return destLook;
+            }
+            destLook = destVec.clone()
+            destLookArr.push(destLook.add(Phaser.Math.Vector2.UP).add(Phaser.Math.Vector2.RIGHT));
+            if (easystarArray[destLook.y][destLook.x] === 0) {
+                return destLook;
+            }
+            destLook = destVec.clone()
+            destLookArr.push(destLook.add(Phaser.Math.Vector2.UP).add(Phaser.Math.Vector2.RIGHT));
+            if (easystarArray[destLook.y][destLook.x] === 0) {
+                return destLook;
+            }
+            destLook = destVec.clone()
+            destLookArr.push(destLook.add(Phaser.Math.Vector2.UP).add(Phaser.Math.Vector2.RIGHT));
+            if (easystarArray[destLook.y][destLook.x] === 0) {
+                return destLook;
+            }
+        }   
+    }
+
 
     drawMovementDestinationImage(destination) {
         // image duration in ms
