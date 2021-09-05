@@ -370,7 +370,7 @@ export default class ClientGameScene extends Phaser.Scene {
             if (easystarArray[destLook.y][destLook.x] === 0) {
                 return destLook;
             }
-        }   
+        }
     }
 
 
