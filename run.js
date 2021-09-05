@@ -2,7 +2,6 @@
 // Constants and Variables //
 /////////////////////////////
 
-const easystarjs = require('easystarjs')
 const express = require('express');
 
 // frameworks + middleware
@@ -28,7 +27,7 @@ const server = http.createServer(app);
 
 app.use(express.static(__dirname + '/public'));
 
-app.get('/', function(req, res) {
+app.get('/', function (req, res) {
     res.sendFile(__dirname + '/index.html');
 });
 
@@ -37,6 +36,6 @@ app.get('/', function(req, res) {
 // Server listen //
 ///////////////////
 
-server.listen(port, function() {
+server.listen(port, function () {
     console.log(`Listening: ${url}`);
 });
