@@ -5,7 +5,7 @@ const {
 } = jsdom;
 
 // initializes headless phaser instance on the server
-function phaserInit(io, spellHelper, __dirname, easystarjs) {
+function phaserInit(io, __dirname) {
     JSDOM.fromFile('server/index.html', {
         runScripts: "dangerously",
         resources: "usable",

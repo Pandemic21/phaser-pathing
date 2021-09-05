@@ -20,6 +20,9 @@ const url = protocol + fqdn + ':' + port + uri;
 const app = express();
 const http = require('http')
 const server = http.createServer(app);
+const {
+    socket
+} = require('./socket')
 
 
 //////////////////////
@@ -33,10 +36,25 @@ app.get('/', function (req, res) {
 });
 
 
+
+//Initializes phaser instance on the server to find the truth
+const {
+    phaserInit
+} = require('./server/phaserInit');
+
+
 ///////////////////
 // Server listen //
 ///////////////////
 
+server.listen(port, () => {
+    // TODO: might need to shunt easystar into server.js here
+    phaserInit(socket(server), __dirname);
+
+    console.log(`Listening: ${url}`);
+});
+/*
 server.listen(port, function () {
     console.log(`Listening: ${url}`);
 });
+*/
