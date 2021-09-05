@@ -138,7 +138,8 @@ export default class ClientGameScene extends Phaser.Scene {
 
         // spacebar re-centers the camera on the player
         this.input.keyboard.on('keyup-SPACE', (keyPress) => {
-            this.eventEmitter.emit('drawRuneSlots', keyPress);
+            this.camera.scrollX = this.player.x - this.SCREEN_WIDTH / 2
+            this.camera.scrollY = this.player.y - this.SCREEN_HEIGHT / 2
         })
 
         // pan the camera around with the mouse
