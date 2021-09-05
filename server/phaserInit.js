@@ -13,9 +13,7 @@ function phaserInit(io, __dirname) {
     }).then((dom) => {
         dom.window.gameLoaded = () => {
             dom.window.io = io;
-            dom.window.spellHelper = spellHelper;
             dom.window.__dirname = __dirname;
-            dom.window.easystarjs = easystarjs;
         }
     })
 }

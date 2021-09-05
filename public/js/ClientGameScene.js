@@ -1,4 +1,3 @@
-
 export default class ClientGameScene extends Phaser.Scene {
     constructor() {
         super();
@@ -42,6 +41,13 @@ export default class ClientGameScene extends Phaser.Scene {
     }
 
     create() {
+        ///////////////
+        // Constants //
+        ///////////////
+
+        const PLAYER_SPEED = 50 // lower is faster
+
+
         //////////////////
         // Map Creation //
         //////////////////
@@ -66,26 +72,6 @@ export default class ClientGameScene extends Phaser.Scene {
         // map height and width in raw pixels (used for minimap)
         this.MAP_WIDTH_PIXELS = map.width * map.tildWidth
         this.MAP_HEIGHT_PIXELS = map.height * map.tileHeight
-
-
-        ////////////
-        // Player //
-        ////////////
-
-        const PLAYER_SPEED = 50 // lower is faster
-
-        //let player = this.physics.add.sprite(50, 50, 'orb') // this is the orb graphic
-        this.player = this.physics.add.sprite(50, 50, 'isaacImg') // this is the mage graphic
-
-        // set the player to collide with trees
-        treesLayer.setCollisionByExclusion([-1]);
-        this.physics.add.collider(this.player, treesLayer);
-
-        // player.body.velocity.normalize().scale(50);
-
-        // make "Trees" layer collidable with player
-        treesLayer.setCollisionByExclusion([-1]);
-        this.physics.add.collider(this.player, treesLayer);
 
 
         ////////////
@@ -130,13 +116,86 @@ export default class ClientGameScene extends Phaser.Scene {
 
         // declare this.minimap
         this.minimap = this.cameras.add(
-            this.MINIMAP_X,
-            this.MINIMAP_Y,
-            this.MINIMAP_WIDTH,
-            this.MINIMAP_HEIGHT)
+                this.MINIMAP_X,
+                this.MINIMAP_Y,
+                this.MINIMAP_WIDTH,
+                this.MINIMAP_HEIGHT)
             .setZoom(0.2)
             .setName('mini')
             .setBackgroundColor(0x002244)
+
+
+        //////////////////////
+        // Socket.io Config //
+        //////////////////////
+
+        this.socket = io();
+
+        this.players = []   // this array contains all the player's in the game
+        this.myId = ''      // this is the current player's id
+
+
+        // This is called by server.js when the player first connects
+        // it sends "<array> players", which contains all players in the game
+        this.socket.on('initialConnectionConfig', (players) => {
+            ////////////
+            // Player //
+            ////////////
+
+            this.myId = this.socket.id  // set "this.myId"
+            this.players = players // set "<array> this.players" equal to what the server has
+
+            // this plucks the current player out of "<array> players" the server sent
+            let myPlayer = players.find((player) => {
+                return player.id == this.myId;
+            })
+
+            // create sprite graphics for all player's mages
+            for (let k=0; k<players.length; k++) {
+                players[k].mage = this.physics.add.sprite(players[k].mage.x, players[k].mage.y, 'isaacImg')
+            }
+        });
+
+        this.socket.on('newPlayerJoined', (newPlayer) => {
+            console.log("New player joined: " + newPlayer.id)
+            // add the new player to "this.players"
+            this.players.push(newPlayer)
+
+            // draw the new player's mage
+            newPlayer.mage = this.physics.add.sprite(newPlayer.mage.x, newPlayer.mage.y, 'isaacImg')
+        });
+
+        this.socket.on('setNewMovement', (movementInfo) => {
+            console.log('setting movement for player: ' + movementInfo.requesterId)
+
+            // if this is telling us to set our own movement, ignore it
+            if (movementInfo.requesterId == this.myId) return false;
+
+
+
+            // take "<str> movementInfo.requesterId" and use that to find the player who requested to move
+            let requesterPlayer = this.players.find((player) => {
+                return player.id == movementInfo.requesterId;
+            })
+
+            // to through "<array> movementInfo.tweens" and replace "targets: this.player" with the requesting player's mage
+            for (let k=0; k<movementInfo.tweens.length; k++) {
+                movementInfo.tweens[k].targets = requesterPlayer.mage
+            }
+
+            // locally animate the mage's movement
+            this.tweens.timeline({
+                tweens: movementInfo.tweens
+            });
+        });
+
+
+
+        // this.socket.emit('checkSettings', this.settings)
+        //
+        // this.socket.on('currentPlayers', (players) => {
+        //     this.serverCurrentPlayers(players, this.socket.id)
+        // });
 
 
         ////////////////////////////////////////////
@@ -145,8 +204,8 @@ export default class ClientGameScene extends Phaser.Scene {
 
         // spacebar re-centers the camera on the player
         this.input.keyboard.on('keyup-SPACE', (keyPress) => {
-            this.camera.scrollX = this.player.x - this.SCREEN_WIDTH / 2
-            this.camera.scrollY = this.player.y - this.SCREEN_HEIGHT / 2
+            this.camera.scrollX = this.mage.x - this.SCREEN_WIDTH / 2
+            this.camera.scrollY = this.mage.y - this.SCREEN_HEIGHT / 2
         })
 
         // toggle follscreen on keypress: F
@@ -206,10 +265,15 @@ export default class ClientGameScene extends Phaser.Scene {
                     }
                 }
 
-                // this does the same as above, but for the player's current position
+                // this plucks the current player out of "<array> players" the server sent
+                let myPlayer = this.players.find((player) => {
+                    return player.id == this.myId;
+                })
+
+                // this does the same translation as above, but for the mage's current position
                 let tmpPlayerPosition = {
-                    x: Math.floor((this.player.x + 0.5) / 12), // this translates the player's current real position (in pixels) to
-                    y: Math.floor((this.player.y + 0.5) / 12) // its position in the pathable tile array
+                    x: Math.floor((myPlayer.mage.x + 0.5) / 12), // this translates the mage's current real position (in pixels) to
+                    y: Math.floor((myPlayer.mage.y + 0.5) / 12) // its position in the pathable tile array
                 }
 
                 // draw the "click to move" image and debug console logs
@@ -235,7 +299,7 @@ export default class ClientGameScene extends Phaser.Scene {
                             var ex = path[i + 1].x;
                             var ey = path[i + 1].y;
                             tweens.push({
-                                targets: this.player,
+                                targets: myPlayer.mage,
                                 x: {
                                     value: ex * 12, // this translates it from the 12x12 pixel tile map to the larger tile map
                                     duration: PLAYER_SPEED
@@ -247,6 +311,16 @@ export default class ClientGameScene extends Phaser.Scene {
                             });
                         }
 
+                        //1qaz
+                        // this tells the server the client has decided on a new path
+                        let movementInfo = {
+                            requesterId: this.myId, // attach this player's ID to the request
+                            path,                   // the easystar path for the mage
+                            tweens                  // the tweens for mage movement
+                        }
+                        this.socket.emit('tryNewMovement', movementInfo)
+
+                        // locally animate the mage's movement
                         this.tweens.timeline({
                             tweens: tweens
                         });
@@ -295,7 +369,7 @@ export default class ClientGameScene extends Phaser.Scene {
         this.easystar.setGrid(easystarArray);
         this.easystar.setAcceptableTiles(0);
         this.easystar.enableDiagonals();
-        this.easystar.disableCornerCutting();  // this stops us from pathing into trees
+        this.easystar.disableCornerCutting(); // this stops us from pathing into trees
     }
 
 
@@ -307,13 +381,22 @@ export default class ClientGameScene extends Phaser.Scene {
         // camera arrow keys update
         this.controls.update(delta);
 
-        // minimap scrolling update
-        this.minimap.scrollX = this.player.x
-        this.minimap.scrollY = this.player.y
+        // get this player
+        let myPlayer = this.players.find((player) => {
+            return player.id == this.myId;
+        })
 
-        // this makes the minimap ccamera follow with Phaser.Math.Clamp, which would be interesting: https://rexrainbow.github.io/phaser3-rex-notes/docs/site/clamp/
-        // this.minimap.scrollX = Phaser.Math.Clamp(this.player.x - this.MINIMAP_WIDTH / 2, 0, 800);
-        // this.minimap.scrollY = Phaser.Math.Clamp(this.player.y - this.MINIMAP_HEIGHT / 2, 0, 10000);
+
+        // if we found the player, continue update()
+        if (myPlayer) {
+            // minimap scrolling update
+            this.minimap.scrollX = myPlayer.mage.x
+            this.minimap.scrollY = myPlayer.mage.y
+
+            // this makes the minimap ccamera follow with Phaser.Math.Clamp, which would be interesting: https://rexrainbow.github.io/phaser3-rex-notes/docs/site/clamp/
+            // this.minimap.scrollX = Phaser.Math.Clamp(this.player.x - this.MINIMAP_WIDTH / 2, 0, 800);
+            // this.minimap.scrollY = Phaser.Math.Clamp(this.player.y - this.MINIMAP_HEIGHT / 2, 0, 10000);
+        }
     }
 
 
@@ -327,10 +410,9 @@ export default class ClientGameScene extends Phaser.Scene {
         let destLook = destVec.clone()
         let destLookArr = []
 
-        if(easystarArray[destVec.y][destVec.x] === 0){
+        if (easystarArray[destVec.y][destVec.x] === 0) {
             return destVec;
-        }
-        else {
+        } else {
             destLookArr.push(destLook.add(Phaser.Math.Vector2.UP));
             if (easystarArray[destLook.y][destLook.x] === 0) {
                 return destLook;
