@@ -147,12 +147,10 @@ export default class ClientGameScene extends Phaser.Scene {
             // if it's fullscreen already, toggle fullscreen off
             if (this.scale.isFullscreen) {
                 this.scale.stopFullscreen();
-                this.camera.setZoom(1)
             }
             // if it's not fullscreen, toggle fullscreen on
             else {
                 this.scale.startFullscreen();
-                this.camera.setZoom(2)
             }
         })
 
