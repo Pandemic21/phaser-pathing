@@ -36,7 +36,8 @@ export default class ClientGameScene extends Phaser.Scene {
         this.load.image("base_tiles", "../assets/maps/oryx_world.png")
 
         //this.load.tilemapTiledJSON("tilemap", "../assets/maps/forest_map_small_v2.json")
-        this.load.tilemapTiledJSON("tilemap", "../assets/maps/forest_map_100x100_v1.json")
+        //this.load.tilemapTiledJSON("tilemap", "../assets/maps/forest_map_100x100_v1.json")
+        this.load.tilemapTiledJSON("tilemap", "../assets/maps/forest_map_100x100_v2.json")
     }
 
     create() {
@@ -45,7 +46,7 @@ export default class ClientGameScene extends Phaser.Scene {
         //////////////////
 
         // create the Tilemap
-        const map = this.make.tilemap({
+        let map = this.make.tilemap({
             key: 'tilemap',
             tileWidth: 24,
             tileHeight: 24
@@ -73,6 +74,10 @@ export default class ClientGameScene extends Phaser.Scene {
 
         //let player = this.physics.add.sprite(50, 50, 'orb') // this is the orb graphic
         this.player = this.physics.add.sprite(50, 50, 'isaacImg') // this is the mage graphic
+
+        // set the player to collide with trees
+        treesLayer.setCollisionByExclusion([-1]);
+        this.physics.add.collider(this.player, treesLayer);
 
         // player.body.velocity.normalize().scale(50);
 
