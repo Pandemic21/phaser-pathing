@@ -203,10 +203,19 @@ export default class ClientGameScene extends Phaser.Scene {
         // Listener Config (e.g. spacebar, click) //
         ////////////////////////////////////////////
 
-        // spacebar re-centers the camera on the player
+        // spacebar re-centers the camera on "myPlayer.mage"
         this.input.keyboard.on('keyup-SPACE', (keyPress) => {
-            this.camera.scrollX = this.mage.x - this.SCREEN_WIDTH / 2
-            this.camera.scrollY = this.mage.y - this.SCREEN_HEIGHT / 2
+            // get this player
+            // let myPlayer = this.players.find((player) => {
+            //     return player.id == this.myId;
+            // })
+            let myPlayer = this.players.find(player => player.id == this.myId);
+
+            // if "myPlayer" exists, center the camera on "myPlayer.mage"
+            if (myPlayer) {
+                this.camera.scrollX = myPlayer.mage.x - this.SCREEN_WIDTH / 2
+                this.camera.scrollY = myPlayer.mage.y - this.SCREEN_HEIGHT / 2
+            }
         })
 
         // toggle follscreen on keypress: F
@@ -312,7 +321,6 @@ export default class ClientGameScene extends Phaser.Scene {
                             });
                         }
 
-                        //1qaz
                         // this tells the server the client has decided on a new path
                         let movementInfo = {
                             requesterId: this.myId, // attach this player's ID to the request
@@ -348,7 +356,6 @@ export default class ClientGameScene extends Phaser.Scene {
                 let parentX = Math.floor((j + 0.5) / 2)
                 let parentY = Math.floor((i + 0.5) / 2)
 
-
                 if (treesLayer.getTileAt(parentX, parentY) !== null) {
                     arr.push(1); // if there is a tree, arr[j] = 1
                     oneMore = true
@@ -365,7 +372,6 @@ export default class ClientGameScene extends Phaser.Scene {
 
         console.log("easystarArray width: " + easystarArray[0].length)
         console.log("easystarArray height: " + easystarArray.length)
-        console.log(treesLayer);
 
         this.easystar.setGrid(easystarArray);
         this.easystar.setAcceptableTiles(0);
@@ -387,7 +393,6 @@ export default class ClientGameScene extends Phaser.Scene {
             return player.id == this.myId;
         })
 
-
         // if we found the player, continue update()
         if (myPlayer) {
             // minimap scrolling update
@@ -405,7 +410,7 @@ export default class ClientGameScene extends Phaser.Scene {
     // Custom Functions //
     //////////////////////
 
-    //Could potentially do this recursively to always find a point, but it already feels solid this way.
+    // Could potentially do this recursively to always find a point, but it already feels solid this way.
     findNearbyWalkablePoint(x, y, easystarArray) {
         let destVec = new Phaser.Math.Vector2(x, y);
         let destLook = destVec.clone();
@@ -467,7 +472,6 @@ export default class ClientGameScene extends Phaser.Scene {
         this.sound.play('movementClickBlip', {
             volume: 0.01
         });
-
 
         // this deletes the image after <ms> DURATION
         setTimeout(() => {
