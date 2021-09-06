@@ -321,7 +321,6 @@ export default class ClientGameScene extends Phaser.Scene {
                             });
                         }
 
-                        //1qaz
                         // this tells the server the client has decided on a new path
                         let movementInfo = {
                             requesterId: this.myId, // attach this player's ID to the request
