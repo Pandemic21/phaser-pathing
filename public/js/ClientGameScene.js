@@ -150,9 +150,11 @@ export default class ClientGameScene extends Phaser.Scene {
                 return player.id == this.myId;
             })
 
+
             // create sprite graphics for all player's mages
             for (let k = 0; k < players.length; k++) {
-                players[k].mage = this.physics.add.sprite(players[k].mage.x, players[k].mage.y, 'isaacImg')
+              console.log(players[k].id)
+              players[k].mage = this.physics.add.sprite(players[k].mage.x, players[k].mage.y, 'isaacImg')
             }
         });
 
@@ -171,23 +173,41 @@ export default class ClientGameScene extends Phaser.Scene {
         this.socket.on('setNewMovement', (movementInfo) => {
             console.log('setting movement for player: ' + movementInfo.requesterId)
 
-            // if this is telling us to set our own movement, ignore it
-            if (movementInfo.requesterId == this.myId) return false;
-
             // take "<str> movementInfo.requesterId" and use that to find the player who ordered their mage to move
             let requesterPlayer = this.players.find((player) => {
                 return player.id == movementInfo.requesterId;
             })
 
-            // go through "<array> movementInfo.tweens" and replace "targets: this.player" with the requesting player's mage
-            for (let k = 0; k < movementInfo.tweens.length; k++) {
-                movementInfo.tweens[k].targets = requesterPlayer.mage
+            if(movementInfo.location) {
+              requesterPlayer.mage.location = {x: movementInfo.location.x * 12, y: movementInfo.location.y * 12};
+              requesterPlayer.mage.path = movementInfo.path;
             }
 
-            // locally animate the mage's movement
-            this.tweens.timeline({
-                tweens: movementInfo.tweens
-            });
+            // if(movementInfo.path){
+            //   var tweens = this.calculateTweens(requesterPlayer, movementInfo.path, PLAYER_SPEED);
+            //   this.tweens.timeline({
+            //     tweens: tweens
+            //   })
+            // }
+
+
+            // // this actually moves the character
+            // var tweens = this.calculateTweens(requesterPlayer, movementInfo.path, PLAYER_SPEED);
+            // // locally animate the mage's movement
+            // this.tweens.timeline({
+            //     tweens: tweens
+            // });
+
+
+            // // go through "<array> movementInfo.tweens" and replace "targets: this.player" with the requesting player's mage
+            // for (let k = 0; k < movementInfo.tweens.length; k++) {
+            //     movementInfo.tweens[k].targets = requesterPlayer.mage
+            // }
+            //
+            // // locally animate the mage's movement
+            // this.tweens.timeline({
+            //     tweens: movementInfo.tweens
+            // });
         });
 
 
@@ -267,11 +287,11 @@ export default class ClientGameScene extends Phaser.Scene {
                 if (easystarArray[destination.y][destination.x] === 1) {
                     let newDest = this.findNearbyWalkablePoint(destination.x, destination.y, easystarArray);
                     console.log('newDest:', newDest);
-                    // if we found a clickable one, replace the bad click
+                    // if we found a tree, replace the bad click
                     if (newDest !== undefined) {
                         console.log('made it here, and is clickable = ' + easystarArray[newDest.y][newDest.x] === 0)
                         destination.x = newDest.x;
-                        destination.y = newDest.y
+                        destination.y = newDest.y;
                     }
                 }
 
@@ -303,36 +323,16 @@ export default class ClientGameScene extends Phaser.Scene {
                     } else {
                         console.log(path);
 
-                        // this actually moves the character
-                        var tweens = [];
-                        for (var i = 0; i < path.length - 1; i++) {
-                            var ex = path[i + 1].x;
-                            var ey = path[i + 1].y;
-                            tweens.push({
-                                targets: myPlayer.mage,
-                                x: {
-                                    value: ex * 12, // this translates it from the 12x12 pixel tile map to the larger tile map
-                                    duration: PLAYER_SPEED
-                                },
-                                y: {
-                                    value: ey * 12, // this translates it from the 12x12 pixel tile map to the larger tile map
-                                    duration: PLAYER_SPEED
-                                }
-                            });
-                        }
+
 
                         // this tells the server the client has decided on a new path
                         let movementInfo = {
                             requesterId: this.myId, // attach this player's ID to the request
                             path,                   // the easystar path for the mage
-                            tweens                  // the tweens for mage movement
                         }
                         this.socket.emit('tryNewMovement', movementInfo)
 
-                        // locally animate the mage's movement
-                        this.tweens.timeline({
-                            tweens: tweens
-                        });
+
                     }
                 });
                 this.easystar.calculate();
@@ -388,6 +388,16 @@ export default class ClientGameScene extends Phaser.Scene {
         // camera arrow keys update
         this.controls.update(delta);
 
+        //handle player movement
+        this.players.forEach((player) => {
+          //update player location;
+          if(player.mage.location) {
+            console .log(player.mage.location);
+            player.mage.x = player.mage.location.x;
+            player.mage.y = player.mage.location.y
+          }
+        })
+
         // get this player
         let myPlayer = this.players.find((player) => {
             return player.id == this.myId;
@@ -409,6 +419,27 @@ export default class ClientGameScene extends Phaser.Scene {
     //////////////////////
     // Custom Functions //
     //////////////////////
+
+    // Calculate tweens here.
+    calculateTweens(player, path, PLAYER_SPEED) {
+      var tweens = [];
+      for (var i = 0; i < path.length - 1; i++) {
+          var ex = path[i + 1].x;
+          var ey = path[i + 1].y;
+          tweens.push({
+              targets: player.mage,
+              x: {
+                  value: ex * 12, // this translates it from the 12x12 pixel tile map to the larger tile map
+                  duration: PLAYER_SPEED
+              },
+              y: {
+                  value: ey * 12, // this translates it from the 12x12 pixel tile map to the larger tile map
+                  duration: PLAYER_SPEED
+              }
+          });
+      }
+      return tweens;
+    }
 
     // Could potentially do this recursively to always find a point, but it already feels solid this way.
     findNearbyWalkablePoint(x, y, easystarArray) {

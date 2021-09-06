@@ -73,7 +73,9 @@ class ServerGameScene extends Phaser.Scene {
             let newPlayer = {
                 id: socket.id,          // this is the player's ID, used to ID the player in update()
                 playerName: socket.id,  // TODO: change this to a user configurable setting
-                mage: mage              // i know this can be shortened to just "mage" but long form helps me understand better
+                mage: mage,             // i know this can be shortened to just "mage" but long form helps me understand better
+                moveTick: 0,            // these will be used to know when to move the character
+                lastMoveTick: 0         //
             }
 
             // add newPlayer to this.players, which is iterated thru in update()
@@ -90,7 +92,6 @@ class ServerGameScene extends Phaser.Scene {
             movementInfo = {
                 requesterId: this.myId, // <str> ID of the player who made the movement order
                 path,                   // <array> easystar path the mage will take
-                tweens                  // <array> the tweens for mage movement
             }
             */
             socket.on('tryNewMovement', (movementInfo) => {
@@ -99,10 +100,12 @@ class ServerGameScene extends Phaser.Scene {
                 //  that the "<array> movementInfo.path" the player chose is
                 //  actually a valid path, and that they're not cheating
                 console.log('Movement: ', movementInfo)
-                // do validation here
-
-                // tell each of the other players where the player is moving
-                socket.broadcast.emit('setNewMovement', movementInfo)
+                // find the current player
+                const player = this.players.find((player) => {
+                  return player.id === socket.id;
+                })
+                //append the path to the player's mage object
+                player.mage.path = movementInfo.path;
             })
 
             // this is called when a player disconencts
@@ -122,10 +125,44 @@ class ServerGameScene extends Phaser.Scene {
     ////////////
     // Update //
     ////////////
-    
+
     update(time, delta) {
         this.gameTime += delta;
         const socket = window.io;
+
+        const PLAYER_SPEED = 50 //this is how many ms should be between each tile movement
+        //this is where we calculate movement and send it to the players;
+        this.players.forEach((player) => {
+          player.moveTick += delta;
+          //if the player has a path and should move, move them
+          if(player.mage.path && player.moveTick - player.lastMoveTick > PLAYER_SPEED) {
+            //default to current location
+            let location = {
+              x: player.mage.x/12,
+              y: player.mage.y/12,
+            }
+            //if there's an active path, move to the next node and remove it
+            if(player.mage.path.length > 0){
+              location = player.mage.path[0]
+              player.mage.path.shift();
+            }
+
+            //move one tile, and reset lastMoveTick to the appropriate time
+            //build the movementInfo object
+            const movementInfo = {
+              requesterId: player.id,
+              location: location, //syntax just for you XD
+              path: player.mage.path
+            }
+            // update the server side character object
+            player.mage.x = location.x * 12;
+            player.mage.y = location.y * 12;
+            //send it
+            socket.emit('setNewMovement', movementInfo);
+            //make sure we are updating every tick evenly;
+            player.lastMoveTick += PLAYER_SPEED;
+          }
+        })
     }
 
 
