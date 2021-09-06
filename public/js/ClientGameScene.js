@@ -116,10 +116,10 @@ export default class ClientGameScene extends Phaser.Scene {
 
         // declare this.minimap
         this.minimap = this.cameras.add(
-                this.MINIMAP_X,
-                this.MINIMAP_Y,
-                this.MINIMAP_WIDTH,
-                this.MINIMAP_HEIGHT)
+            this.MINIMAP_X,
+            this.MINIMAP_Y,
+            this.MINIMAP_WIDTH,
+            this.MINIMAP_HEIGHT)
             .setZoom(0.2)
             .setName('mini')
             .setBackgroundColor(0x002244)
@@ -151,7 +151,7 @@ export default class ClientGameScene extends Phaser.Scene {
             })
 
             // create sprite graphics for all player's mages
-            for (let k=0; k<players.length; k++) {
+            for (let k = 0; k < players.length; k++) {
                 players[k].mage = this.physics.add.sprite(players[k].mage.x, players[k].mage.y, 'isaacImg')
             }
         });
@@ -180,7 +180,7 @@ export default class ClientGameScene extends Phaser.Scene {
             })
 
             // go through "<array> movementInfo.tweens" and replace "targets: this.player" with the requesting player's mage
-            for (let k=0; k<movementInfo.tweens.length; k++) {
+            for (let k = 0; k < movementInfo.tweens.length; k++) {
                 movementInfo.tweens[k].targets = requesterPlayer.mage
             }
 
@@ -407,9 +407,9 @@ export default class ClientGameScene extends Phaser.Scene {
 
     //Could potentially do this recursively to always find a point, but it already feels solid this way.
     findNearbyWalkablePoint(x, y, easystarArray) {
-        let destVec = new Phaser.Math.Vector2(x, y)
-        let destLook = destVec.clone()
-        let destLookArr = []
+        let destVec = new Phaser.Math.Vector2(x, y);
+        let destLook = destVec.clone();
+        let destLookArr = [];
 
         if (easystarArray[destVec.y][destVec.x] === 0) {
             return destVec;

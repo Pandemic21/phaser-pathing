@@ -10,7 +10,6 @@ class ServerGameScene extends Phaser.Scene {
     }
 
     preload() {
-        //this is where you get access to spellHelper.js.
         __dirname = window.__dirname;
 
         //this.load.tilemapTiledJSON("tilemap", "file:///" + __dirname + "/public/assets/maps/forest_map_small.json");
@@ -99,7 +98,7 @@ class ServerGameScene extends Phaser.Scene {
                 // TODO: this is where we would perform server-side validation
                 //  that the "<array> movementInfo.path" the player chose is
                 //  actually a valid path, and that they're not cheating
-
+                console.log('Movement: ', movementInfo)
                 // do validation here
 
                 // tell each of the other players where the player is moving
