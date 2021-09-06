@@ -206,9 +206,10 @@ export default class ClientGameScene extends Phaser.Scene {
         // spacebar re-centers the camera on "myPlayer.mage"
         this.input.keyboard.on('keyup-SPACE', (keyPress) => {
             // get this player
-            let myPlayer = this.players.find((player) => {
-                return player.id == this.myId;
-            })
+            // let myPlayer = this.players.find((player) => {
+            //     return player.id == this.myId;
+            // })
+            let myPlayer = this.players.find(player => player.id == this.myId);
 
             // if "myPlayer" exists, center the camera on "myPlayer.mage"
             if (myPlayer) {
