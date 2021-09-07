@@ -124,6 +124,7 @@ export default class ClientGameScene extends Phaser.Scene {
             .setName('mini')
             .setBackgroundColor(0x002244);
 
+        this.tweenManager = new Phaser.Tweens.TweenManager(this);
 
         //////////////////////
         // Socket.io Config //
@@ -133,6 +134,7 @@ export default class ClientGameScene extends Phaser.Scene {
 
         this.players = [];   // this array contains all the player's in the game
         this.myId = '';      // this is the current player's id
+
 
 
         // This is called by server.js when the player first connects
@@ -187,10 +189,25 @@ export default class ClientGameScene extends Phaser.Scene {
                 return player.id == movementInfo.requesterId;
             });
 
-            if(movementInfo.location) {
-              requesterPlayer.mage.location = {x: movementInfo.location.x * 12, y: movementInfo.location.y * 12};
-              requesterPlayer.mage.path = movementInfo.path;
+            //requesterPlayer.mage.location = {x: movementInfo.location.x * 12, y: movementInfo.location.y * 12}; // this is just a hard location update. can potentially replace this with tweens
+
+            //if the player has a path, there is an incoming path, and the destination is the same as the incoming path, we can assume it is the same path;
+            if(requesterPlayer.mage.path && movementInfo.path.length > 0 && requesterPlayer.mage.path.length > 0 &&
+                movementInfo.path[movementInfo.path.length - 1].x === requesterPlayer.mage.path[requesterPlayer.mage.path.length - 1].x &&
+                movementInfo.path[movementInfo.path.length - 1].y === requesterPlayer.mage.path[requesterPlayer.mage.path.length - 1].y) {
+              //do something
+            } else if(movementInfo.path.length > 0){
+              console.log('should be adding new tweens')
+              this.tweenManager.killTweensOf(requesterPlayer.mage);
+              let tweens = this.calculateTweens(requesterPlayer, movementInfo.path, PLAYER_SPEED);
+              const timeline = this.tweens.createTimeline();
+              tweens.forEach((tween) => {
+                timeline.add(tween);
+              })
+                timeline.play();
             }
+            requesterPlayer.mage.path = movementInfo.path;
+
 
             // if(movementInfo.path){
             //   var tweens = this.calculateTweens(requesterPlayer, movementInfo.path, PLAYER_SPEED);
