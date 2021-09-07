@@ -1,7 +1,14 @@
 {
-  "source": {
-    "include": ["."],
-    "includePattern": ".+\\.js(doc|x)?$",
-    "excludePattern": "node_modules"
-  }
+    "plugins": ["plugins/markdown"],
+    "source": {
+        "include": ["."],
+        "exclude": ["node_modules", "jsdoc"],
+        "includePattern": ".+\\.js(doc|x)?$"
+    },
+    "opts": {
+        "template": "./node_modules/clean-jsdoc-theme",
+        "theme_opts": {
+            "theme": "dark"
+        }
+    }
 }

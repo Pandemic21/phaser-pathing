@@ -4,7 +4,7 @@ export default class ClientGameScene extends Phaser.Scene {
     }
 
     init(easystar) {
-        this.easystar = easystar
+        this.easystar = easystar;
     }
 
     preload() {
@@ -13,7 +13,7 @@ export default class ClientGameScene extends Phaser.Scene {
         ////////////
 
         this.load.image('isaacImg', './assets/sliced/creatures_24x24/oryx_16bit_fantasy_creatures_04.png');
-        this.load.image('isaacBreathe', './assets/sliced/creatures_24x24/oryx_16bit_fantasy_creatures_22.png')
+        this.load.image('isaacBreathe', './assets/sliced/creatures_24x24/oryx_16bit_fantasy_creatures_22.png');
 
         this.load.image('orb', './assets/sliced/fx_24x24/oryx_16bit_fantasy_fx2_42.png');
         this.load.image('movementClick', './assets/sliced/fx_24x24/oryx_16bit_fantasy_fx2_53.png');
@@ -33,11 +33,11 @@ export default class ClientGameScene extends Phaser.Scene {
         // Map //
         /////////
 
-        this.load.image("base_tiles", "../assets/maps/oryx_world.png")
+        this.load.image("base_tiles", "../assets/maps/oryx_world.png");
 
         //this.load.tilemapTiledJSON("tilemap", "../assets/maps/forest_map_small_v2.json")
         //this.load.tilemapTiledJSON("tilemap", "../assets/maps/forest_map_100x100_v1.json")
-        this.load.tilemapTiledJSON("tilemap", "../assets/maps/forest_map_100x100_v2.json")
+        this.load.tilemapTiledJSON("tilemap", "../assets/maps/forest_map_100x100_v2.json");
     }
 
     create() {
@@ -45,7 +45,7 @@ export default class ClientGameScene extends Phaser.Scene {
         // Constants //
         ///////////////
 
-        const PLAYER_SPEED = 50 // lower is faster
+        const PLAYER_SPEED = 50; // lower is faster
 
 
         //////////////////
@@ -57,10 +57,10 @@ export default class ClientGameScene extends Phaser.Scene {
             key: 'tilemap',
             tileWidth: 24,
             tileHeight: 24
-        })
+        });
 
         // add the tileset image we are using
-        const tileset = map.addTilesetImage('oryx_world', 'base_tiles')
+        const tileset = map.addTilesetImage('oryx_world', 'base_tiles');
 
         // "Ground" layer will be first
         let ground = map.createLayer('Ground', tileset);
@@ -70,8 +70,8 @@ export default class ClientGameScene extends Phaser.Scene {
 
 
         // map height and width in raw pixels (used for minimap)
-        this.MAP_WIDTH_PIXELS = map.width * map.tildWidth
-        this.MAP_HEIGHT_PIXELS = map.height * map.tileHeight
+        this.MAP_WIDTH_PIXELS = map.width * map.tildWidth;
+        this.MAP_HEIGHT_PIXELS = map.height * map.tileHeight;
 
 
         ////////////
@@ -97,7 +97,7 @@ export default class ClientGameScene extends Phaser.Scene {
         // declare the camera
         this.controls = new Phaser.Cameras.Controls.SmoothedKeyControl(controlConfig);
         this.camera = this.cameras.main;
-        this.camera.setBounds(0, 0, this.MAP_WIDTH_PIXELS, this.MAP_HEIGHT_PIXELS)
+        this.camera.setBounds(0, 0, this.MAP_WIDTH_PIXELS, this.MAP_HEIGHT_PIXELS);
 
 
         /////////////
@@ -105,14 +105,14 @@ export default class ClientGameScene extends Phaser.Scene {
         /////////////
 
         // constants and variables
-        this.SCREEN_WIDTH = 800
-        this.SCREEN_HEIGHT = 600
+        this.SCREEN_WIDTH = 800;
+        this.SCREEN_HEIGHT = 600;
 
-        this.MINIMAP_WIDTH = this.SCREEN_WIDTH / 4
-        this.MINIMAP_HEIGHT = this.SCREEN_HEIGHT / 4
-        this.MINIMAP_ZOOM = 0.2
-        this.MINIMAP_X = this.SCREEN_WIDTH - this.MINIMAP_WIDTH // right side of the screen
-        this.MINIMAP_Y = this.SCREEN_HEIGHT - this.MINIMAP_HEIGHT // bottom of the screen
+        this.MINIMAP_WIDTH = this.SCREEN_WIDTH / 4;
+        this.MINIMAP_HEIGHT = this.SCREEN_HEIGHT / 4;
+        this.MINIMAP_ZOOM = 0.2;
+        this.MINIMAP_X = this.SCREEN_WIDTH - this.MINIMAP_WIDTH; // right side of the screen
+        this.MINIMAP_Y = this.SCREEN_HEIGHT - this.MINIMAP_HEIGHT; // bottom of the screen
 
         // declare this.minimap
         this.minimap = this.cameras.add(
@@ -122,7 +122,7 @@ export default class ClientGameScene extends Phaser.Scene {
             this.MINIMAP_HEIGHT)
             .setZoom(0.2)
             .setName('mini')
-            .setBackgroundColor(0x002244)
+            .setBackgroundColor(0x002244);
 
 
         //////////////////////
@@ -131,8 +131,8 @@ export default class ClientGameScene extends Phaser.Scene {
 
         this.socket = io();
 
-        this.players = []   // this array contains all the player's in the game
-        this.myId = ''      // this is the current player's id
+        this.players = [];   // this array contains all the player's in the game
+        this.myId = '';      // this is the current player's id
 
 
         // This is called by server.js when the player first connects
@@ -142,13 +142,13 @@ export default class ClientGameScene extends Phaser.Scene {
             // Player //
             ////////////
 
-            this.myId = this.socket.id  // set "this.myId"
-            this.players = players // set "<array> this.players" equal to what the server has
+            this.myId = this.socket.id;  // set "this.myId"
+            this.players = players; // set "<array> this.players" equal to what the server has
 
             // this plucks the current player out of "<array> players" the server sent
             let myPlayer = players.find((player) => {
                 return player.id == this.myId;
-            })
+            });
 
             // TODO: move this variable to a more sensible place. Maybe on the player.mage object?
             // this holds the mage's old destination
@@ -157,34 +157,35 @@ export default class ClientGameScene extends Phaser.Scene {
                     x: 0,
                     y: 0
                 }
-            }
+            };
 
 
             // create sprite graphics for all player's mages
             for (let k = 0; k < players.length; k++) {
-              players[k].mage = this.physics.add.sprite(players[k].mage.x, players[k].mage.y, 'isaacImg')
+              console.log(players[k].id);
+              players[k].mage = this.physics.add.sprite(players[k].mage.x, players[k].mage.y, 'isaacImg');
             }
         });
 
         // this is called by server.js whenever a new player joins
         this.socket.on('newPlayerJoined', (newPlayer) => {
-            console.log("New player joined: " + newPlayer.id)
+            console.log("New player joined: " + newPlayer.id);
 
             // add the new player to "<array> this.players"
-            this.players.push(newPlayer)
+            this.players.push(newPlayer);
 
             // draw the new player's mage
-            newPlayer.mage = this.physics.add.sprite(newPlayer.mage.x, newPlayer.mage.y, 'isaacImg')
+            newPlayer.mage = this.physics.add.sprite(newPlayer.mage.x, newPlayer.mage.y, 'isaacImg');
         });
 
         // this is called by server.js whenever a player issues a move order to their mage
         this.socket.on('setNewMovement', (movementInfo) => {
-            //console.log('setting movement for player: ' + movementInfo.requesterId)
+            console.log('setting movement for player: ' + movementInfo.requesterId);
 
             // take "<str> movementInfo.requesterId" and use that to find the player who ordered their mage to move
             let requesterPlayer = this.players.find((player) => {
                 return player.id == movementInfo.requesterId;
-            })
+            });
 
             if(movementInfo.location) {
               requesterPlayer.mage.location = {x: movementInfo.location.x * 12, y: movementInfo.location.y * 12};
@@ -241,10 +242,10 @@ export default class ClientGameScene extends Phaser.Scene {
 
             // if "myPlayer" exists, center the camera on "myPlayer.mage"
             if (myPlayer) {
-                this.camera.scrollX = myPlayer.mage.x - this.SCREEN_WIDTH / 2
-                this.camera.scrollY = myPlayer.mage.y - this.SCREEN_HEIGHT / 2
+                this.camera.scrollX = myPlayer.mage.x - this.SCREEN_WIDTH / 2;
+                this.camera.scrollY = myPlayer.mage.y - this.SCREEN_HEIGHT / 2;
             }
-        })
+        });
 
         // toggle follscreen on keypress: F
         this.input.keyboard.on('keyup-F', (keyPress) => {
@@ -256,7 +257,7 @@ export default class ClientGameScene extends Phaser.Scene {
             else {
                 this.scale.startFullscreen();
             }
-        })
+        });
 
         // pan the camera around with the mouse
         this.input.on('pointermove', (pointer) => {
@@ -264,7 +265,7 @@ export default class ClientGameScene extends Phaser.Scene {
             if (!pointer.rightButtonDown()) return;
 
             // adjust the camera
-            const SCROLL_SPEED = 2
+            const SCROLL_SPEED = 2;
 
             // SCROLL_SPEED adjusts how fast the camera moves
             this.camera.scrollX -= (pointer.x - pointer.prevPosition.x) / this.camera.zoom * SCROLL_SPEED;
@@ -284,7 +285,7 @@ export default class ClientGameScene extends Phaser.Scene {
                 this.drawMovementDestinationImage({
                     x: this.input.mousePointer.x + this.camera.scrollX,
                     y: this.input.mousePointer.y + this.camera.scrollY
-                })
+                });
 
                 // destination location (x,y) the player clicked
 
@@ -297,16 +298,16 @@ export default class ClientGameScene extends Phaser.Scene {
                 let destination = {
                     x: this.input.mousePointer.x,
                     y: this.input.mousePointer.y
-                }
+                };
 
                 // each tile on the map is 24x24 pixels
                 // the pathable map has double the amount of tiles but is the same width/height, so the pixel size for each tile is half (12x12)
                 // this translates where the user clicked (raw pixel location on the screen) to where they clicked on the 12x12 tile map/array
-                destination.x = Math.floor((this.camera.scrollX + destination.x + 0.5) / 12)
-                destination.y = Math.floor((this.camera.scrollY + destination.y + 0.5) / 12)
+                destination.x = Math.floor((this.camera.scrollX + destination.x + 0.5) / 12);
+                destination.y = Math.floor((this.camera.scrollY + destination.y + 0.5) / 12);
 
                 // if they're just spam clicking the same tile, return false
-                if (destination.x == this.oldDestination.location.x && destination.y == this.oldDestination.location.y) return false
+                if (destination.x == this.oldDestination.location.x && destination.y == this.oldDestination.location.y) return false;
 
                 // update the old destination to match the current click destination
                 this.oldDestination = {
@@ -314,7 +315,7 @@ export default class ClientGameScene extends Phaser.Scene {
                         x: destination.x,
                         y: destination.y
                     }
-                }
+                };
 
                 // if a tree is clicked, search for a clickable tile.
                 if (easystarArray[destination.y][destination.x] === 1) {
@@ -329,13 +330,13 @@ export default class ClientGameScene extends Phaser.Scene {
                 // this plucks the current player out of "<array> players" the server sent
                 let myPlayer = this.players.find((player) => {
                     return player.id == this.myId;
-                })
+                });
 
                 // this does the same translation as above, but for the mage's current position
                 let tmpPlayerPosition = {
                     x: Math.floor((myPlayer.mage.x + 0.5) / 12), // this translates the mage's current real position (in pixels) to
                     y: Math.floor((myPlayer.mage.y + 0.5) / 12) // its position in the pathable tile array
-                }
+                };
 
 
                 // draw the "click to move" image and debug console logs
@@ -361,9 +362,10 @@ export default class ClientGameScene extends Phaser.Scene {
                         let movementInfo = {
                             requesterId: this.myId, // attach this player's ID to the request
                             path,                   // the easystar path for the mage
-                        }
-                        this.socket.emit('tryNewMovement', movementInfo)
-                        console.log('timed out');
+                        };
+                        this.socket.emit('tryNewMovement', movementInfo);
+
+
                     }
                 });
                 this.easystar.calculate();
@@ -379,18 +381,18 @@ export default class ClientGameScene extends Phaser.Scene {
         let easystarArray = [];
 
         for (let i = 0; i < map.height * 2; i++) { // height*2 to double the times to path on
-            let arr = []
+            let arr = [];
             let oneMore = false; // used to fix visual issue of walking on trees on the right side
             for (let j = 0; j < map.width * 2; j++) { // width*2 to double the times to path on
 
                 // there are twice as many pathable tiles are visual tiles.
                 // this algorithm translates the current pathable tile to the larger, collidable tile
-                let parentX = Math.floor((j + 0.5) / 2)
-                let parentY = Math.floor((i + 0.5) / 2)
+                let parentX = Math.floor((j + 0.5) / 2);
+                let parentY = Math.floor((i + 0.5) / 2);
 
                 if (treesLayer.getTileAt(parentX, parentY) !== null) {
                     arr.push(1); // if there is a tree, arr[j] = 1
-                    oneMore = true
+                    oneMore = true;
                 } else if (oneMore) {
                     arr.push(1);
                     oneMore = false; // additionally, if there is a tree 1 half-tile to the left, arr[j] = 1
@@ -402,8 +404,8 @@ export default class ClientGameScene extends Phaser.Scene {
             easystarArray.push(arr);
         }
 
-        //console.log("easystarArray width: " + easystarArray[0].length)
-        //console.log("easystarArray height: " + easystarArray.length)
+        console.log("easystarArray width: " + easystarArray[0].length);
+        console.log("easystarArray height: " + easystarArray.length);
 
         this.easystar.setGrid(easystarArray);
         this.easystar.setAcceptableTiles(0);
@@ -427,20 +429,20 @@ export default class ClientGameScene extends Phaser.Scene {
           if(player.mage.location) {
             //console.log(player.mage.location);
             player.mage.x = player.mage.location.x;
-            player.mage.y = player.mage.location.y
+            player.mage.y = player.mage.location.y;
           }
-        })
+      });
 
         // get this player
         let myPlayer = this.players.find((player) => {
             return player.id == this.myId;
-        })
+        });
 
         // if we found the player, continue update()
         if (myPlayer) {
             // minimap scrolling update
-            this.minimap.scrollX = myPlayer.mage.x
-            this.minimap.scrollY = myPlayer.mage.y
+            this.minimap.scrollX = myPlayer.mage.x;
+            this.minimap.scrollY = myPlayer.mage.y;
 
             // this makes the minimap ccamera follow with Phaser.Math.Clamp, which would be interesting: https://rexrainbow.github.io/phaser3-rex-notes/docs/site/clamp/
             // this.minimap.scrollX = Phaser.Math.Clamp(this.player.x - this.MINIMAP_WIDTH / 2, 0, 800);
@@ -500,37 +502,37 @@ export default class ClientGameScene extends Phaser.Scene {
             if (easystarArray[destLook.y][destLook.x] === 0) {
                 return destLook;
             }
-            destLook = destVec.clone()
+            destLook = destVec.clone();
             destLookArr.push(destLook.add(Phaser.Math.Vector2.DOWN));
             if (easystarArray[destLook.y][destLook.x] === 0) {
                 return destLook;
             }
-            destLook = destVec.clone()
+            destLook = destVec.clone();
             destLookArr.push(destLook.add(Phaser.Math.Vector2.LEFT));
             if (easystarArray[destLook.y][destLook.x] === 0) {
                 return destLook;
             }
-            destLook = destVec.clone()
+            destLook = destVec.clone();
             destLookArr.push(destLook.add(Phaser.Math.Vector2.RIGHT));
             if (easystarArray[destLook.y][destLook.x] === 0) {
                 return destLook;
             }
-            destLook = destVec.clone()
+            destLook = destVec.clone();
             destLookArr.push(destLook.add(Phaser.Math.Vector2.UP).add(Phaser.Math.Vector2.RIGHT));
             if (easystarArray[destLook.y][destLook.x] === 0) {
                 return destLook;
             }
-            destLook = destVec.clone()
+            destLook = destVec.clone();
             destLookArr.push(destLook.add(Phaser.Math.Vector2.UP).add(Phaser.Math.Vector2.RIGHT));
             if (easystarArray[destLook.y][destLook.x] === 0) {
                 return destLook;
             }
-            destLook = destVec.clone()
+            destLook = destVec.clone();
             destLookArr.push(destLook.add(Phaser.Math.Vector2.UP).add(Phaser.Math.Vector2.RIGHT));
             if (easystarArray[destLook.y][destLook.x] === 0) {
                 return destLook;
             }
-            destLook = destVec.clone()
+            destLook = destVec.clone();
             destLookArr.push(destLook.add(Phaser.Math.Vector2.UP).add(Phaser.Math.Vector2.RIGHT));
             if (easystarArray[destLook.y][destLook.x] === 0) {
                 return destLook;
@@ -549,9 +551,9 @@ export default class ClientGameScene extends Phaser.Scene {
      */
     drawMovementDestinationImage(destination) {
         // image duration in ms
-        const DURATION = 0.5 * 1000
+        const DURATION = 0.5 * 1000;
         let clickImg = this.add.image(destination.x, destination.y, 'movementClick');
-        clickImg.setScale(2.5, 2.5)
+        clickImg.setScale(2.5, 2.5);
 
         //this.sound.play('movementClickSound', {volume: 0.25});
         this.sound.play('movementClickBlip', {
@@ -560,7 +562,7 @@ export default class ClientGameScene extends Phaser.Scene {
 
         // this deletes the image after <ms> DURATION
         setTimeout(() => {
-            clickImg.destroy()
-        }, DURATION)
+            clickImg.destroy();
+        }, DURATION);
     }
 }
