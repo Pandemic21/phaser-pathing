@@ -143,8 +143,14 @@ class ServerGameScene extends Phaser.Scene {
             };
             //if there's an active path, move to the next node and remove it
             if(player.mage.path.length > 0){
-              location = player.mage.path[0];
-              player.mage.path.shift();
+              //this finds the current location in the path if it exists, to make sure we are starting from our current location
+              let currentLocIndex = player.mage.path.findIndex((loc) => {
+                return location.x === loc.x && location.y === loc.y;
+              })
+              //if the current location is not found currentLocIndex = -1, and therefore we pick up at the beginning of the path
+              location = player.mage.path[currentLocIndex + 1];
+              //splice the path to the next point
+              player.mage.path.splice(0, currentLocIndex + 2);
             }
 
             //move one tile, and reset lastMoveTick to the appropriate time

@@ -195,9 +195,9 @@ export default class ClientGameScene extends Phaser.Scene {
             if(requesterPlayer.mage.path && movementInfo.path.length > 0 && requesterPlayer.mage.path.length > 0 &&
                 movementInfo.path[movementInfo.path.length - 1].x === requesterPlayer.mage.path[requesterPlayer.mage.path.length - 1].x &&
                 movementInfo.path[movementInfo.path.length - 1].y === requesterPlayer.mage.path[requesterPlayer.mage.path.length - 1].y) {
-              //do something
+              //not sure we need to do anything when the path is the same, we would do it here, but i think this is just a condition that should be reformatted
             } else if(movementInfo.path.length > 0){
-              console.log('should be adding new tweens')
+              //if the path is not the same but there is still a path, reset the tweens to the new path.
               this.tweenManager.killTweensOf(requesterPlayer.mage);
               let tweens = this.calculateTweens(requesterPlayer, movementInfo.path, PLAYER_SPEED);
               const timeline = this.tweens.createTimeline();
