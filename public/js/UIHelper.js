@@ -48,6 +48,112 @@ export default class UIHelper {
             DARK: 0x000000,
             EMPTY: 0xbfbcbb,
         };
+
+        /////////////
+        // Buttons //
+        /////////////
+
+        /** UI button height/width */
+        this.BUTTON_SIZE = {
+            "WIDTH": 120,
+            "HEIGHT": 40
+        };
+
+        this.BUTTON_START_LOCATION = {
+            "x": (this.BUTTON_SIZE.WIDTH / 2),
+            "y": (this.BUTTON_SIZE.HEIGHT / 2)
+        };
+
+        this.BACK_BUTTON_LOCATION = {
+            "x": (this.SCREEN_WIDTH / 2 - this.BUTTON_SIZE.WIDTH - this.PIXEL_BUFFER),
+            "y": (this.SCREEN_HEIGHT - this.BUTTON_SIZE.HEIGHT - this.PIXEL_BUFFER)
+        };
+
+
+        ////////////////
+        // Health Bar //
+        ////////////////
+
+        // these variables are used in creating "this.HEALTH_BAR"
+        const HEALTH_BAR_STROKE_WIDTH = 8;
+        const HEALTH_BAR_BUFFER = 10 + STROKE_WIDTH;
+        const HEALTH_BAR_WIDTH = 100;
+        const HEALTH_BAR_HEIGHT = 100;
+        const HEALTH_BAR_START_X = HEALTH_BAR_BUFFER;
+
+        // BAR_HEIGHT because we setOrigin(0,0) (e.g. Top Left)
+        const HEALTH_BAR_START_Y = this.SCREEN_HEIGHT - HEALTH_BAR_BUFFER - HEALTH_BAR_HEIGHT;
+
+        // create "this.HEALTH_BAR"
+        this.HEALTH_BAR = {
+            "strokeWidth": HEALTH_BAR_STROKE_WIDTH,
+            "buffer": HEALTH_BAR_BUFFER,
+            "size": {
+                "width": HEALTH_BAR_WIDTH,
+                "height": HEALTH_BAR_HEIGHT
+            },
+            "location": {
+                "x": HEALTH_BAR_BUFFER,
+                "y": HEALTH_BAR_START_Y
+            }
+        };
+
+
+        ////////////////////////////
+        // Mana Orbs (all colors) //
+        ////////////////////////////
+
+        const MANA_ORB_STROKE_WIDTH = 3;
+        const MANA_ORB_RADIUS = 10;
+        const MANA_ORB_BUFFER = 20 + MANA_ORB_STROKE_WIDTH + MANA_ORB_RADIUS;
+
+        // place X to the right of the health bar
+        // place Y to the bottom of the screen, with buffer
+        const MANA_ORB_START_X = HEALTH_BAR_START_X + HEALTH_BAR_WIDTH + HEALTH_BAR_STROKE_WIDTH + HEALTH_BAR_BUFFER;
+        const MANA_ORB_START_Y = this.SCREEN_HEIGHT - HEALTH_BAR_BUFFER - MANA_ORB_STROKE_WIDTH - MANA_ORB_RADIUS;
+
+        // create "this.MANA_ORB"
+        this.MANA_ORB = {
+            "location": {
+                "x": MANA_ORB_START_X,
+                "y": MANA_ORB_START_Y
+            },
+            "strokeWidth": MANA_ORB_STROKE_WIDTH,
+            "radius": MANA_ORB_RADIUS,
+            "buffer": MANA_ORB_BUFFER,
+        };
+
+
+        ////////////////
+        // Rune Slots //
+        ////////////////
+
+        const RUNE_SLOT_STROKE_COLOR = 0xefc53f;
+        const RUNE_SLOT_FILL_COLOR = 0xbcc947;
+        const RUNE_SLOT_WIDTH = 50;
+        const RUNE_SLOT_HEIGHT = 50;
+
+        // TODO: verify this pixel buffer looks good
+        const RUNE_SLOT_BUFFER = 25;
+
+        // *1.5 because there's 3 rune slots, 1.5 is half.
+        const RUNE_SLOT_START_X = (this.SCREEN_WIDTH / 2 - RUNE_SLOT_WIDTH * 1.5);
+        const RUNE_SLOT_START_Y = (this.SCREEN_HEIGHT - this.PIXEL_BUFFER);
+
+        // create "this.RUNE_SLOT"
+        this.RUNE_SLOT = {
+            "strokeColor": RUNE_SLOT_STROKE_COLOR,
+            "fillColor": RUNE_SLOT_FILL_COLOR,
+            "buffer": RUNE_SLOT_BUFFER,
+            "size": {
+                "width": RUNE_SLOT_WIDTH,
+                "height": RUNE_SLOT_HEIGHT,
+            },
+            "location": {
+                "x": RUNE_SLOT_START_X,
+                "y": RUNE_SLOT_START_Y
+            }
+        };
     }
 
 
@@ -97,73 +203,64 @@ export default class UIHelper {
     ////////////
 
 
-    static getUIColor(color = "black") {
-        return this.UI_COLORS[color]
+    static get UI_COLOR(color = "black") {
+        return this.UI_COLORS[color];
     }
 
-
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // need to clean up below this line
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    static get MANA_COLOR(color = "empty") {
+        return this.MANA_COLORS[color];
+    }
 
 
     /////////////
     // Buttons //
     /////////////
 
-    // layout start x, y
-    static BUTTON_WIDTH = 120
-    static BUTTON_HEIGHT = 40
-    static BUTTON_START_X = (this.SCREEN_WIDTH / 2) // this is the X center of the screen, since the origin is (0.5, 0.5)
-    static BUTTON_START_Y = (this.SCREEN_HEIGHT / 2) // this is the Y center of the screen, since the origin is (0.5, 0.5)
-    static BUTTON_BACK_START_X = (this.SCREEN_WIDTH / 2 - this.BUTTON_WIDTH - this.PIXEL_BUFFER) // sets position to half the screen minute one (1) button width
-    static BUTTON_BACK_START_Y = (this.SCREEN_HEIGHT - this.BUTTON_HEIGHT - this.PIXEL_BUFFER) // sets position to bottom of the screen plus PIXEL_BUFFER
+    static get BUTTON_SIZE() {
+        return this.BUTTON_SIZE;
+    }
+
+    static get BUTTON_START_LOCATION() {
+        return this.BUTTON_START_LOCATION;
+    }
+
+    static get BACK_BUTTON_LOCATION() {
+        return this.BACK_BUTTON_LOCATION;
+    }
+
+
 
 
     ////////////////
     // Health Bar //
     ////////////////
 
-    // set all bar constants
-    static HEALTH_BAR_STROKE_WIDTH = 8;
-    static HEALTH_BAR_BUFFER = 10 + this.HEALTH_BAR_STROKE_WIDTH;
-    static HEALTH_BAR_WIDTH = 40;
-    static HEALTH_BAR_HEIGHT = 100;
-
-    // set health bar constants
-    static HEALTH_BAR_START_X = this.HEALTH_BAR_BUFFER
-    static HEALTH_BAR_START_Y = this.SCREEN_HEIGHT - this.HEALTH_BAR_BUFFER - this.HEALTH_BAR_HEIGHT // BAR_HEIGHT because we setOrigin(0,0) (e.g. Top Left)
+    static get HEALTH_BAR() {
+        return this.HEALTH_BAR;
+    }
 
 
     ////////////////////////////
     // Mana Orbs (all colors) //
     ////////////////////////////
 
-    static MANA_ORB_STROKE_WIDTH = 3
-    static MANA_ORB_RADIUS = 10
-    static MANA_ORB_BUFFER = 20 + this.MANA_ORB_STROKE_WIDTH + this.MANA_ORB_RADIUS
-
-    // place X to the right of the health bar
-    // place Y to the bottom of the screen, with buffer
-    static MANA_ORB_START_X = this.HEALTH_BAR_START_X + this.HEALTH_BAR_WIDTH + this.HEALTH_BAR_STROKE_WIDTH + this.HEALTH_BAR_BUFFER
-    static MANA_ORB_START_Y = this.SCREEN_HEIGHT - this.HEALTH_BAR_BUFFER - this.MANA_ORB_STROKE_WIDTH - this.MANA_ORB_RADIUS
+    static get MANA_ORB() {
+        return this.MANA_ORB;
+    }
 
 
     ////////////////
     // Rune Slots //
     ////////////////
 
-    static RUNE_SLOT_STROKE_COLOR = 0xefc53f
-    static RUNE_SLOT_FILL_COLOR = 0xbcc947
-    static RUNE_SLOT_WIDTH = 50
-    static RUNE_SLOT_HEIGHT = 50
-    static RUNE_SLOT_START_X = (this.SCREEN_WIDTH / 2 - this.RUNE_SLOT_WIDTH * 1.5) // *1.5 because there's 3 rune slots, 1.5 is half.
-    static RUNE_SLOT_START_Y = (this.SCREEN_HEIGHT - this.PIXEL_BUFFER)
+    static get RUNE_SLOT() {
+        return this.RUNE_SLOT;
+    }
 
 
-    constructor() {}
-
+    //////////////////////
+    // Custom Functions //
+    //////////////////////
 
     static setCameraBackgroundColor(cameraMain) {
         cameraMain.backgroundColor.setTo(this.BG_COLOR_GREY[0], this.BG_COLOR_GREY[1], this.BG_COLOR_GREY[2]);
