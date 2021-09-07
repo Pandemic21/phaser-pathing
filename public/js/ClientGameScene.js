@@ -150,6 +150,15 @@ export default class ClientGameScene extends Phaser.Scene {
                 return player.id == this.myId;
             })
 
+            // TODO: move this variable to a more sensible place. Maybe on the player.mage object?
+            // this holds the mage's old destination
+            this.oldDestination = {
+                location: {
+                    x: 0,
+                    y: 0
+                }
+            }
+
 
             // create sprite graphics for all player's mages
             for (let k = 0; k < players.length; k++) {
@@ -272,6 +281,20 @@ export default class ClientGameScene extends Phaser.Scene {
 
             // else it's LMB, move the player to the destination
             else {
+                // draw the "click to move" image and debug console logs
+                this.drawMovementDestinationImage({
+                    x: this.input.mousePointer.x + this.camera.scrollX,
+                    y: this.input.mousePointer.y + this.camera.scrollY
+                })
+
+                // destination location (x,y) the player clicked
+
+                /**
+                 * The location the player clicked, in raw pixels
+                 * @type {object} destination   - The location the player clicked, in raw pixels
+                 * @member {number}  destination.x   - x location
+                 * @member {number}  destination.y   - y location
+                 */
                 let destination = {
                     x: this.input.mousePointer.x,
                     y: this.input.mousePointer.y
@@ -283,13 +306,22 @@ export default class ClientGameScene extends Phaser.Scene {
                 destination.x = Math.floor((this.camera.scrollX + destination.x + 0.5) / 12)
                 destination.y = Math.floor((this.camera.scrollY + destination.y + 0.5) / 12)
 
-                // if a tree is clicked, search for a clickable one.
+                // if they're just spam clicking the same tile, return false
+                if (destination.x == this.oldDestination.location.x && destination.y == this.oldDestination.location.y) return false
+
+                // update the old destination to match the current click destination
+                this.oldDestination = {
+                    location: {
+                        x: destination.x,
+                        y: destination.y
+                    }
+                }
+
+                // if a tree is clicked, search for a clickable tile.
                 if (easystarArray[destination.y][destination.x] === 1) {
                     let newDest = this.findNearbyWalkablePoint(destination.x, destination.y, easystarArray);
-                    console.log('newDest:', newDest);
                     // if we found a tree, replace the bad click
                     if (newDest !== undefined) {
-                        console.log('made it here, and is clickable = ' + easystarArray[newDest.y][newDest.x] === 0)
                         destination.x = newDest.x;
                         destination.y = newDest.y;
                     }
@@ -305,12 +337,6 @@ export default class ClientGameScene extends Phaser.Scene {
                     x: Math.floor((myPlayer.mage.x + 0.5) / 12), // this translates the mage's current real position (in pixels) to
                     y: Math.floor((myPlayer.mage.y + 0.5) / 12) // its position in the pathable tile array
                 }
-
-                // draw the "click to move" image and debug console logs
-                this.drawMovementDestinationImage({
-                    x: this.input.mousePointer.x + this.camera.scrollX,
-                    y: this.input.mousePointer.y + this.camera.scrollY
-                })
 
                 console.log('moving from: (' + tmpPlayerPosition.x + ", " + tmpPlayerPosition.y + ")");
                 console.log('-------> to: (' + destination.x + ", " + destination.y + ")");
