@@ -14,16 +14,21 @@ class UIHelper {
 
         /**
          * The width of the screen, in pixels.
+         * > Getter: {@link UIHelper.getScreenWidth}
+         * @const
          * @type {Number}
          */
         this.SCREEN_WIDTH = SCREEN_WIDTH;
         /**
          * The height of the screen, in pixels
+         * > Getter: {@link UIHelper.getScreenHeight}
+         * @const
          * @type {Number}
          */
         this.SCREEN_HEIGHT = SCREEN_HEIGHT;
         /**
          * The amount of pixels to put between objects we draw on the screen
+         * @const
          * @type {Number}
          */
         this.PIXEL_BUFFER = PIXEL_BUFFER;
@@ -42,6 +47,8 @@ class UIHelper {
 
         /**
          * This object contains all information required for the client use/draw fonts
+         * > Getter: {@link UIHelper.getFont}
+         * @const
          * @type {Object}
          * @prop {Object} location
          * @prop {Number} location.x
@@ -71,6 +78,8 @@ class UIHelper {
 
         /**
          * This dictionary stores UI colors
+         * > Getter: {@link UIHelper.getUIColors}
+         * @const
          * @type {Object.<string, hex>}
          */
         this.UI_COLORS = {
@@ -86,6 +95,8 @@ class UIHelper {
 
         /**
          * This dictionary stores mana colors
+         * > Getter: {@link UIHelper.getManaColors}
+         * @const
          * @type {Object.<string, hex>}
          */
         this.MANA_COLORS = {
@@ -110,6 +121,8 @@ class UIHelper {
 
         /**
          * This object contains all information required for the client to draw the buttons
+         * > Getter: {@link UIHelper.getButton}
+         * @const
          * @type {Object}
          * @prop {Object} location
          * @prop {Number} location.x
@@ -135,6 +148,8 @@ class UIHelper {
 
         /**
          * This object contains all information required for the client to draw the back button
+         * > Getter: {@link UIHelper.getBackButton}
+         * @const
          * @type {Object}
          * @prop {Object} location
          * @prop {Number} location.x
@@ -143,7 +158,7 @@ class UIHelper {
          * @prop {Number} size.width
          * @prop {Number} size.height
          */
-        this.BACK_BUTTON_LOCATION = {
+        this.BACK_BUTTON = {
             "location": {
                 "x": BACK_BUTTON_START_X,
                 "y": BACK_BUTTON_START_Y
@@ -173,6 +188,8 @@ class UIHelper {
 
         /**
          * This is all the data needed to draw the health bar
+         * > Getter: {@link UIHelper.getHealthBar}
+         * @const
          * @type {Object}
          * @prop {Number} strokeWidth
          * @prop {Number} buffer
@@ -212,6 +229,8 @@ class UIHelper {
 
         /**
          * This object contains all information required for the client to draw the mana orbs
+         * > Getter: {@link UIHelper.getManaColors}
+         * @const
          * @type {Object}
          * @prop {Object} location
          * @prop {Number} location.x
@@ -249,6 +268,8 @@ class UIHelper {
 
         /**
          * This object contains all information required for the client to draw the rune slots
+         * > Getter: {@link UIHelper.getRuneSlot}
+         * @const
          * @type {Object}
          * @prop {Hex} strokeColor
          * @prop {Hex} fillColor
@@ -283,19 +304,21 @@ class UIHelper {
 
     /**
      * Called by ClientGameScene.js, returns the screen width
+     * @static
      * @function
      * @returns {Number} - Returns {@link UIHelper#SCREEN_WIDTH}
      */
-    static get SCREEN_WIDTH() {
+    static get getScreenWidth() {
         return this.SCREEN_WIDTH;
     }
 
     /**
      * Called by ClientGameScene.js, returns the screen height
+     * @static
      * @function
      * @returns {Number} - Returns {@link UIHelper#SCREEN_HEIGHT}
      */
-    static get SCREEN_HEIGHT() {
+    static get getScreenHeight() {
         return this.SCREEN_HEIGHT;
     }
 
@@ -306,10 +329,11 @@ class UIHelper {
 
     /**
      * Called by ClientGameScene.js, returns the font object
+     * @static
      * @function
      * @returns {Object} - Returns {@link UIHelper#FONT}
      */
-    static get FONT() {
+    static get getFont() {
         return this.FONT;
     }
 
@@ -319,19 +343,21 @@ class UIHelper {
 
     /**
      * Called by ClientGameScene.js, returns the UI_COLORS dictionary
+     * @static
      * @function
      * @returns {Object.<string, hex>} - Returns {@link UIHelper#UI_COLORS}
      */
-    static get UI_COLOR() {
+    static get getUIColors() {
         return this.UI_COLORS;
     }
 
     /**
      * Called by ClientGameScene.js, returns the MANA_COLORS dictionary
+     * @static
      * @function
      * @returns {Object.<string, hex>} - Returns {@link UIHelper#MANA_COLORS}
      */
-    static get MANA_COLOR() {
+    static get getManaColors() {
         return this.MANA_COLORS;
     }
 
@@ -342,11 +368,22 @@ class UIHelper {
 
     /**
      * Called by ClientGameScene.js, returns the MANA_COLORS dictionary
+     * @static
      * @function
-     * @returns {Object.<string, hex>} - Returns {@link UIHelper#MANA_COLORS}
+     * @returns {Object.<string, hex>} - Returns {@link UIHelper#BUTTON}
      */
-    static get BUTTON() {
+    static get getButton() {
         return this.BUTTON;
+    }
+
+    /**
+     * Called by ClientGameScene.js, returns the the back button
+     * @static
+     * @function
+     * @returns {Object.<string, hex>} - Returns {@link UIHelper#BACK_BUTTON}
+     */
+    static get getBackButton() {
+        return this.BACK_BUTTON;
     }
 
 
@@ -359,7 +396,7 @@ class UIHelper {
      * @function
      * @returns {Object} - Returns {@link UIHelper#HEALTH_BAR}
      */
-    static get HEALTH_BAR() {
+    static get getHealthBar() {
         return this.HEALTH_BAR;
     }
 
@@ -373,7 +410,7 @@ class UIHelper {
      * @function
      * @returns {Object} - Returns {@link UIHelper#MANA_ORB}
      */
-    static get MANA_ORB() {
+    static get getManaOrb() {
         return this.MANA_ORB;
     }
 
@@ -387,7 +424,7 @@ class UIHelper {
      * @function
      * @returns {Object} - Returns {@link UIHelper#RUNE_SLOT}
      */
-    static get RUNE_SLOT() {
+    static get getRuneSlot() {
         return this.RUNE_SLOT;
     }
 
