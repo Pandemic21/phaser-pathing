@@ -153,7 +153,6 @@ export default class ClientGameScene extends Phaser.Scene {
 
             // create sprite graphics for all player's mages
             for (let k = 0; k < players.length; k++) {
-              console.log(players[k].id)
               players[k].mage = this.physics.add.sprite(players[k].mage.x, players[k].mage.y, 'isaacImg')
             }
         });
@@ -171,7 +170,7 @@ export default class ClientGameScene extends Phaser.Scene {
 
         // this is called by server.js whenever a player issues a move order to their mage
         this.socket.on('setNewMovement', (movementInfo) => {
-            console.log('setting movement for player: ' + movementInfo.requesterId)
+            //console.log('setting movement for player: ' + movementInfo.requesterId)
 
             // take "<str> movementInfo.requesterId" and use that to find the player who ordered their mage to move
             let requesterPlayer = this.players.find((player) => {
@@ -286,10 +285,10 @@ export default class ClientGameScene extends Phaser.Scene {
                 // if a tree is clicked, search for a clickable one.
                 if (easystarArray[destination.y][destination.x] === 1) {
                     let newDest = this.findNearbyWalkablePoint(destination.x, destination.y, easystarArray);
-                    console.log('newDest:', newDest);
+                    //console.log('newDest:', newDest);
                     // if we found a tree, replace the bad click
                     if (newDest !== undefined) {
-                        console.log('made it here, and is clickable = ' + easystarArray[newDest.y][newDest.x] === 0)
+                        //console.log('made it here, and is clickable = ' + easystarArray[newDest.y][newDest.x] === 0)
                         destination.x = newDest.x;
                         destination.y = newDest.y;
                     }
@@ -312,8 +311,8 @@ export default class ClientGameScene extends Phaser.Scene {
                     y: this.input.mousePointer.y + this.camera.scrollY
                 })
 
-                console.log('moving from: (' + tmpPlayerPosition.x + ", " + tmpPlayerPosition.y + ")");
-                console.log('-------> to: (' + destination.x + ", " + destination.y + ")");
+                //console.log('moving from: (' + tmpPlayerPosition.x + ", " + tmpPlayerPosition.y + ")");
+                //console.log('-------> to: (' + destination.x + ", " + destination.y + ")");
 
                 // this tells easystar to find a path from (tmpPlayerPosition.x, tmpPlayerPosition.y) --> (destination.x, destination.y)
                 // note that those (x, y) coords are on the higher res, pathable tile map
@@ -321,21 +320,18 @@ export default class ClientGameScene extends Phaser.Scene {
                     if (path === null) {
                         console.warn("Path was not found.");
                     } else {
-                        console.log(path);
-
-
-
+                        //console.log(path);
                         // this tells the server the client has decided on a new path
                         let movementInfo = {
                             requesterId: this.myId, // attach this player's ID to the request
                             path,                   // the easystar path for the mage
                         }
                         this.socket.emit('tryNewMovement', movementInfo)
-
-
+                        console.log('timed out');
                     }
                 });
                 this.easystar.calculate();
+
             }
         }, this);
 
@@ -370,8 +366,8 @@ export default class ClientGameScene extends Phaser.Scene {
             easystarArray.push(arr);
         }
 
-        console.log("easystarArray width: " + easystarArray[0].length)
-        console.log("easystarArray height: " + easystarArray.length)
+        //console.log("easystarArray width: " + easystarArray[0].length)
+        //console.log("easystarArray height: " + easystarArray.length)
 
         this.easystar.setGrid(easystarArray);
         this.easystar.setAcceptableTiles(0);
@@ -385,6 +381,7 @@ export default class ClientGameScene extends Phaser.Scene {
     ////////////
 
     update(time, delta) {
+
         // camera arrow keys update
         this.controls.update(delta);
 
@@ -392,7 +389,7 @@ export default class ClientGameScene extends Phaser.Scene {
         this.players.forEach((player) => {
           //update player location;
           if(player.mage.location) {
-            console .log(player.mage.location);
+            //console.log(player.mage.location);
             player.mage.x = player.mage.location.x;
             player.mage.y = player.mage.location.y
           }
