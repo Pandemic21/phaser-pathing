@@ -1,13 +1,8 @@
 /**
  * UIHelper Constructor. Sets a bunch of local constants, then uses those local constants to create "this" objects
- * @module UIHelper
+ * @class UIHelper
  */
-module.exports = class UIHelper {
-    /**
-     *
-     * @constructor
-     * @memberOf module:UIHelper
-     */
+class UIHelper {
     constructor() {
         ////////////
         // Screen //
@@ -18,7 +13,7 @@ module.exports = class UIHelper {
         const PIXEL_BUFFER = 20;
 
         /**
-         * The width of the screen, in pixels
+         * The width of the screen, in pixels.
          * @type {Number}
          */
         this.SCREEN_WIDTH = SCREEN_WIDTH;
@@ -69,37 +64,6 @@ module.exports = class UIHelper {
             "fontSizePx": FONT_SIZE + "px",
             "buffer": FONT_SIZE * 2
         };
-
-        /**
-         * The default font size
-         * @type {Number}
-         */
-        this.FONT_SIZE = 30;
-        /**
-         * [The default font size]{@link module:UIHelper#FONT_SIZE} with "px" appended (some functions require a string with px at the end)
-         * @type {String}
-         */
-        this.FONT_SIZE_PX = this.FONT_SIZE + "px";
-        /**
-         * Starting x coordinate
-         * @type {Number}
-         */
-        this.START_X = 230;
-        /**
-         * Starting y coordinate
-         * @type {Number}
-         */
-        this.START_Y = 130;
-        /**
-         * The amount of pixels to put between words (derived from [the default font size]{@link module:UIHelper#FONT_SIZE} )
-         * @type {Number}
-         */
-        this.FONT_PIXEL_BUFFER = this.FONT_SIZE * 2;
-        /**
-         * The font fill color
-         * @type {Hex}
-         */
-        this.FILL_COLOR = '#0f0';
 
         ////////////
         // Colors //
@@ -165,7 +129,7 @@ module.exports = class UIHelper {
             }
         };
 
-
+        // get the back button (x,y)
         const BACK_BUTTON_START_X = (SCREEN_WIDTH / 2 - BUTTON_WIDTH - PIXEL_BUFFER);
         const BACK_BUTTON_START_Y = (SCREEN_HEIGHT - BUTTON_HEIGHT - PIXEL_BUFFER);
 
@@ -317,12 +281,20 @@ module.exports = class UIHelper {
     ///////////////////////////
 
 
-    /** Returns {@link module:UIHelper#SCREEN_WIDTH} */
+    /**
+     * Called by ClientGameScene.js, returns the screen width
+     * @function
+     * @returns {Number} - Returns {@link UIHelper#SCREEN_WIDTH}
+     */
     static get SCREEN_WIDTH() {
         return this.SCREEN_WIDTH;
     }
 
-    /** Returns {@link module:UIHelper#SCREEN_HEIGHT} */
+    /**
+     * Called by ClientGameScene.js, returns the screen height
+     * @function
+     * @returns {Number} - Returns {@link UIHelper#SCREEN_HEIGHT}
+     */
     static get SCREEN_HEIGHT() {
         return this.SCREEN_HEIGHT;
     }
@@ -332,45 +304,33 @@ module.exports = class UIHelper {
     // Fonts //
     ///////////
 
-    /** Returns {@link module:UIHelper#SCREEN_HEIGHT} */
-    static get FONT_SIZE() {
-        return this.FONT_SIZE;
-    }
-
-    /** Returns {@link module:UIHelper#SCREEN_HEIGHT} */
-    static get FONT_SIZE_PX() {
-        return this.FONT_SIZE_PX;
-    }
-
-    /** Returns {@link module:UIHelper#SCREEN_HEIGHT} */
-    static get START_X() {
-        return this.START_X;
-    }
-
-    /** Returns {@link module:UIHelper#SCREEN_HEIGHT} */
-    static get START_Y() {
-        return this.START_Y;
-    }
-
-    /** Returns {@link module:UIHelper#SCREEN_HEIGHT} */
-    static get PIXEL_BUFFER() {
-        return this.PIXEL_BUFFER;
-    }
-
-    /** Returns {@link module:UIHelper#SCREEN_HEIGHT} */
-    static get FILL_COLOR() {
-        return this.FILL_COLOR;
+    /**
+     * Called by ClientGameScene.js, returns the font object
+     * @function
+     * @returns {Object} - Returns {@link UIHelper#FONT}
+     */
+    static get FONT() {
+        return this.FONT;
     }
 
     ////////////
     // Colors //
     ////////////
 
-
+    /**
+     * Called by ClientGameScene.js, returns the UI_COLORS dictionary
+     * @function
+     * @returns {Object.<string, hex>} - Returns {@link UIHelper#UI_COLORS}
+     */
     static get UI_COLOR() {
         return this.UI_COLORS;
     }
 
+    /**
+     * Called by ClientGameScene.js, returns the MANA_COLORS dictionary
+     * @function
+     * @returns {Object.<string, hex>} - Returns {@link UIHelper#MANA_COLORS}
+     */
     static get MANA_COLOR() {
         return this.MANA_COLORS;
     }
@@ -380,25 +340,25 @@ module.exports = class UIHelper {
     // Buttons //
     /////////////
 
-    static get BUTTON_SIZE() {
-        return this.BUTTON_SIZE;
+    /**
+     * Called by ClientGameScene.js, returns the MANA_COLORS dictionary
+     * @function
+     * @returns {Object.<string, hex>} - Returns {@link UIHelper#MANA_COLORS}
+     */
+    static get BUTTON() {
+        return this.BUTTON;
     }
-
-    static get BUTTON_START_LOCATION() {
-        return this.BUTTON_START_LOCATION;
-    }
-
-    static get BACK_BUTTON_LOCATION() {
-        return this.BACK_BUTTON_LOCATION;
-    }
-
-
 
 
     ////////////////
     // Health Bar //
     ////////////////
 
+    /**
+     * Called by ClientGameScene.js, returns the HEALTH_BAR object
+     * @function
+     * @returns {Object} - Returns {@link UIHelper#HEALTH_BAR}
+     */
     static get HEALTH_BAR() {
         return this.HEALTH_BAR;
     }
@@ -408,6 +368,11 @@ module.exports = class UIHelper {
     // Mana Orbs (all colors) //
     ////////////////////////////
 
+    /**
+     * Called by ClientGameScene.js, returns the MANA_ORB object
+     * @function
+     * @returns {Object} - Returns {@link UIHelper#MANA_ORB}
+     */
     static get MANA_ORB() {
         return this.MANA_ORB;
     }
@@ -417,6 +382,11 @@ module.exports = class UIHelper {
     // Rune Slots //
     ////////////////
 
+    /**
+     * Called by ClientGameScene.js, returns the RUNE_SLOT object
+     * @function
+     * @returns {Object} - Returns {@link UIHelper#RUNE_SLOT}
+     */
     static get RUNE_SLOT() {
         return this.RUNE_SLOT;
     }
@@ -425,12 +395,29 @@ module.exports = class UIHelper {
     //////////////////////
     // Custom Functions //
     //////////////////////
+    // TODO: come up with a better name for this section
 
+    /**
+     *
+     *
+     */
+
+     /**
+      * This sets the background color based on BG_COLOR_GREY in {@link UIHelper#UI_COLORS}
+      * @function
+      * @param {Phaser.Camera} cameraMain  the player's main camera
+      * @returns {Void}
+      */
     static setCameraBackgroundColor(cameraMain) {
-        cameraMain.backgroundColor.setTo(this.BG_COLOR_GREY[0], this.BG_COLOR_GREY[1], this.BG_COLOR_GREY[2]);
+        cameraMain.backgroundColor.setTo(this.UI_Colors.BG_COLOR_GREY);
     }
 
-
+    /**
+     *  This takes any Array as a parameter, then returns the same array but shuffled.
+     * @function
+     * @param {Array} array  the array to shuffle
+     * @returns {Array}
+     */
     static shuffle(array) {
         var currentIndex = array.length,
             randomIndex;
@@ -450,7 +437,13 @@ module.exports = class UIHelper {
         return array;
     }
 
-    /* Function: createBackButton
+    /**
+     * Creates a back button in the scene parameter
+     * @function
+     * @param  {Phaser.Scene} thisScene - The scene to draw the back button on
+     * @param  {Phaser.Scene.Key}  currentSceneKey
+     * @param  {Phaser.Scene}  backSceneKey
+     * @return {String} - What the mouse is doing to the button (e.g. click, out, over, etc...)
      */
     static createBackButton(thisScene, currentSceneKey, backSceneKey) {
         let backButton = thisScene.rexUI.add.buttons({
@@ -484,16 +477,20 @@ module.exports = class UIHelper {
         });
 
         backButton.on('button.out', () => {
-            return; // this is called when the mouse LEAVES the button (can be used for highlighting)
+            return "out"; // this is called when the mouse LEAVES the button (can be used for highlighting)
         });
 
         backButton.on('button.over', () => {
-            return; // this is called when the mouse ENTERS the button (can be used for highlighting)
+            return "over"; // this is called when the mouse ENTERS the button (can be used for highlighting)
         });
     }
 
 
-    /* Function: createButton
+    /**
+     * Creates a Rex UI button with `text` in `thisScene`
+     * @param  {Phaser.Scene } thisScene               The scene to draw the button on
+     * @param  {String }  text                    The text to put inside the button
+     * @return {rexUI.label}            Returns a Phaser 3 RexUI label (which the client uses as a button)
      */
     static createButton(thisScene, text) {
         return thisScene.rexUI.add.label({
@@ -510,8 +507,12 @@ module.exports = class UIHelper {
         });
     }
 
-
-    /* Function: createButton
+    /**
+     * creates Rex UI radio buttons
+     * @param  {Phaser.Scene } scene               Phaser scene to draw the radio buttons in
+     * @param  {String } text                The text for the radio button
+     * @param  {String } name                The name for the Rex UI radio button group
+     * @return {rexUI.label }       The radio button as a Rex UI label
      */
     static createRadioButton(scene, text, name) {
         if (name === undefined) {
@@ -535,4 +536,6 @@ module.exports = class UIHelper {
 
         return button;
     }
-};
+}
+
+export default UIHelper;
