@@ -1,2 +1,9 @@
 A lot of the code and ideas came from this tutorial:
 https://phaser.io/news/2018/03/pathfinding-and-phaser-3
+
+To generate jdsoc output:
+(1) install jsdoc (may need to be run as root):
+npm install -g jsdoc
+
+(2) run jsdoc using "jsdoc.conf.json":
+jsdoc -c ./jsdoc.conf.json -r
