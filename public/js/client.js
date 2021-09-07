@@ -11,7 +11,7 @@ let easystar = new EasyStar.js();
 // Phaser Init //
 /////////////////
 
-console.log("Starting...")
+console.log("Starting...");
 
 var config = {
     type: Phaser.AUTO,
@@ -34,9 +34,9 @@ let game = new Phaser.Game(config);
 // prevents default right click website behavior
 game.canvas.oncontextmenu = function(e) {
     e.preventDefault();
-}
+};
 
-game.scene.add('clientGameScene', clientGameScene)
-game.scene.start('clientGameScene', easystar)   // pass the easystar variable to the game scene
+game.scene.add('clientGameScene', clientGameScene);
+game.scene.start('clientGameScene', easystar);   // pass the easystar variable to the game scene
 
-console.log("Complete.")
+console.log("Complete.");

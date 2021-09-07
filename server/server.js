@@ -6,7 +6,7 @@
 class ServerGameScene extends Phaser.Scene {
     constructor(config) {
         super(config);
-        this.clients = {}
+        this.clients = {};
     }
 
     preload() {
@@ -38,10 +38,10 @@ class ServerGameScene extends Phaser.Scene {
             key: 'tilemap',
             tileWidth: 24,
             tileHeight: 24
-        })
+        });
 
         // this adds a blank tilesetImage. This is server.js, we don't need to draw anything
-        let tileset = this.map.addTilesetImage('oryx_world', '')
+        let tileset = this.map.addTilesetImage('oryx_world', '');
         this.groundLayer = this.map.createStaticLayer('Ground', tileset);
 
         // create the (invisible) trees layer, then add collision
@@ -56,18 +56,18 @@ class ServerGameScene extends Phaser.Scene {
         // players array. A "player" is a connection to the server's listening socket.io port.
         // the "mage" is the little guy running around the screen.
         // each "player" has "<obj> mage", which is a Phaser physics object
-        this.players = []
+        this.players = [];
 
         // on Socket.io connection
         window.io.on('connection', (socket) => {
             console.log('user connected: ' + socket.id);
 
             // set the (x,y) spawn location for the new player's mage
-            const SPAWN_X = 24*5
-            const SPAWN_Y = 24*5
+            const SPAWN_X = 24*5;
+            const SPAWN_Y = 24*5;
 
             // add a new mage physics object
-            let mage = this.physics.add.sprite(SPAWN_X, SPAWN_Y)
+            let mage = this.physics.add.sprite(SPAWN_X, SPAWN_Y);
 
             // set the newPlayer's config parameters
             let newPlayer = {
@@ -76,16 +76,16 @@ class ServerGameScene extends Phaser.Scene {
                 mage: mage,             // i know this can be shortened to just "mage" but long form helps me understand better
                 moveTick: 0,            // these will be used to know when to move the character
                 lastMoveTick: 0         //
-            }
+            };
 
             // add newPlayer to this.players, which is iterated thru in update()
-            this.players.push(newPlayer)
+            this.players.push(newPlayer);
 
             // this is the initial connection, it's called only when the player first connects
-            socket.emit('initialConnectionConfig', this.players)
+            socket.emit('initialConnectionConfig', this.players);
 
             // tell all other connected players about the new player
-            socket.broadcast.emit('newPlayerJoined', newPlayer)
+            socket.broadcast.emit('newPlayerJoined', newPlayer);
 
 
             /* this is called by ClientGameScene.js when the player orders their mage to move
@@ -95,18 +95,18 @@ class ServerGameScene extends Phaser.Scene {
             }
             */
             socket.on('tryNewMovement', (movementInfo) => {
-                console.log("tryNewMovement for: " + movementInfo.requesterId)
+                console.log("tryNewMovement for: " + movementInfo.requesterId);
                 // TODO: this is where we would perform server-side validation
                 //  that the "<array> movementInfo.path" the player chose is
                 //  actually a valid path, and that they're not cheating
-                console.log('Movement: ', movementInfo)
+                console.log('Movement: ', movementInfo);
                 // find the current player
                 const player = this.players.find((player) => {
                   return player.id === socket.id;
-                })
+                });
                 //append the path to the player's mage object
                 player.mage.path = movementInfo.path;
-            })
+            });
 
             // this is called when a player disconencts
             socket.on('disconnect', (() => {
@@ -130,7 +130,7 @@ class ServerGameScene extends Phaser.Scene {
         this.gameTime += delta;
         const socket = window.io;
 
-        const PLAYER_SPEED = 50 //this is how many ms should be between each tile movement
+        const PLAYER_SPEED = 50; //this is how many ms should be between each tile movement
         //this is where we calculate movement and send it to the players;
         this.players.forEach((player) => {
           player.moveTick += delta;
@@ -140,10 +140,10 @@ class ServerGameScene extends Phaser.Scene {
             let location = {
               x: player.mage.x/12,
               y: player.mage.y/12,
-            }
+            };
             //if there's an active path, move to the next node and remove it
             if(player.mage.path.length > 0){
-              location = player.mage.path[0]
+              location = player.mage.path[0];
               player.mage.path.shift();
             }
 
@@ -153,7 +153,7 @@ class ServerGameScene extends Phaser.Scene {
               requesterId: player.id,
               location: location, //syntax just for you XD
               path: player.mage.path
-            }
+            };
             // update the server side character object
             player.mage.x = location.x * 12;
             player.mage.y = location.y * 12;
@@ -162,7 +162,7 @@ class ServerGameScene extends Phaser.Scene {
             //make sure we are updating every tick evenly;
             player.lastMoveTick += PLAYER_SPEED;
           }
-        })
+        });
     }
 
 
@@ -189,11 +189,11 @@ config = {
         }
     },
     autoFocus: false,
-}
+};
 
 var game = new Phaser.Game(config);
 
-game.scene.add('ServerGameScene', ServerGameScene)
-game.scene.start('ServerGameScene')
+game.scene.add('ServerGameScene', ServerGameScene);
+game.scene.start('ServerGameScene');
 
 window.gameLoaded();
