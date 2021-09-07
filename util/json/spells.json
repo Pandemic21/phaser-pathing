@@ -1,0 +1,110 @@
+{
+    "fire": {
+        "fire": {
+            "fire": "explosion",
+            "water": {},
+            "earth": {},
+            "air": "fireball",
+            "light": "burn"
+        },
+        "water": {
+            "fire": {},
+            "water": {},
+            "earth": {},
+            "air": {}
+        },
+        "earth": {
+            "fire": {},
+            "water": {},
+            "earth": {},
+            "air": {}
+        },
+        "air": {
+            "fire": "air explosion",
+            "water": {},
+            "earth": {},
+            "air": "air projectile"
+        }
+    },
+    "water": {
+        "fire": {
+            "fire": {},
+            "water": {},
+            "earth": {},
+            "air": {}
+        },
+        "water": {
+            "fire": {},
+            "water": {},
+            "earth": {},
+            "air": {}
+        },
+        "earth": {
+            "fire": {},
+            "water": {},
+            "earth": {},
+            "air": {}
+        },
+
+        "air": {
+            "fire": {},
+            "water": {},
+            "earth": {},
+            "air": {}
+        }
+    },
+    "earth": {
+        "fire": {
+            "fire": {},
+            "water": {},
+            "earth": {},
+            "air": {}
+        },
+        "water": {
+            "fire": {},
+            "water": {},
+            "earth": {},
+            "air": {}
+        },
+        "earth": {
+            "fire": {},
+            "water": {},
+            "earth": "wall",
+            "air": {}
+        },
+
+        "air": {
+            "fire": {},
+            "water": {},
+            "earth": {},
+            "air": {}
+        }
+    },
+    "air": {
+        "fire": {
+            "fire": {},
+            "water": {},
+            "earth": {},
+            "air": {}
+        },
+        "water": {
+            "fire": {},
+            "water": {},
+            "earth": {},
+            "air": {}
+        },
+        "earth": {
+            "fire": {},
+            "water": {},
+            "earth": {},
+            "air": {}
+        },
+
+        "air": {
+            "fire": {},
+            "water": {},
+            "earth": {},
+            "air": {}
+        }
+    }
+}
