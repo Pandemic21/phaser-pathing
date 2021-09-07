@@ -441,7 +441,20 @@ export default class ClientGameScene extends Phaser.Scene {
       return tweens;
     }
 
-    // Could potentially do this recursively to always find a point, but it already feels solid this way.
+
+
+    /**
+     * findNearbyWalkablePoint
+     *
+     * Could potentially do this recursively to always find a point, but it already feels solid this way.
+     *
+     * @param {int}	x - x location to search near
+     * @param {int}	y - y location to search near
+     * @param {easystar[]}	easystarArray - this is the parameter easystarArray
+     *
+     * @return {Phaser.Math.Vector2}
+     *
+     */
     findNearbyWalkablePoint(x, y, easystarArray) {
         let destVec = new Phaser.Math.Vector2(x, y);
         let destLook = destVec.clone();
@@ -493,6 +506,14 @@ export default class ClientGameScene extends Phaser.Scene {
     }
 
 
+    /**
+     * drawMovementDestinationImage
+     *
+     * @param {object}	destination - this is the destination location
+     * @param {int} destination.x - the X coordination for the destination
+     * @param {int} destination.y - the X coordination for the destination
+     *
+     */
     drawMovementDestinationImage(destination) {
         // image duration in ms
         const DURATION = 0.5 * 1000
