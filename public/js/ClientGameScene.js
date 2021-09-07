@@ -337,7 +337,7 @@ export default class ClientGameScene extends Phaser.Scene {
                     y: Math.floor((myPlayer.mage.y + 0.5) / 12) // its position in the pathable tile array
                 }
 
-<<<<<<< HEAD
+
                 // draw the "click to move" image and debug console logs
                 this.drawMovementDestinationImage({
                     x: this.input.mousePointer.x + this.camera.scrollX,
@@ -346,10 +346,9 @@ export default class ClientGameScene extends Phaser.Scene {
 
                 //console.log('moving from: (' + tmpPlayerPosition.x + ", " + tmpPlayerPosition.y + ")");
                 //console.log('-------> to: (' + destination.x + ", " + destination.y + ")");
-=======
                 console.log('moving from: (' + tmpPlayerPosition.x + ", " + tmpPlayerPosition.y + ")");
                 console.log('-------> to: (' + destination.x + ", " + destination.y + ")");
->>>>>>> 19c988941dfa987dd2a9626b173f3d44051fd7bf
+
 
                 // this tells easystar to find a path from (tmpPlayerPosition.x, tmpPlayerPosition.y) --> (destination.x, destination.y)
                 // note that those (x, y) coords are on the higher res, pathable tile map
