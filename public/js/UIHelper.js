@@ -1,23 +1,104 @@
-export default class UIHelper {
+/**
+ * UIHelper Constructor. Sets a bunch of local constants, then uses those local constants to create "this" objects
+ * @module UIHelper
+ */
+module.exports = class UIHelper {
+    /**
+     *
+     * @constructor
+     * @memberOf module:UIHelper
+     */
     constructor() {
         ////////////
         // Screen //
         ////////////
 
-        this.SCREEN_WIDTH = 800;
-        this.SCREEN_HEIGHT = 600;
-        this.PIXEL_BUFFER = 20;
+        const SCREEN_WIDTH = 800;
+        const SCREEN_HEIGHT = 600;
+        const PIXEL_BUFFER = 20;
+
+        /**
+         * The width of the screen, in pixels
+         * @type {Number}
+         */
+        this.SCREEN_WIDTH = SCREEN_WIDTH;
+        /**
+         * The height of the screen, in pixels
+         * @type {Number}
+         */
+        this.SCREEN_HEIGHT = SCREEN_HEIGHT;
+        /**
+         * The amount of pixels to put between objects we draw on the screen
+         * @type {Number}
+         */
+        this.PIXEL_BUFFER = PIXEL_BUFFER;
 
 
         ///////////
         // Fonts //
         ///////////
 
+        const FONT_SIZE = 30;
+        const FONT_SIZE_PX = FONT_SIZE + "px";
+        const FONT_START_X = 230;
+        const FONT_START_Y = 130;
+        const FONT_PIXEL_BUFFER = FONT_SIZE * 2;
+        const FONT_FILL_COLOR = '#0f0';
+
+        /**
+         * This object contains all information required for the client use/draw fonts
+         * @type {Object}
+         * @prop {Object} location
+         * @prop {Number} location.x
+         * @prop {Number} location.y
+         * @prop {Object} colors
+         * @prop {Hex} colors.fillColor
+         * @prop {Number} fontSize
+         * @prop {Number} fontSizePx
+         * @prop {Number} buffer
+         */
+        this.FONT = {
+            "location": {
+                "x": FONT_START_X,
+                "y": FONT_START_Y
+            },
+            "colors": {
+                "fillColor": 0x00f000
+            },
+            "fontSize": FONT_SIZE,
+            "fontSizePx": FONT_SIZE + "px",
+            "buffer": FONT_SIZE * 2
+        };
+
+        /**
+         * The default font size
+         * @type {Number}
+         */
         this.FONT_SIZE = 30;
+        /**
+         * [The default font size]{@link module:UIHelper#FONT_SIZE} with "px" appended (some functions require a string with px at the end)
+         * @type {String}
+         */
         this.FONT_SIZE_PX = this.FONT_SIZE + "px";
+        /**
+         * Starting x coordinate
+         * @type {Number}
+         */
         this.START_X = 230;
+        /**
+         * Starting y coordinate
+         * @type {Number}
+         */
         this.START_Y = 130;
-        this.PIXEL_BUFFER = this.FONT_SIZE * 2;
+        /**
+         * The amount of pixels to put between words (derived from [the default font size]{@link module:UIHelper#FONT_SIZE} )
+         * @type {Number}
+         */
+        this.FONT_PIXEL_BUFFER = this.FONT_SIZE * 2;
+        /**
+         * The font fill color
+         * @type {Hex}
+         */
         this.FILL_COLOR = '#0f0';
 
         ////////////
@@ -25,8 +106,8 @@ export default class UIHelper {
         ////////////
 
         /**
-         * This dictionary contains the colors drawn on the client's screen
-         * @type {Object.<string, number>}
+         * This dictionary stores UI colors
+         * @type {Object.<string, hex>}
          */
         this.UI_COLORS = {
             BLACK: 0x000000,
@@ -39,6 +120,10 @@ export default class UIHelper {
             BG_COLOR_GREY: 0x9a9a9a
         };
 
+        /**
+         * This dictionary stores mana colors
+         * @type {Object.<string, hex>}
+         */
         this.MANA_COLORS = {
             FIRE: 0xff0313,
             WATER: 0x071aeb,
@@ -48,6 +133,182 @@ export default class UIHelper {
             DARK: 0x000000,
             EMPTY: 0xbfbcbb,
         };
+
+        /////////////
+        // Buttons //
+        /////////////
+
+        const BUTTON_WIDTH = 120;
+        const BUTTON_HEIGHT = 40;
+
+        const BUTTON_START_X = BUTTON_WIDTH / 2;
+        const BUTTON_START_Y = BUTTON_HEIGHT / 2;
+
+        /**
+         * This object contains all information required for the client to draw the buttons
+         * @type {Object}
+         * @prop {Object} location
+         * @prop {Number} location.x
+         * @prop {Number} location.y
+         * @prop {Object} size
+         * @prop {Number} size.width
+         * @prop {Number} size.height
+         */
+        this.BUTTON = {
+            "location": {
+                "x": BUTTON_START_X,
+                "y": BUTTON_START_Y
+            },
+            "size": {
+                "width": BUTTON_WIDTH,
+                "height": BUTTON_HEIGHT
+            }
+        };
+
+
+        const BACK_BUTTON_START_X = (SCREEN_WIDTH / 2 - BUTTON_WIDTH - PIXEL_BUFFER);
+        const BACK_BUTTON_START_Y = (SCREEN_HEIGHT - BUTTON_HEIGHT - PIXEL_BUFFER);
+
+        /**
+         * This object contains all information required for the client to draw the back button
+         * @type {Object}
+         * @prop {Object} location
+         * @prop {Number} location.x
+         * @prop {Number} location.y
+         * @prop {Object} size
+         * @prop {Number} size.width
+         * @prop {Number} size.height
+         */
+        this.BACK_BUTTON_LOCATION = {
+            "location": {
+                "x": BACK_BUTTON_START_X,
+                "y": BACK_BUTTON_START_Y
+            },
+            "size": {
+                "width": BUTTON_WIDTH,
+                "height": BUTTON_HEIGHT
+            }
+        };
+
+
+        ////////////////
+        // Health Bar //
+        ////////////////
+
+        // these variables are used in creating "this.HEALTH_BAR"
+        const HEALTH_BAR_STROKE_WIDTH = 8;
+        const HEALTH_BAR_BUFFER = 10 + STROKE_WIDTH;
+        const HEALTH_BAR_WIDTH = 100;
+        const HEALTH_BAR_HEIGHT = 100;
+        const HEALTH_BAR_START_X = HEALTH_BAR_BUFFER;
+
+        // BAR_HEIGHT because we setOrigin(0,0) (e.g. Top Left)
+        const HEALTH_BAR_START_Y = this.SCREEN_HEIGHT - HEALTH_BAR_BUFFER - HEALTH_BAR_HEIGHT;
+
+        // create "this.HEALTH_BAR"
+
+        /**
+         * This is all the data needed to draw the health bar
+         * @type {Object}
+         * @prop {Number} strokeWidth
+         * @prop {Number} buffer
+         * @prop {Object} size
+         * @prop {Number} size.width
+         * @prop {Number} size.height
+         * @prop {Object} location
+         * @prop {Number} location.x
+         * @prop {Number} location.y
+         */
+        this.HEALTH_BAR = {
+            "strokeWidth": HEALTH_BAR_STROKE_WIDTH,
+            "buffer": HEALTH_BAR_BUFFER,
+            "size": {
+                "width": HEALTH_BAR_WIDTH,
+                "height": HEALTH_BAR_HEIGHT
+            },
+            "location": {
+                "x": HEALTH_BAR_BUFFER,
+                "y": HEALTH_BAR_START_Y
+            }
+        };
+
+
+        ////////////////////////////
+        // Mana Orbs (all colors) //
+        ////////////////////////////
+
+        const MANA_ORB_STROKE_WIDTH = 3;
+        const MANA_ORB_RADIUS = 10;
+        const MANA_ORB_BUFFER = 20 + MANA_ORB_STROKE_WIDTH + MANA_ORB_RADIUS;
+
+        // place X to the right of the health bar
+        // place Y to the bottom of the screen, with buffer
+        const MANA_ORB_START_X = HEALTH_BAR_START_X + HEALTH_BAR_WIDTH + HEALTH_BAR_STROKE_WIDTH + HEALTH_BAR_BUFFER;
+        const MANA_ORB_START_Y = SCREEN_HEIGHT - HEALTH_BAR_BUFFER - MANA_ORB_STROKE_WIDTH - MANA_ORB_RADIUS;
+
+        /**
+         * This object contains all information required for the client to draw the mana orbs
+         * @type {Object}
+         * @prop {Object} location
+         * @prop {Number} location.x
+         * @prop {Number} location.y
+         * @prop {Number} strokeWidth
+         * @prop {Number} radius
+         * @prop {Number} buffer
+         */
+        this.MANA_ORB = {
+            "location": {
+                "x": MANA_ORB_START_X,
+                "y": MANA_ORB_START_Y
+            },
+            "strokeWidth": MANA_ORB_STROKE_WIDTH,
+            "radius": MANA_ORB_RADIUS,
+            "buffer": MANA_ORB_BUFFER,
+        };
+
+
+        ////////////////
+        // Rune Slots //
+        ////////////////
+
+        const RUNE_SLOT_STROKE_COLOR = 0xefc53f;
+        const RUNE_SLOT_FILL_COLOR = 0xbcc947;
+        const RUNE_SLOT_WIDTH = 50;
+        const RUNE_SLOT_HEIGHT = 50;
+
+        // TODO: verify this pixel buffer looks good
+        const RUNE_SLOT_BUFFER = 25;
+
+        // *1.5 because there's 3 rune slots, 1.5 is half.
+        const RUNE_SLOT_START_X = (this.SCREEN_WIDTH / 2 - RUNE_SLOT_WIDTH * 1.5);
+        const RUNE_SLOT_START_Y = (this.SCREEN_HEIGHT - this.PIXEL_BUFFER);
+
+        /**
+         * This object contains all information required for the client to draw the rune slots
+         * @type {Object}
+         * @prop {Hex} strokeColor
+         * @prop {Hex} fillColor
+         * @prop {Number} buffer
+         * @prop {Object} size
+         * @prop {Number} size.width
+         * @prop {Number} size.height
+         * @prop {Object} location
+         * @prop {Number} location.x
+         * @prop {Number} location.y
+         */
+        this.RUNE_SLOT = {
+            "strokeColor": RUNE_SLOT_STROKE_COLOR,
+            "fillColor": RUNE_SLOT_FILL_COLOR,
+            "buffer": RUNE_SLOT_BUFFER,
+            "size": {
+                "width": RUNE_SLOT_WIDTH,
+                "height": RUNE_SLOT_HEIGHT,
+            },
+            "location": {
+                "x": RUNE_SLOT_START_X,
+                "y": RUNE_SLOT_START_Y
+            }
+        };
     }
 
 
@@ -55,10 +316,13 @@ export default class UIHelper {
     // Static Getter methods //
     ///////////////////////////
 
+
+    /** Returns {@link module:UIHelper#SCREEN_WIDTH} */
     static get SCREEN_WIDTH() {
         return this.SCREEN_WIDTH;
     }
 
+    /** Returns {@link module:UIHelper#SCREEN_HEIGHT} */
     static get SCREEN_HEIGHT() {
         return this.SCREEN_HEIGHT;
     }
@@ -68,26 +332,32 @@ export default class UIHelper {
     // Fonts //
     ///////////
 
+    /** Returns {@link module:UIHelper#SCREEN_HEIGHT} */
     static get FONT_SIZE() {
         return this.FONT_SIZE;
     }
 
+    /** Returns {@link module:UIHelper#SCREEN_HEIGHT} */
     static get FONT_SIZE_PX() {
         return this.FONT_SIZE_PX;
     }
 
+    /** Returns {@link module:UIHelper#SCREEN_HEIGHT} */
     static get START_X() {
         return this.START_X;
     }
 
+    /** Returns {@link module:UIHelper#SCREEN_HEIGHT} */
     static get START_Y() {
         return this.START_Y;
     }
 
+    /** Returns {@link module:UIHelper#SCREEN_HEIGHT} */
     static get PIXEL_BUFFER() {
         return this.PIXEL_BUFFER;
     }
 
+    /** Returns {@link module:UIHelper#SCREEN_HEIGHT} */
     static get FILL_COLOR() {
         return this.FILL_COLOR;
     }
@@ -97,73 +367,64 @@ export default class UIHelper {
     ////////////
 
 
-    static getUIColor(color = "black") {
-        return this.UI_COLORS[color]
+    static get UI_COLOR() {
+        return this.UI_COLORS;
     }
 
-
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // need to clean up below this line
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    static get MANA_COLOR() {
+        return this.MANA_COLORS;
+    }
 
 
     /////////////
     // Buttons //
     /////////////
 
-    // layout start x, y
-    static BUTTON_WIDTH = 120
-    static BUTTON_HEIGHT = 40
-    static BUTTON_START_X = (this.SCREEN_WIDTH / 2) // this is the X center of the screen, since the origin is (0.5, 0.5)
-    static BUTTON_START_Y = (this.SCREEN_HEIGHT / 2) // this is the Y center of the screen, since the origin is (0.5, 0.5)
-    static BUTTON_BACK_START_X = (this.SCREEN_WIDTH / 2 - this.BUTTON_WIDTH - this.PIXEL_BUFFER) // sets position to half the screen minute one (1) button width
-    static BUTTON_BACK_START_Y = (this.SCREEN_HEIGHT - this.BUTTON_HEIGHT - this.PIXEL_BUFFER) // sets position to bottom of the screen plus PIXEL_BUFFER
+    static get BUTTON_SIZE() {
+        return this.BUTTON_SIZE;
+    }
+
+    static get BUTTON_START_LOCATION() {
+        return this.BUTTON_START_LOCATION;
+    }
+
+    static get BACK_BUTTON_LOCATION() {
+        return this.BACK_BUTTON_LOCATION;
+    }
+
+
 
 
     ////////////////
     // Health Bar //
     ////////////////
 
-    // set all bar constants
-    static HEALTH_BAR_STROKE_WIDTH = 8;
-    static HEALTH_BAR_BUFFER = 10 + this.HEALTH_BAR_STROKE_WIDTH;
-    static HEALTH_BAR_WIDTH = 40;
-    static HEALTH_BAR_HEIGHT = 100;
-
-    // set health bar constants
-    static HEALTH_BAR_START_X = this.HEALTH_BAR_BUFFER
-    static HEALTH_BAR_START_Y = this.SCREEN_HEIGHT - this.HEALTH_BAR_BUFFER - this.HEALTH_BAR_HEIGHT // BAR_HEIGHT because we setOrigin(0,0) (e.g. Top Left)
+    static get HEALTH_BAR() {
+        return this.HEALTH_BAR;
+    }
 
 
     ////////////////////////////
     // Mana Orbs (all colors) //
     ////////////////////////////
 
-    static MANA_ORB_STROKE_WIDTH = 3
-    static MANA_ORB_RADIUS = 10
-    static MANA_ORB_BUFFER = 20 + this.MANA_ORB_STROKE_WIDTH + this.MANA_ORB_RADIUS
-
-    // place X to the right of the health bar
-    // place Y to the bottom of the screen, with buffer
-    static MANA_ORB_START_X = this.HEALTH_BAR_START_X + this.HEALTH_BAR_WIDTH + this.HEALTH_BAR_STROKE_WIDTH + this.HEALTH_BAR_BUFFER
-    static MANA_ORB_START_Y = this.SCREEN_HEIGHT - this.HEALTH_BAR_BUFFER - this.MANA_ORB_STROKE_WIDTH - this.MANA_ORB_RADIUS
+    static get MANA_ORB() {
+        return this.MANA_ORB;
+    }
 
 
     ////////////////
     // Rune Slots //
     ////////////////
 
-    static RUNE_SLOT_STROKE_COLOR = 0xefc53f
-    static RUNE_SLOT_FILL_COLOR = 0xbcc947
-    static RUNE_SLOT_WIDTH = 50
-    static RUNE_SLOT_HEIGHT = 50
-    static RUNE_SLOT_START_X = (this.SCREEN_WIDTH / 2 - this.RUNE_SLOT_WIDTH * 1.5) // *1.5 because there's 3 rune slots, 1.5 is half.
-    static RUNE_SLOT_START_Y = (this.SCREEN_HEIGHT - this.PIXEL_BUFFER)
+    static get RUNE_SLOT() {
+        return this.RUNE_SLOT;
+    }
 
 
-    constructor() {}
-
+    //////////////////////
+    // Custom Functions //
+    //////////////////////
 
     static setCameraBackgroundColor(cameraMain) {
         cameraMain.backgroundColor.setTo(this.BG_COLOR_GREY[0], this.BG_COLOR_GREY[1], this.BG_COLOR_GREY[2]);
@@ -274,4 +535,4 @@ export default class UIHelper {
 
         return button;
     }
-}
+};
