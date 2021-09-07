@@ -316,10 +316,10 @@ export default class ClientGameScene extends Phaser.Scene {
                 // destination location (x,y) the player clicked
 
                 /**
-                 * The location the player clicked, in raw pixels
-                 * @type {object} destination   - The location the player clicked, in raw pixels
-                 * @member {number}  destination.x   - x location
-                 * @member {number}  destination.y   - y location
+                 * This object contains all information required for the client use/draw fonts
+                 * @type {Object}
+                 * @prop {Number} x
+                 * @prop {Number} y
                  */
                 let destination = {
                     x: this.input.mousePointer.x,
