@@ -198,7 +198,7 @@ export default class ClientGameScene extends Phaser.Scene {
                 const timeline = this.tweens.createTimeline();
                 tweens.forEach((tween) => {
                   timeline.add(tween);
-                })
+              });
                   timeline.play();
               }
             //requesterPlayer.mage.location = {x: movementInfo.location.x * 12, y: movementInfo.location.y * 12}; // this is just a hard location update. can potentially replace this with tweens
@@ -212,7 +212,7 @@ export default class ClientGameScene extends Phaser.Scene {
               const timeline = this.tweens.createTimeline();
               tweens.forEach((tween) => {
                 timeline.add(tween);
-              })
+            });
                 timeline.play();
             }
             requesterPlayer.mage.path = movementInfo.path;
@@ -369,7 +369,7 @@ export default class ClientGameScene extends Phaser.Scene {
                 this.drawMovementDestinationImage({
                     x: this.input.mousePointer.x + this.camera.scrollX,
                     y: this.input.mousePointer.y + this.camera.scrollY
-                })
+                });
 
                 //console.log('moving from: (' + tmpPlayerPosition.x + ", " + tmpPlayerPosition.y + ")");
                 //console.log('-------> to: (' + destination.x + ", " + destination.y + ")");
