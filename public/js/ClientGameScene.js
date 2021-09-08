@@ -188,22 +188,31 @@ export default class ClientGameScene extends Phaser.Scene {
             let requesterPlayer = this.players.find((player) => {
                 return player.id == movementInfo.requesterId;
             });
-
+            // if we get more than 2 tiles away on the x or the y, fix it
+            if(Math.abs(requesterPlayer.mage.x/12 - movementInfo.location.x) > 1 ||
+              Math.abs(requesterPlayer.mage.y/12 - movementInfo.location.y) > 1) {
+                requesterPlayer.mage.x = movementInfo.location.x * 12;
+                requesterPlayer.mage.y = movementInfo.location.y * 12;
+                this.tweenManager.killTweensOf(requesterPlayer.mage);
+                let tweens = this.calculateTweens(requesterPlayer, movementInfo.path, PLAYER_SPEED);
+                const timeline = this.tweens.createTimeline();
+                tweens.forEach((tween) => {
+                  timeline.add(tween);
+              });
+                  timeline.play();
+              }
             //requesterPlayer.mage.location = {x: movementInfo.location.x * 12, y: movementInfo.location.y * 12}; // this is just a hard location update. can potentially replace this with tweens
 
-            //if the player has a path, there is an incoming path, and the destination is the same as the incoming path, we can assume it is the same path;
-            if(requesterPlayer.mage.path && movementInfo.path.length > 0 && requesterPlayer.mage.path.length > 0 &&
-                movementInfo.path[movementInfo.path.length - 1].x === requesterPlayer.mage.path[requesterPlayer.mage.path.length - 1].x &&
-                movementInfo.path[movementInfo.path.length - 1].y === requesterPlayer.mage.path[requesterPlayer.mage.path.length - 1].y) {
-              //not sure we need to do anything when the path is the same, we would do it here, but i think this is just a condition that should be reformatted
-            } else if(movementInfo.path.length > 0){
-              //if the path is not the same but there is still a path, reset the tweens to the new path.
+            //if there is a path incoming, we have a current path, and the destination is not the same as our current path, calculate tweens for the new path
+            else if(movementInfo.path.length > 0 && requesterPlayer.mage.path && requesterPlayer.mage.path.length > 0 &&
+                    (movementInfo.path[movementInfo.path.length - 1].x !== requesterPlayer.mage.path[requesterPlayer.mage.path.length - 1].x ||
+                    movementInfo.path[movementInfo.path.length - 1].y !== requesterPlayer.mage.path[requesterPlayer.mage.path.length - 1].y)) {
               this.tweenManager.killTweensOf(requesterPlayer.mage);
               let tweens = this.calculateTweens(requesterPlayer, movementInfo.path, PLAYER_SPEED);
               const timeline = this.tweens.createTimeline();
               tweens.forEach((tween) => {
                 timeline.add(tween);
-              })
+            });
                 timeline.play();
             }
             requesterPlayer.mage.path = movementInfo.path;
@@ -307,10 +316,10 @@ export default class ClientGameScene extends Phaser.Scene {
                 // destination location (x,y) the player clicked
 
                 /**
-                 * The location the player clicked, in raw pixels
-                 * @type {object} destination   - The location the player clicked, in raw pixels
-                 * @member {number}  destination.x   - x location
-                 * @member {number}  destination.y   - y location
+                 * This object contains all information required for the client use/draw fonts
+                 * @type {Object}
+                 * @prop {Number} x
+                 * @prop {Number} y
                  */
                 let destination = {
                     x: this.input.mousePointer.x,
@@ -360,7 +369,7 @@ export default class ClientGameScene extends Phaser.Scene {
                 this.drawMovementDestinationImage({
                     x: this.input.mousePointer.x + this.camera.scrollX,
                     y: this.input.mousePointer.y + this.camera.scrollY
-                })
+                });
 
                 //console.log('moving from: (' + tmpPlayerPosition.x + ", " + tmpPlayerPosition.y + ")");
                 //console.log('-------> to: (' + destination.x + ", " + destination.y + ")");
@@ -476,8 +485,8 @@ export default class ClientGameScene extends Phaser.Scene {
     calculateTweens(player, path, PLAYER_SPEED) {
       var tweens = [];
       for (var i = 0; i < path.length - 1; i++) {
-          var ex = path[i + 1].x;
-          var ey = path[i + 1].y;
+          var ex = path[i].x;
+          var ey = path[i].y;
           tweens.push({
               targets: player.mage,
               x: {
