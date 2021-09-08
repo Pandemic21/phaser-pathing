@@ -1,0 +1,20 @@
+{
+  "!name": "public/js/lib/Circle.js",
+  "Circle": {
+    "prototype": {
+      "radius": {
+        "!type": "number",
+        "!span": "551[25:8]-557[25:14]",
+        "!doc": "Returns the location object\n@type {Number}"
+      },
+      "area": {
+        "!type": "number",
+        "!span": "757[37:8]-761[37:12]",
+        "!doc": "Returns the area of the circle\n@type {Number}"
+      },
+      "!span": "156[7:0]-839[40:1]"
+    },
+    "!type": "fn(radius?: number)",
+    "!span": "162[7:6]-168[7:12]"
+  }
+}
