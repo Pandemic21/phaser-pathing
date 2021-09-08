@@ -1,0 +1,25 @@
+{
+  "!name": "public/js/lib/Status.js",
+  "Status": {
+    "prototype": {
+      "gameTime": {
+        "!type": "number",
+        "!span": "1644[42:8]-1652[42:16]",
+        "!doc": "The gameTime in ms the status initially took effect\n@return {Number} The gameTime in ms the status initially took effect"
+      },
+      "duration": {
+        "!type": "number",
+        "!span": "1911[54:8]-1919[54:16]",
+        "!doc": "The duration in ms the status lasts\n@return {Number} The duration in ms the status lasts"
+      },
+      "label": {
+        "!type": "string",
+        "!span": "2230[66:8]-2235[66:13]",
+        "!doc": "What the status effect is (e.g. stun, slow, confused, etc...)\n@return {String} What the status effect is (e.g. stun, slow, confused, etc...)"
+      },
+      "!span": "509[16:0]-2618[85:1]"
+    },
+    "!type": "fn(gameTime: number, duration: number, label: string, colors: ?)",
+    "!span": "515[16:6]-521[16:12]"
+  }
+}
