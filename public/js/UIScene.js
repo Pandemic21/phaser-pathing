@@ -29,10 +29,10 @@ export default class UIScene extends Phaser.Scene {
 
         // font constants
         const fontSize = 30;
-        const fontSizePx = fontSize + "px";
+        const fontSizePx = fontSize + 'px';
         const startX = 400;
         const startY = 300;
-        const pixel_buffer = fontSize * 2;
+        const pixelBuffer = fontSize * 2;
 
 
         //////////////////

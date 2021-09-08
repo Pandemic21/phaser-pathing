@@ -5,13 +5,16 @@
 import ClientGameScene from './ClientGameScene.js';
 let clientGameScene = new ClientGameScene();
 
+import UIScene from './UIScene.js';
+let uiScene = new UIScene();
+
 let easystar = new EasyStar.js();
 
 /////////////////
 // Phaser Init //
 /////////////////
 
-console.log("Starting...");
+console.log(`Starting...`);
 
 var config = {
     type: Phaser.AUTO,
@@ -30,6 +33,7 @@ var config = {
     }
 };
 let game = new Phaser.Game(config);
+let eventEmitter = new Phaser.Events.EventEmitter();
 
 // prevents default right click website behavior
 game.canvas.oncontextmenu = function(e) {
@@ -37,6 +41,10 @@ game.canvas.oncontextmenu = function(e) {
 };
 
 game.scene.add('clientGameScene', clientGameScene);
-game.scene.start('clientGameScene', easystar);   // pass the easystar variable to the game scene
+game.scene.add('uiScene', uiScene);
 
-console.log("Complete.");
+game.scene.start('clientGameScene', {
+    eventEmitter
+});
+
+console.log(`Complete.`);

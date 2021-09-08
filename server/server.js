@@ -127,6 +127,9 @@ class ServerGameScene extends Phaser.Scene {
             // tell all other connected players about the new player
             socket.broadcast.emit('newPlayerJoined', newPlayer);
 
+            socket.on('tryFireball', target => {
+              console.log('throw fire at ', target)
+            })
 
             /* this is called by ClientGameScene.js when the player orders their mage to move
             movementInfo = {
