@@ -46,6 +46,7 @@ export default class ClientGameScene extends Phaser.Scene {
         ///////////////
 
         const PLAYER_SPEED = 50; // lower is faster
+        const TICK_RATE = 50; // how fast we receive gameState snapshots. this needs to be the same on the server and the client.
 
 
         //////////////////
@@ -124,8 +125,6 @@ export default class ClientGameScene extends Phaser.Scene {
             .setName('mini')
             .setBackgroundColor(0x002244);
 
-        this.tweenManager = new Phaser.Tweens.TweenManager(this);
-
         //////////////////////
         // Socket.io Config //
         //////////////////////
@@ -134,6 +133,7 @@ export default class ClientGameScene extends Phaser.Scene {
 
         this.players = [];   // this array contains all the player's in the game
         this.myId = '';      // this is the current player's id
+        this.gameStates = [] // this is the array of snapshots we will tween through
 
 
 
@@ -151,16 +151,6 @@ export default class ClientGameScene extends Phaser.Scene {
             let myPlayer = players.find((player) => {
                 return player.id == this.myId;
             });
-
-            // TODO: move this variable to a more sensible place. Maybe on the player.mage object?
-            // this holds the mage's old destination
-            this.oldDestination = {
-                location: {
-                    x: 0,
-                    y: 0
-                }
-            };
-
 
             // create sprite graphics for all player's mages
             for (let k = 0; k < players.length; k++) {
@@ -180,71 +170,42 @@ export default class ClientGameScene extends Phaser.Scene {
             newPlayer.mage = this.physics.add.sprite(newPlayer.mage.x, newPlayer.mage.y, 'isaacImg');
         });
 
-        // this is called by server.js whenever a player issues a move order to their mage
-        this.socket.on('setNewMovement', (movementInfo) => {
-            console.log('setting movement for player: ' + movementInfo.requesterId);
+        this.socket.on('setUpdate', (gameState) => {
+          //add the new snapshot to our gameStates array
+          this.gameStates.push(gameState);
 
-            // take "<str> movementInfo.requesterId" and use that to find the player who ordered their mage to move
-            let requesterPlayer = this.players.find((player) => {
-                return player.id == movementInfo.requesterId;
-            });
-            // if we get more than 2 tiles away on the x or the y, fix it
-            if(Math.abs(requesterPlayer.mage.x/12 - movementInfo.location.x) > 3 ||
-              Math.abs(requesterPlayer.mage.y/12 - movementInfo.location.y) > 3) {
-                requesterPlayer.mage.x = movementInfo.location.x * 12;
-                requesterPlayer.mage.y = movementInfo.location.y * 12;
+          //nothing to tween if theres not at least two snapshots
+          if(this.gameStates.length < 2) return;
 
-                this.calculateTweens(requesterPlayer, movementInfo.path, PLAYER_SPEED);
+          const stateA = this.gameStates[this.gameStates.length-2];
+          const stateB = this.gameStates[this.gameStates.length-1];
 
-              }
-            //requesterPlayer.mage.location = {x: movementInfo.location.x * 12, y: movementInfo.location.y * 12}; // this is just a hard location update. can potentially replace this with tweens
-
-            //if there is a path incoming, we have a current path, and the destination is not the same as our current path, calculate tweens for the new path
-            else if(movementInfo.path.length > 0 && requesterPlayer.mage.path && requesterPlayer.mage.path.length > 0 &&
-                    (movementInfo.path[movementInfo.path.length - 1].x !== requesterPlayer.mage.path[requesterPlayer.mage.path.length - 1].x ||
-                    movementInfo.path[movementInfo.path.length - 1].y !== requesterPlayer.mage.path[requesterPlayer.mage.path.length - 1].y)) {
-
-                      this.calculateTweens(requesterPlayer, movementInfo.path, PLAYER_SPEED);
-
+          stateA.players.forEach((player) => {
+            const currentPlayer = this.players.find((p) => {
+              return p.id === player.id
+            })
+            if(currentPlayer) {
+              currentPlayer.mage.fromX = player.x
+              currentPlayer.mage.fromY = player.y
             }
-            requesterPlayer.mage.path = movementInfo.path;
+
+          });
+
+          stateB.players.forEach((player) => {
+            const currentPlayer = this.players.find((p) => {
+              return p.id === player.id
+            })
+            if(currentPlayer){
+              currentPlayer.mage.toX = player.x
+              currentPlayer.mage.toY = player.y
+            }
+
+          });
+
+          this.calculateTweens(TICK_RATE);
 
 
-            // if(movementInfo.path){
-            //   var tweens = this.calculateTweens(requesterPlayer, movementInfo.path, PLAYER_SPEED);
-            //   this.tweens.timeline({
-            //     tweens: tweens
-            //   })
-            // }
-
-
-            // // this actually moves the character
-            // var tweens = this.calculateTweens(requesterPlayer, movementInfo.path, PLAYER_SPEED);
-            // // locally animate the mage's movement
-            // this.tweens.timeline({
-            //     tweens: tweens
-            // });
-
-
-            // // go through "<array> movementInfo.tweens" and replace "targets: this.player" with the requesting player's mage
-            // for (let k = 0; k < movementInfo.tweens.length; k++) {
-            //     movementInfo.tweens[k].targets = requesterPlayer.mage
-            // }
-            //
-            // // locally animate the mage's movement
-            // this.tweens.timeline({
-            //     tweens: movementInfo.tweens
-            // });
-        });
-
-
-
-        // this.socket.emit('checkSettings', this.settings)
-        //
-        // this.socket.on('currentPlayers', (players) => {
-        //     this.serverCurrentPlayers(players, this.socket.id)
-        // });
-
+        })
 
         ////////////////////////////////////////////
         // Listener Config (e.g. spacebar, click) //
@@ -324,17 +285,6 @@ export default class ClientGameScene extends Phaser.Scene {
                 destination.x = Math.floor((this.camera.scrollX + destination.x + 0.5) / 12);
                 destination.y = Math.floor((this.camera.scrollY + destination.y + 0.5) / 12);
 
-                // if they're just spam clicking the same tile, return false
-                if (destination.x == this.oldDestination.location.x && destination.y == this.oldDestination.location.y) return false;
-
-                // update the old destination to match the current click destination
-                this.oldDestination = {
-                    location: {
-                        x: destination.x,
-                        y: destination.y
-                    }
-                };
-
                 // if a tree is clicked, search for a clickable tile.
                 if (easystarArray[destination.y][destination.x] === 1) {
                     let newDest = this.findNearbyWalkablePoint(destination.x, destination.y, easystarArray);
@@ -381,10 +331,7 @@ export default class ClientGameScene extends Phaser.Scene {
                             requesterId: this.myId, // attach this player's ID to the request
                             path,                   // the easystar path for the mage
                         };
-                        this.calculateTweens(myPlayer, path, PLAYER_SPEED);
                         this.socket.emit('tryNewMovement', movementInfo);
-
-
                     }
                 });
                 this.easystar.calculate();
@@ -442,16 +389,6 @@ export default class ClientGameScene extends Phaser.Scene {
         // camera arrow keys update
         this.controls.update(delta);
 
-        //handle player movement
-        this.players.forEach((player) => {
-          //update player location;
-          if(player.mage.location) {
-            //console.log(player.mage.location);
-            player.mage.x = player.mage.location.x;
-            player.mage.y = player.mage.location.y;
-          }
-      });
-
         // get this player
         let myPlayer = this.players.find((player) => {
             return player.id == this.myId;
@@ -475,39 +412,28 @@ export default class ClientGameScene extends Phaser.Scene {
     //////////////////////
 
     // Calculate tweens here.
-    calculateTweens(player, path, PLAYER_SPEED) {
+    calculateTweens(TICK_RATE) {
 
-      if(this.timelines && this.timelines[player.id]) {
-        this.timelines[player.id].stop();
-        delete this.timelines[player.id];
-      }
+      this.players.forEach((player) => {
+        if(player.mage.fromX && player.mage.fromY && player.mage.toX && player.mage.toY) {
 
-      var tweens = [];
-      for (var i = 0; i < path.length - 1; i++) {
-          var ex = path[i].x;
-          var ey = path[i].y;
-          tweens.push({
-              targets: player.mage,
+          var ex = player.mage.toX;
+          var ey = player.mage.toY;
+
+          this.tweens.add({
+            targets: player.mage,
               x: {
-                  value: ex * 12, // this translates it from the 12x12 pixel tile map to the larger tile map
-                  duration: PLAYER_SPEED
+                  value: ex,
+                  duration: TICK_RATE
               },
               y: {
-                  value: ey * 12, // this translates it from the 12x12 pixel tile map to the larger tile map
-                  duration: PLAYER_SPEED
+                  value: ey,
+                  duration: TICK_RATE
               }
-          });
-      }
-      const timeline = this.tweens.createTimeline();
-      tweens.forEach((tween) => {
-        timeline.add(tween);
-      });
-        timeline.play();
-      if(!this.timelines){
-        this.timelines = {}
-      } else {
-        this.timelines[player.id] = timeline;
-      }
+          })
+        }
+
+      })
 
     }
 

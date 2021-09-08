@@ -104,18 +104,7 @@ class ServerGameScene extends Phaser.Scene {
                 const player = this.players.find((player) => {
                   return player.id === socket.id;
                 });
-                //append the path to the player's mage object
                 player.mage.path = movementInfo.path;
-
-                const movementInfo1 = {
-                  requesterId: player.id,
-                  location: { x: player.x, y: player.y }, //syntax just for you XD
-                  path: player.mage.path
-                };
-
-                socket.emit('setNewMovement', movementInfo1);
-                socket.broadcast.emit('setNewMovement', movementInfo1);
-
             });
 
             // this is called when a player disconencts
@@ -140,45 +129,50 @@ class ServerGameScene extends Phaser.Scene {
         this.gameTime += delta;
         const socket = window.io;
 
+        //start building the gameState;
+        this.gameState = {};
+        this.gameState.gameTime = this.gameTime;
+        this.gameState.players = [];
+
         const PLAYER_SPEED = 50; //this is how many ms should be between each tile movement
         //this is where we calculate movement and send it to the players;
         this.players.forEach((player) => {
           player.moveTick += delta;
-          //if the player has a path and should move, move them
-          if(player.mage.path && player.moveTick - player.lastMoveTick > PLAYER_SPEED) {
-            //default to current location
-            let location = {
-              x: player.mage.x/12,
-              y: player.mage.y/12,
-            };
-            //if there's an active path, move to the next node and remove it
-            if(player.mage.path.length > 0){
-              //this finds the current location in the path if it exists, to make sure we are starting from our current location
-              let currentLocIndex = player.mage.path.findIndex((loc) => {
-                return location.x === loc.x && location.y === loc.y;
-              })
-              //if the current location is not found currentLocIndex = -1, and therefore we pick up at the beginning of the path
-              location = player.mage.path[currentLocIndex + 1];
-              //splice the path to the next point
-              player.mage.path.splice(0, currentLocIndex + 2);
-            }
+            //if the player has a path and should move, move them
+            if(player.mage.path && player.moveTick - player.lastMoveTick > PLAYER_SPEED) {
+              //default to current location
+              let location = {
+                x: player.mage.x/12,
+                y: player.mage.y/12,
+              };
+              //if there's an active path, move to the next node and remove it
+              if(player.mage.path.length > 0){
+                //this finds the current location in the path if it exists, to make sure we are starting from our current location
+                let currentLocIndex = player.mage.path.findIndex((loc) => {
+                  return location.x === loc.x && location.y === loc.y;
+                })
+                //if the current location is not found currentLocIndex = -1, and therefore we pick up at the beginning of the path
+                location = player.mage.path[currentLocIndex + 1];
+                //splice the path to the next point
+                player.mage.path.splice(0, currentLocIndex + 2);
+              }
 
-            //move one tile, and reset lastMoveTick to the appropriate time
-            //build the movementInfo object
-            const movementInfo = {
-              requesterId: player.id,
-              location: location, //syntax just for you XD
-              path: player.mage.path
-            };
-            // update the server side character object
-            player.mage.x = location.x * 12;
-            player.mage.y = location.y * 12;
-            //send it
-            socket.emit('setNewMovement', movementInfo);
-            //make sure we are updating every tick evenly;
-            player.lastMoveTick += PLAYER_SPEED;
+              //move one tile, and reset lastMoveTick to the appropriate time
+              player.mage.x = location.x * 12;
+              player.mage.y = location.y * 12;
+
+
+              //make sure we are updating every tick evenly;
+              player.lastMoveTick += PLAYER_SPEED;
           }
-        });
+        //append the mage's location to gameState
+        this.gameState.players.push({id: player.id, x: player.mage.x, y: player.mage.y})
+        }, this)
+
+        const TICK_RATE = 50; // this is how often we send setUpdate.
+        socket.emit('setUpdate', this.gameState);
+
+
     }
 
 
