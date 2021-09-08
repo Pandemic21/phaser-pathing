@@ -213,8 +213,16 @@ export default class ClientGameScene extends Phaser.Scene {
               currentPlayer.mage.toX = player.x
               currentPlayer.mage.toY = player.y
             }
-
           });
+          //handle disconnects
+          this.players.forEach((player) => {
+            const findPlayer = stateB.players.find((p) => {
+              return p.id === player.id
+            })
+            if(!findPlayer) {
+              player.mage.destroy();
+            }
+          })
 
           this.calculateTweens(TICK_RATE);
 

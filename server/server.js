@@ -163,7 +163,10 @@ class ServerGameScene extends Phaser.Scene {
             // this is called when a player disconencts
             socket.on('disconnect', (() => {
                 console.log('user disconnected: ' + socket.id);
-
+                let playerIndex = this.players.findIndex((player) => {
+                  return player.id === socket.id;
+                })
+                this.players.splice(playerIndex, 1);
                 // TODO: remove the client from the array
                 // TODO: tell connected players to stop rendering the player
 
