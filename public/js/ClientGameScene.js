@@ -45,7 +45,7 @@ export default class ClientGameScene extends Phaser.Scene {
         // Constants //
         ///////////////
 
-        const PLAYER_SPEED = 50; // lower is faster
+        const PLAYER_SPEED = 150; // lower is faster
 
 
         //////////////////
