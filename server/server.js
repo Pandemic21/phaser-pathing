@@ -12,9 +12,9 @@ class ServerGameScene extends Phaser.Scene {
     preload() {
         __dirname = window.__dirname;
 
-        //this.load.tilemapTiledJSON("tilemap", "file:///" + __dirname + "/public/assets/maps/forest_map_small.json");
-        //this.load.tilemapTiledJSON("tilemap", "file:///" + __dirname + "/public/assets/maps/forest_map_small_v2.json");
-        this.load.tilemapTiledJSON("tilemap", "file:///" + __dirname + "/public/assets/maps/forest_map_100x100_v2.json");
+        //this.load.tilemapTiledJSON('tilemap', 'file:///' + __dirname + '/public/assets/maps/forest_map_small.json');
+        //this.load.tilemapTiledJSON('tilemap', 'file:///' + __dirname + '/public/assets/maps/forest_map_small_v2.json');
+        this.load.tilemapTiledJSON('tilemap', 'file:///' + __dirname + '/public/assets/maps/forest_map_100x100_v2.json');
     }
 
     create() {
@@ -80,8 +80,8 @@ class ServerGameScene extends Phaser.Scene {
             easystarArray.push(arr);
         }
 
-        console.log("easystarArray width: " + easystarArray[0].length);
-        console.log("easystarArray height: " + easystarArray.length);
+        console.log('easystarArray width: ' + easystarArray[0].length);
+        console.log('easystarArray height: ' + easystarArray.length);
 
         this.easystar.setGrid(easystarArray);
         this.easystar.setAcceptableTiles(0);
@@ -93,11 +93,11 @@ class ServerGameScene extends Phaser.Scene {
         // Socket.io Config //
         //////////////////////
 
-        // players array. A "player" is a connection to the server's listening socket.io port.
-        // the "mage" is the little guy running around the screen.
-        // each "player" has "<obj> mage", which is a Phaser physics object
+        // players array. A 'player' is a connection to the server's listening socket.io port.
+        // the 'mage' is the little guy running around the screen.
+        // each 'player' has '<obj> mage', which is a Phaser physics object
         this.players = [];
-        this.projectiles = this.physics.add.group()
+        this.projectiles = this.physics.add.group();
 
         // on Socket.io connection
         window.io.on('connection', (socket) => {
@@ -114,7 +114,7 @@ class ServerGameScene extends Phaser.Scene {
             let newPlayer = {
                 id: socket.id,          // this is the player's ID, used to ID the player in update()
                 playerName: socket.id,  // TODO: change this to a user configurable setting
-                mage: mage,             // i know this can be shortened to just "mage" but long form helps me understand better
+                mage: mage,             // i know this can be shortened to just 'mage' but long form helps me understand better
                 moveTick: 0,            // these will be used to know when to move the character
                 lastMoveTick: 0         //
             };
@@ -131,21 +131,21 @@ class ServerGameScene extends Phaser.Scene {
             socket.on('tryFireball', target => {
               //this will become a cast fireball function, there should just be a tryCast or something for spells
               const owner = this.players.find((player) => {
-                return player.id === socket.id
-              })
+                return player.id === socket.id;
+            });
               const speed = 600;
               if(!this.projectileId) this.projectileId = 0;
               const projectileId = this.projectileId;
-              console.log('projectileId: '  + projectileId)
+              console.log('projectileId: '  + projectileId);
               this.projectileId += 1;
               const projectile = {
                 owner,
                 target,
                 speed,
                 projectileId
-              }
+            };
               this.createProjectile(projectile);
-            })
+          });
 
 
             /* this is called by ClientGameScene.js when the player orders their mage to move
@@ -155,9 +155,9 @@ class ServerGameScene extends Phaser.Scene {
             }
             */
             socket.on('tryNewMovement', (movementInfo) => {
-                console.log("tryNewMovement for: " + movementInfo.requesterId);
+                console.log('tryNewMovement for: ' + movementInfo.requesterId);
                 // TODO: this is where we would perform server-side validation
-                //  that the "<array> movementInfo.path" the player chose is
+                //  that the '<array> movementInfo.path' the player chose is
                 //  actually a valid path, and that they're not cheating
                 console.log('Movement: ', movementInfo);
                 let destination = movementInfo.destination;
@@ -168,11 +168,11 @@ class ServerGameScene extends Phaser.Scene {
                 let tmpPlayerPosition = {
                   x: Math.floor((player.mage.x + 0.5) / 12), //convert World x to minitile x,
                   y: Math.floor((player.mage.y + 0.5) / 12) //convert World y to minitile y
-                }
+              };
 
                 this.easystar.findPath(tmpPlayerPosition.x, tmpPlayerPosition.y, destination.x, destination.y, (path) => {
                     if (path === null) {
-                        console.warn("Path was not found.");
+                        console.warn('Path was not found.');
                     } else {
                         player.mage.path = path;
                     }
@@ -185,7 +185,7 @@ class ServerGameScene extends Phaser.Scene {
                 console.log('user disconnected: ' + socket.id);
                 let playerIndex = this.players.findIndex((player) => {
                   return player.id === socket.id;
-                })
+              });
                 this.players.splice(playerIndex, 1);
                 // TODO: remove the client from the array
                 // TODO: tell connected players to stop rendering the player
@@ -227,7 +227,7 @@ class ServerGameScene extends Phaser.Scene {
                 //this finds the current location in the path if it exists, to make sure we are starting from our current location
                 let currentLocIndex = player.mage.path.findIndex((loc) => {
                   return location.x === loc.x && location.y === loc.y;
-                })
+              });
                 //if the current location is not found currentLocIndex = -1, and therefore we pick up at the beginning of the path
                 location = player.mage.path[currentLocIndex + 1];
                 //splice the path to the next point
@@ -243,8 +243,8 @@ class ServerGameScene extends Phaser.Scene {
               player.lastMoveTick += PLAYER_SPEED;
           }
         //append the mage's location to gameState
-        this.gameState.players.push({id: player.id, x: player.mage.x, y: player.mage.y})
-        }, this)
+        this.gameState.players.push({id: player.id, x: player.mage.x, y: player.mage.y});
+    }, this);
 
         this.projectiles.getChildren().forEach((projectile) => {
           this.gameState.projectiles.push({
@@ -253,8 +253,8 @@ class ServerGameScene extends Phaser.Scene {
             angle: projectile.angle,
             x: projectile.x,
             y: projectile.y
-          })
-        })
+        });
+    });
 
         const TICK_RATE = 50; // this is how often we send setUpdate.
         socket.emit('setUpdate', this.gameState);
@@ -281,7 +281,7 @@ class ServerGameScene extends Phaser.Scene {
       newProj.projectileId = projectile.projectileId;
       newProj.angle = Phaser.Math.Angle.Between(newProj.x, newProj.y, projectile.target.x, projectile.target.y);
       newProj.setSize(32, 32);
-      this.projectiles.add(newProj)
+      this.projectiles.add(newProj);
       this.physics.moveTo(newProj, projectile.target.x, projectile.target.y, projectile.speed);
 
     }
