@@ -1,5 +1,9 @@
+// TODO: verify this import is working
+import Location from './lib/Location.js';
+import Rectangle from './lib/Rectangle.js';
+
 /**
- * UIHelper Constructor. Sets a bunch of local constants, then uses those local constants to create "this" objects
+ * UIHelper Constructor. Sets a bunch of local constants, then uses those local constants to create 'this' objects
  * @class UIHelper
  */
 class UIHelper {
@@ -39,7 +43,7 @@ class UIHelper {
         ///////////
 
         const FONT_SIZE = 30;
-        const FONT_SIZE_PX = FONT_SIZE + "px";
+        const FONT_SIZE_PX = FONT_SIZE + 'px';
         const FONT_START_X = 230;
         const FONT_START_Y = 130;
         const FONT_PIXEL_BUFFER = FONT_SIZE * 2;
@@ -60,16 +64,16 @@ class UIHelper {
          * @prop {Number} buffer
          */
         this.FONT = {
-            "location": {
-                "x": FONT_START_X,
-                "y": FONT_START_Y
+            'location': {
+                'x': FONT_START_X,
+                'y': FONT_START_Y
             },
-            "colors": {
-                "fillColor": 0x00f000
+            'colors': {
+                'fillColor': 0x00f000
             },
-            "fontSize": FONT_SIZE,
-            "fontSizePx": FONT_SIZE + "px",
-            "buffer": FONT_SIZE * 2
+            'fontSize': FONT_SIZE,
+            'fontSizePx': FONT_SIZE + 'px',
+            'buffer': FONT_SIZE * 2
         };
 
         ////////////
@@ -82,7 +86,7 @@ class UIHelper {
          * @const
          * @type {Object.<string, hex>}
          */
-        this.UI_COLORS = {
+        this.UIColors = {
             BLACK: 0x000000,
             HEALTH: 0xf5112f,
             MANA: 0x1212cc,
@@ -133,13 +137,13 @@ class UIHelper {
          * @prop {Number} size.height
          */
         this.BUTTON = {
-            "location": {
-                "x": BUTTON_START_X,
-                "y": BUTTON_START_Y
+            'location': {
+                'x': BUTTON_START_X,
+                'y': BUTTON_START_Y
             },
-            "size": {
-                "width": BUTTON_WIDTH,
-                "height": BUTTON_HEIGHT
+            'size': {
+                'width': BUTTON_WIDTH,
+                'height': BUTTON_HEIGHT
             }
         };
 
@@ -160,13 +164,13 @@ class UIHelper {
          * @prop {Number} size.height
          */
         this.BACK_BUTTON = {
-            "location": {
-                "x": BACK_BUTTON_START_X,
-                "y": BACK_BUTTON_START_Y
+            'location': {
+                'x': BACK_BUTTON_START_X,
+                'y': BACK_BUTTON_START_Y
             },
-            "size": {
-                "width": BUTTON_WIDTH,
-                "height": BUTTON_HEIGHT
+            'size': {
+                'width': BUTTON_WIDTH,
+                'height': BUTTON_HEIGHT
             }
         };
 
@@ -175,7 +179,7 @@ class UIHelper {
         // Health Bar //
         ////////////////
 
-        // these variables are used in creating "this.HEALTH_BAR"
+        // these variables are used in creating 'this.HEALTH_BAR'
         const HEALTH_BAR_STROKE_WIDTH = 8;
         const HEALTH_BAR_BUFFER = 10 + STROKE_WIDTH;
         const HEALTH_BAR_WIDTH = 100;
@@ -185,7 +189,7 @@ class UIHelper {
         // BAR_HEIGHT because we setOrigin(0,0) (e.g. Top Left)
         const HEALTH_BAR_START_Y = this.SCREEN_HEIGHT - HEALTH_BAR_BUFFER - HEALTH_BAR_HEIGHT;
 
-        // create "this.HEALTH_BAR"
+        // create 'this.HEALTH_BAR'
 
         /**
          * This is all the data needed to draw the health bar
@@ -202,15 +206,15 @@ class UIHelper {
          * @prop {Number} location.y
          */
         this.HEALTH_BAR = {
-            "strokeWidth": HEALTH_BAR_STROKE_WIDTH,
-            "buffer": HEALTH_BAR_BUFFER,
-            "size": {
-                "width": HEALTH_BAR_WIDTH,
-                "height": HEALTH_BAR_HEIGHT
+            'strokeWidth': HEALTH_BAR_STROKE_WIDTH,
+            'buffer': HEALTH_BAR_BUFFER,
+            'size': {
+                'width': HEALTH_BAR_WIDTH,
+                'height': HEALTH_BAR_HEIGHT
             },
-            "location": {
-                "x": HEALTH_BAR_BUFFER,
-                "y": HEALTH_BAR_START_Y
+            'location': {
+                'x': HEALTH_BAR_BUFFER,
+                'y': HEALTH_BAR_START_Y
             }
         };
 
@@ -241,13 +245,13 @@ class UIHelper {
          * @prop {Number} buffer
          */
         this.MANA_ORB = {
-            "location": {
-                "x": MANA_ORB_START_X,
-                "y": MANA_ORB_START_Y
+            'location': {
+                'x': MANA_ORB_START_X,
+                'y': MANA_ORB_START_Y
             },
-            "strokeWidth": MANA_ORB_STROKE_WIDTH,
-            "radius": MANA_ORB_RADIUS,
-            "buffer": MANA_ORB_BUFFER,
+            'strokeWidth': MANA_ORB_STROKE_WIDTH,
+            'radius': MANA_ORB_RADIUS,
+            'buffer': MANA_ORB_BUFFER,
         };
 
 
@@ -283,16 +287,16 @@ class UIHelper {
          * @prop {Number} location.y
          */
         this.RUNE_SLOT = {
-            "strokeColor": RUNE_SLOT_STROKE_COLOR,
-            "fillColor": RUNE_SLOT_FILL_COLOR,
-            "buffer": RUNE_SLOT_BUFFER,
-            "size": {
-                "width": RUNE_SLOT_WIDTH,
-                "height": RUNE_SLOT_HEIGHT,
+            'strokeColor': RUNE_SLOT_STROKE_COLOR,
+            'fillColor': RUNE_SLOT_FILL_COLOR,
+            'buffer': RUNE_SLOT_BUFFER,
+            'size': {
+                'width': RUNE_SLOT_WIDTH,
+                'height': RUNE_SLOT_HEIGHT,
             },
-            "location": {
-                "x": RUNE_SLOT_START_X,
-                "y": RUNE_SLOT_START_Y
+            'location': {
+                'x': RUNE_SLOT_START_X,
+                'y': RUNE_SLOT_START_Y
             }
         };
     }
@@ -442,7 +446,7 @@ class UIHelper {
       * @returns {Void}
       */
     static setCameraBackgroundColor(cameraMain) {
-        cameraMain.backgroundColor.setTo(this.UI_Colors.BG_COLOR_GREY);
+        cameraMain.backgroundColor.setTo(this.UIColors.BG_COLOR_GREY);
     }
 
     /**
@@ -504,20 +508,20 @@ class UIHelper {
 
             // find which button they clicked
             // Clicked: Play Game
-            if (button.text == "Back") {
+            if (button.text == 'Back') {
                 console.log('Back button pressed');
                 thisScene.scene.start(backSceneKey);
-                console.log("currentSceneKey: " + currentSceneKey);
-                console.log("backSceneKey: " + backSceneKey);
+                console.log('currentSceneKey: ' + currentSceneKey);
+                console.log('backSceneKey: ' + backSceneKey);
             }
         });
 
         backButton.on('button.out', () => {
-            return "out"; // this is called when the mouse LEAVES the button (can be used for highlighting)
+            return 'out'; // this is called when the mouse LEAVES the button (can be used for highlighting)
         });
 
         backButton.on('button.over', () => {
-            return "over"; // this is called when the mouse ENTERS the button (can be used for highlighting)
+            return 'over'; // this is called when the mouse ENTERS the button (can be used for highlighting)
         });
     }
 
@@ -533,7 +537,7 @@ class UIHelper {
         return thisScene.rexUI.add.label({
             width: UIHelper.BUTTON_WIDTH,
             height: UIHelper.BUTTON_HEIGHT,
-            background: thisScene.rexUI.add.roundRectangle(0, 0, 0, 0, 20, this.UI_COLORS.LIGHT),
+            background: thisScene.rexUI.add.roundRectangle(0, 0, 0, 0, 20, this.UIColors.LIGHT),
             text: thisScene.add.text(0, 0, text, {
                 fontSize: 18
             }),
