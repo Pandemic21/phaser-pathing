@@ -1,17 +1,20 @@
 {
-  "ecmaVersion": 8,
-  "libs": [
-    "browser"
-  ],
-  "loadEagerly": [],
-  "dontLoad": [],
-  "plugins": {
-    "doc_comment": true,
-    "modules": {
-      "dontLoad": "",
-      "load": "",
-      "modules": ""
-    },
-    "es_modules": {}
-  }
+    "ecmaVersion": 8,
+    "libs": [
+        "browser"
+    ],
+    "loadEagerly": [],
+    "dontLoad": [],
+    "plugins": {
+        "doc_comment": {
+            "fullDocs": true,
+            "strong": true
+        },
+        "modules": {
+            "dontLoad": "",
+            "load": "/public/js/UIHelper.js",
+            "modules": ""
+        },
+        "es_modules": {}
+    }
 }
