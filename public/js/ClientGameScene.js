@@ -214,7 +214,7 @@ export default class ClientGameScene extends Phaser.Scene {
               currentPlayer.mage.toY = player.y
             }
           });
-          //handle disconnects
+          //check for and handle disconnects here
           this.players.forEach((player) => {
             const findPlayer = stateB.players.find((p) => {
               return p.id === player.id
@@ -249,7 +249,14 @@ export default class ClientGameScene extends Phaser.Scene {
         });
 
         this.input.keyboard.on('keyup-SPACE', (keypress) => {
-          console.log('shoot fireball!')
+
+          const target = {
+            x: this.input.mousePointer.worldX,
+            y: this.input.mousePointer.worldY
+          }
+
+          this.socket.emit('tryFireball', target)
+
         })
 
         // toggle follscreen on keypress: F
