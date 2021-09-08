@@ -48,7 +48,6 @@ export default class ClientGameScene extends Phaser.Scene {
         const PLAYER_SPEED = 50; // lower is faster
         const TICK_RATE = 50; // how fast we receive gameState snapshots. this needs to be the same on the server and the client.
 
-
         //////////////////
         // Map Creation //
         //////////////////
@@ -124,7 +123,21 @@ export default class ClientGameScene extends Phaser.Scene {
             .setZoom(0.2)
             .setName('mini')
             .setBackgroundColor(0x002244);
-
+        ////////////////
+        // Animations //
+        ////////////////
+        this.anims.create({
+            key: 'breathe',
+            frames: [{
+                    key: 'isaacBreathe'
+                },
+                {
+                    key: 'isaacImg'
+                }
+            ],
+            frameRate: 4,
+            repeat: -1
+        })
         //////////////////////
         // Socket.io Config //
         //////////////////////
@@ -156,6 +169,7 @@ export default class ClientGameScene extends Phaser.Scene {
             for (let k = 0; k < players.length; k++) {
               console.log(players[k].id);
               players[k].mage = this.physics.add.sprite(players[k].mage.x, players[k].mage.y, 'isaacImg');
+              players[k].mage.play('breathe');
             }
         });
 
@@ -212,7 +226,7 @@ export default class ClientGameScene extends Phaser.Scene {
         ////////////////////////////////////////////
 
         // spacebar re-centers the camera on "myPlayer.mage"
-        this.input.keyboard.on('keyup-SPACE', (keyPress) => {
+        this.input.keyboard.on('keyup-T', (keyPress) => {
             // get this player
             // let myPlayer = this.players.find((player) => {
             //     return player.id == this.myId;
@@ -225,6 +239,10 @@ export default class ClientGameScene extends Phaser.Scene {
                 this.camera.scrollY = myPlayer.mage.y - this.SCREEN_HEIGHT / 2;
             }
         });
+
+        this.input.keyboard.on('keyup-SPACE', (keypress) => {
+          console.log('shoot fireball!')
+        })
 
         // toggle follscreen on keypress: F
         this.input.keyboard.on('keyup-F', (keyPress) => {
@@ -377,7 +395,8 @@ export default class ClientGameScene extends Phaser.Scene {
 
       this.players.forEach((player) => {
         if(player.mage.fromX && player.mage.fromY && player.mage.toX && player.mage.toY) {
-
+          if(player.mage.fromX < player.mage.toX) player.mage.setFlipX(true);
+          if(player.mage.fromX > player.mage.toX) player.mage.setFlipX(false);
           var ex = player.mage.toX;
           var ey = player.mage.toY;
 
