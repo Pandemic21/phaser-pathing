@@ -8,22 +8,22 @@ const express = require('express');
 
 // default port is 8081, but if it's in "/opt/magegame-dev/" it should listen on the dev port (8082)
 let port = 8083;
-if (__dirname.includes("-dev")) {
+if (__dirname.includes('-dev')) {
     port = port + 1;
 }
 
-const protocol = 'http://'
+const protocol = 'http://';
 const fqdn = 'localhost';
-const uri = "/";
+const uri = '/';
 const url = protocol + fqdn + ':' + port + uri;
 
 const app = express();
-const http = require('http')
+const http = require('http');
 const server = http.createServer(app);
 const {
     socket
-} = require('./socket')
-const easystar = require('easystarjs')
+} = require('./socket');
+const easystar = require('easystarjs');
 
 //////////////////////
 // Middleware Setup //
@@ -33,6 +33,18 @@ app.use(express.static(__dirname + '/public'));
 
 app.get('/', function (req, res) {
     res.sendFile(__dirname + '/index.html');
+});
+
+app.get('/home', function(req, res) {
+    res.sendFile(__dirname + '/public/frontend/index.html');
+});
+
+app.get('/settings', function(req, res) {
+    res.sendFile(__dirname + '/public/frontend/settings.html');
+});
+
+app.get('/game', function(req, res) {
+    res.sendFile(__dirname + '/public/frontend/game.html');
 });
 
 
