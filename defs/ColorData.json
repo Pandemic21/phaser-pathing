@@ -1,0 +1,25 @@
+
+  "!name": "public/js/lib/ColorData.js",
+  "ColorData": {
+    "prototype": {
+      "strokeWidth": {
+        "!type": "number",
+        "!span": "1007[32:8]-1018[32:19]",
+        "!doc": "Stroke width in pixels\n@type {Number}"
+      },
+      "strokeColor": {
+        "!type": "number",
+        "!span": "1222[44:8]-1233[44:19]",
+        "!doc": "Stroke color\n@type {Hex}"
+      },
+      "fillColor": {
+        "!type": "number",
+        "!span": "1447[56:8]-1456[56:17]",
+        "!doc": "Stroke width in pixels\n@type {Hex}"
+      },
+      "!span": "295[9:0]-1587[63:1]"
+    },
+    "!type": "fn(strokeWidth?: number, strokeColor?: ?, fillColor?: ?)",
+    "!span": "301[9:6]-310[9:15]"
+  }
+}

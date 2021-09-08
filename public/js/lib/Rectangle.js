@@ -7,7 +7,6 @@
  * @prop {Number} [width=0]  width coordinate on the map
  * @prop {Number} [height=0]  height coordinate on the map
  */
-
 class Rectangle {
     /**
      * Creates a new rectangle with `width` and `height`
