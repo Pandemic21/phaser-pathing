@@ -1,0 +1,31 @@
+{
+  "!name": "public/js/lib/Rectangle.js",
+  "Rectangle": {
+    "prototype": {
+      "rectangle": {
+        "[width=0]": "number",
+        "[height=0]": "number",
+        "!span": "835[31:8]-844[31:17]",
+        "!doc": "Returns the Rectangle object\n@type {Rectangle}"
+      },
+      "width": {
+        "!type": "number",
+        "!span": "1242[55:8]-1247[55:13]",
+        "!doc": "Returns the width\n@type {Number}"
+      },
+      "height": {
+        "!type": "number",
+        "!span": "1448[68:8]-1454[68:14]",
+        "!doc": "Returns the height\n@type {Number}"
+      },
+      "toString": {
+        "!type": "fn() -> string",
+        "!span": "1785[86:4]-1793[86:12]",
+        "!doc": "Returns a string of the coordinates in the format \"Width: `this.width`, Height: `this.height`\"\n@returns {String}"
+      },
+      "!span": "323[10:0]-1868[89:1]"
+    },
+    "!type": "fn(width?: number, height?: number)",
+    "!span": "329[10:6]-338[10:15]"
+  }
+}

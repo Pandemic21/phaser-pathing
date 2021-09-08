@@ -14,8 +14,8 @@ class Location {
      * @param {Number} [y=0]  y coordinate on the map
      */
     constructor(x = 0, y = 0) {
-        this.x = x;
-        this.y = y;
+        this.privateX = x;
+        this.privateY = y;
     }
 
 
@@ -29,18 +29,18 @@ class Location {
      */
     get location() {
         return {
-            x: this.x,
-            y: this.y
+            x: this.privateX,
+            y: this.privateY
         };
     }
 
     set location({x=0, y=0}) {
-        this.x = x;
-        this.y = y;
+        this.privateX = x;
+        this.privateY = y;
 
         return {
-            x: this.x,
-            y: this.y
+            x: this.privateX,
+            y: this.privateY
         };
     }
 
@@ -49,12 +49,11 @@ class Location {
      * @type {Number}
      */
     get x() {
-        return this.x;
+        return this.privateX;
     }
 
     set x(x=0) {
-        this.x = y;
-        return this.x;
+        this.privateX = x;
     }
 
     /**
@@ -62,12 +61,11 @@ class Location {
      * @type {Number}
      */
     get y() {
-        return this.y;
+        return this.privateY;
     }
 
     set y(y=0) {
-        this.y = y;
-        return this.y;
+        this.privateY = y;
     }
 
 

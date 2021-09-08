@@ -8,6 +8,7 @@ import Rectangle from './lib/Rectangle.js';
  */
 class UIHelper {
     constructor() {
+        // FIXME: this should be a properly static class...
         ////////////
         // Screen //
         ////////////
@@ -437,7 +438,7 @@ class UIHelper {
     //////////////////////
     // Custom Functions //
     //////////////////////
-    // TODO: come up with a better name for this section
+    // FIXME: come up with a better name for this section
 
      /**
       * This sets the background color based on BG_COLOR_GREY in {@link UIHelper#UI_COLORS}
