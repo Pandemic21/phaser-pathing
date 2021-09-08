@@ -49,6 +49,46 @@ class ServerGameScene extends Phaser.Scene {
         //this.map.setCollisionBetween(1, 999, true, 'Trees');
 
 
+        ////////////////////
+        // BEGIN EASYSTAR //
+        ////////////////////
+        this.easystar = new window.easystar.js();
+
+        let easystarArray = [];
+
+        for (let i = 0; i < this.map.height * 2; i++) { // height*2 to double the times to path on
+            let arr = [];
+            let oneMore = false; // used to fix visual issue of walking on trees on the right side
+            for (let j = 0; j < this.map.width * 2; j++) { // width*2 to double the times to path on
+
+                // there are twice as many pathable tiles are visual tiles.
+                // this algorithm translates the current pathable tile to the larger, collidable tile
+                let parentX = Math.floor((j + 0.5) / 2);
+                let parentY = Math.floor((i + 0.5) / 2);
+
+                if (this.treesLayer.getTileAt(parentX, parentY) !== null) {
+                    arr.push(1); // if there is a tree, arr[j] = 1
+                    oneMore = true;
+                } else if (oneMore) {
+                    arr.push(1);
+                    oneMore = false; // additionally, if there is a tree 1 half-tile to the left, arr[j] = 1
+                } else {
+                    arr.push(0); // if there is NOT a tree, arr[j] = 0
+                }
+
+            }
+            easystarArray.push(arr);
+        }
+
+        console.log("easystarArray width: " + easystarArray[0].length);
+        console.log("easystarArray height: " + easystarArray.length);
+
+        this.easystar.setGrid(easystarArray);
+        this.easystar.setAcceptableTiles(0);
+        this.easystar.enableDiagonals();
+        this.easystar.disableCornerCutting(); // this stops us from pathing into trees
+
+
         //////////////////////
         // Socket.io Config //
         //////////////////////
@@ -100,11 +140,24 @@ class ServerGameScene extends Phaser.Scene {
                 //  that the "<array> movementInfo.path" the player chose is
                 //  actually a valid path, and that they're not cheating
                 console.log('Movement: ', movementInfo);
+                let destination = movementInfo.destination;
                 // find the current player
                 const player = this.players.find((player) => {
                   return player.id === socket.id;
                 });
-                player.mage.path = movementInfo.path;
+                let tmpPlayerPosition = {
+                  x: Math.floor((player.mage.x + 0.5) / 12), //convert World x to minitile x,
+                  y: Math.floor((player.mage.y + 0.5) / 12) //convert World y to minitile y
+                }
+
+                this.easystar.findPath(tmpPlayerPosition.x, tmpPlayerPosition.y, destination.x, destination.y, (path) => {
+                    if (path === null) {
+                        console.warn("Path was not found.");
+                    } else {
+                        player.mage.path = path;
+                    }
+                });
+                this.easystar.calculate();
             });
 
             // this is called when a player disconencts
@@ -134,7 +187,7 @@ class ServerGameScene extends Phaser.Scene {
         this.gameState.gameTime = this.gameTime;
         this.gameState.players = [];
 
-        const PLAYER_SPEED = 100; //this is how many ms should be between each tile movement
+        const PLAYER_SPEED = 50; //this is how many ms should be between each tile movement
         //this is where we calculate movement
         this.players.forEach((player) => {
           player.moveTick += delta;

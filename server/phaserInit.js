@@ -5,7 +5,7 @@ const {
 } = jsdom;
 
 // initializes headless phaser instance on the server
-function phaserInit(io, __dirname) {
+function phaserInit(io, __dirname, easystar) {
     JSDOM.fromFile('server/index.html', {
         runScripts: "dangerously",
         resources: "usable",
@@ -14,6 +14,7 @@ function phaserInit(io, __dirname) {
         dom.window.gameLoaded = () => {
             dom.window.io = io;
             dom.window.__dirname = __dirname;
+            dom.window.easystar = easystar;
         };
     });
 }

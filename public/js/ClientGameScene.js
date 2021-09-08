@@ -3,8 +3,8 @@ export default class ClientGameScene extends Phaser.Scene {
         super();
     }
 
-    init(easystar) {
-        this.easystar = easystar;
+    init() {
+
     }
 
     preload() {
@@ -45,7 +45,7 @@ export default class ClientGameScene extends Phaser.Scene {
         // Constants //
         ///////////////
 
-        const PLAYER_SPEED = 100; // lower is faster
+        const PLAYER_SPEED = 50; // lower is faster
         const TICK_RATE = 50; // how fast we receive gameState snapshots. this needs to be the same on the server and the client.
 
 
@@ -71,7 +71,7 @@ export default class ClientGameScene extends Phaser.Scene {
 
 
         // map height and width in raw pixels (used for minimap)
-        this.MAP_WIDTH_PIXELS = map.width * map.tildWidth;
+        this.MAP_WIDTH_PIXELS = map.width * map.tileWidth;
         this.MAP_HEIGHT_PIXELS = map.height * map.tileHeight;
 
 
@@ -294,49 +294,18 @@ export default class ClientGameScene extends Phaser.Scene {
                         destination.y = newDest.y;
                     }
                 }
-
-                // this plucks the current player out of "<array> players" the server sent
-                let myPlayer = this.players.find((player) => {
-                    return player.id == this.myId;
-                });
-
-                // this does the same translation as above, but for the mage's current position
-                let tmpPlayerPosition = {
-                    x: Math.floor((myPlayer.mage.x + 0.5) / 12), // this translates the mage's current real position (in pixels) to
-                    y: Math.floor((myPlayer.mage.y + 0.5) / 12) // its position in the pathable tile array
-                };
-
+                let movementInfo = {
+                  requesterId: this.socket.id,
+                  destination
+                }
+                this.socket.emit('tryNewMovement', movementInfo)
 
                 // draw the "click to move" image and debug console logs
                 this.drawMovementDestinationImage({
                     x: this.input.mousePointer.x + this.camera.scrollX,
                     y: this.input.mousePointer.y + this.camera.scrollY
                 });
-
-                //console.log('moving from: (' + tmpPlayerPosition.x + ", " + tmpPlayerPosition.y + ")");
-                //console.log('-------> to: (' + destination.x + ", " + destination.y + ")");
-                console.log('moving from: (' + tmpPlayerPosition.x + ", " + tmpPlayerPosition.y + ")");
-                console.log('-------> to: (' + destination.x + ", " + destination.y + ")");
-
-
-                // this tells easystar to find a path from (tmpPlayerPosition.x, tmpPlayerPosition.y) --> (destination.x, destination.y)
-                // note that those (x, y) coords are on the higher res, pathable tile map
-                this.easystar.findPath(tmpPlayerPosition.x, tmpPlayerPosition.y, destination.x, destination.y, (path) => {
-                    if (path === null) {
-                        console.warn("Path was not found.");
-                    } else {
-                        //console.log(path);
-                        // this tells the server the client has decided on a new path
-                        let movementInfo = {
-                            requesterId: this.myId, // attach this player's ID to the request
-                            path,                   // the easystar path for the mage
-                        };
-                        this.socket.emit('tryNewMovement', movementInfo);
-                    }
-                });
-                this.easystar.calculate();
-
-            }
+             }
         }, this);
 
 
@@ -369,14 +338,6 @@ export default class ClientGameScene extends Phaser.Scene {
             }
             easystarArray.push(arr);
         }
-
-        console.log("easystarArray width: " + easystarArray[0].length);
-        console.log("easystarArray height: " + easystarArray.length);
-
-        this.easystar.setGrid(easystarArray);
-        this.easystar.setAcceptableTiles(0);
-        this.easystar.enableDiagonals();
-        this.easystar.disableCornerCutting(); // this stops us from pathing into trees
     }
 
 

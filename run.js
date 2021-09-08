@@ -23,7 +23,7 @@ const server = http.createServer(app);
 const {
     socket
 } = require('./socket')
-
+const easystar = require('easystarjs')
 
 //////////////////////
 // Middleware Setup //
@@ -49,7 +49,7 @@ const {
 
 server.listen(port, () => {
     // TODO: might need to shunt easystar into server.js here
-    phaserInit(socket(server), __dirname);
+    phaserInit(socket(server), __dirname, easystar);
 
     console.log(`Listening: ${url}`);
 });
