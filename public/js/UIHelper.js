@@ -87,6 +87,7 @@ class UIHelper {
             HEALTH: 0xf5112f,
             MANA: 0x1212cc,
             PRIMARY: 0x4e342e,
+            /** Color: 0x7b5e57 */
             LIGHT: 0x7b5e57,
             DARK: 0x260e04,
             GOLD: 0xefc53f,
@@ -377,7 +378,7 @@ class UIHelper {
     }
 
     /**
-     * Called by ClientGameScene.js, returns the the back button
+     * getBackButton - Called by ClientGameScene.js, returns the the back button
      * @static
      * @function
      * @returns {Object.<string, hex>} - Returns {@link UIHelper#BACK_BUTTON}
@@ -434,11 +435,6 @@ class UIHelper {
     //////////////////////
     // TODO: come up with a better name for this section
 
-    /**
-     *
-     *
-     */
-
      /**
       * This sets the background color based on BG_COLOR_GREY in {@link UIHelper#UI_COLORS}
       * @function
@@ -476,11 +472,14 @@ class UIHelper {
 
     /**
      * Creates a back button in the scene parameter
+     * > Called by:
+     * > {@link MainMenu#create}
      * @function
      * @param  {Phaser.Scene} thisScene - The scene to draw the back button on
      * @param  {Phaser.Scene.Key}  currentSceneKey
      * @param  {Phaser.Scene}  backSceneKey
      * @return {String} - What the mouse is doing to the button (e.g. click, out, over, etc...)
+     * @see https://rexrainbow.github.io/phaser3-rex-notes/docs/site/ui-buttons/
      */
     static createBackButton(thisScene, currentSceneKey, backSceneKey) {
         let backButton = thisScene.rexUI.add.buttons({
@@ -525,15 +524,16 @@ class UIHelper {
 
     /**
      * Creates a Rex UI button with `text` in `thisScene`
-     * @param  {Phaser.Scene } thisScene               The scene to draw the button on
-     * @param  {String }  text                    The text to put inside the button
-     * @return {rexUI.label}            Returns a Phaser 3 RexUI label (which the client uses as a button)
+     * @param  {Phaser.Scene } thisScene - The scene to draw the button on
+     * @param  {String }  text - The text to put inside the button
+     * @return {rexUI.add.label} - Returns a Phaser 3 RexUI label (which the client uses as a button)
+     * @see https://rexrainbow.github.io/phaser3-rex-notes/docs/site/ui-label/
      */
     static createButton(thisScene, text) {
         return thisScene.rexUI.add.label({
             width: UIHelper.BUTTON_WIDTH,
             height: UIHelper.BUTTON_HEIGHT,
-            background: thisScene.rexUI.add.roundRectangle(0, 0, 0, 0, 20, UIHelper.COLOR_LIGHT),
+            background: thisScene.rexUI.add.roundRectangle(0, 0, 0, 0, 20, this.UI_COLORS.LIGHT),
             text: thisScene.add.text(0, 0, text, {
                 fontSize: 18
             }),
@@ -546,10 +546,11 @@ class UIHelper {
 
     /**
      * creates Rex UI radio buttons
-     * @param  {Phaser.Scene } scene               Phaser scene to draw the radio buttons in
-     * @param  {String } text                The text for the radio button
-     * @param  {String } name                The name for the Rex UI radio button group
-     * @return {rexUI.label }       The radio button as a Rex UI label
+     * @param  {Phaser.Scene } scene - Phaser scene to draw the radio buttons in
+     * @param  {String } text - The text for the radio button
+     * @param  {String } name - The name for the Rex UI radio button group
+     * @return {rexUI.add.label } - The radio button as a Rex UI label
+     * @see @see https://rexrainbow.github.io/phaser3-rex-notes/docs/site/ui-label/
      */
     static createRadioButton(scene, text, name) {
         if (name === undefined) {
