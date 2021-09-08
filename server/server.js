@@ -97,6 +97,7 @@ class ServerGameScene extends Phaser.Scene {
         // the "mage" is the little guy running around the screen.
         // each "player" has "<obj> mage", which is a Phaser physics object
         this.players = [];
+        this.projectiles = this.physics.add.group()
 
         // on Socket.io connection
         window.io.on('connection', (socket) => {
@@ -128,8 +129,24 @@ class ServerGameScene extends Phaser.Scene {
             socket.broadcast.emit('newPlayerJoined', newPlayer);
 
             socket.on('tryFireball', target => {
-              console.log('throw fire at ', target)
+              //this will become a cast fireball function, there should just be a tryCast or something for spells
+              const owner = this.players.find((player) => {
+                return player.id === socket.id
+              })
+              const speed = 600;
+              if(!this.projectileId) this.projectileId = 0;
+              const projectileId = this.projectileId;
+              console.log('projectileId: '  + projectileId)
+              this.projectileId += 1;
+              const projectile = {
+                owner,
+                target,
+                speed,
+                projectileId
+              }
+              this.createProjectile(projectile);
             })
+
 
             /* this is called by ClientGameScene.js when the player orders their mage to move
             movementInfo = {
@@ -229,6 +246,16 @@ class ServerGameScene extends Phaser.Scene {
         this.gameState.players.push({id: player.id, x: player.mage.x, y: player.mage.y})
         }, this)
 
+        this.projectiles.getChildren().forEach((projectile) => {
+          this.gameState.projectiles.push({
+            owner: projectile.owner,
+            projectileId: projectile.projectileId,
+            angle: projectile.angle,
+            x: projectile.x,
+            y: projectile.y
+          })
+        })
+
         const TICK_RATE = 50; // this is how often we send setUpdate.
         socket.emit('setUpdate', this.gameState);
 
@@ -240,6 +267,24 @@ class ServerGameScene extends Phaser.Scene {
     // Custom Functions //
     //////////////////////
 
+
+    createProjectile(projectile) {
+      // projectile = {
+      //   owner,
+      //   target,
+      //   speed,
+      //   projectileId
+      // }
+
+      const newProj = this.physics.add.sprite(projectile.owner.mage.x, projectile.owner.mage.y);
+      newProj.owner = projectile.owner.id;
+      newProj.projectileId = projectile.projectileId;
+      newProj.angle = Phaser.Math.Angle.Between(newProj.x, newProj.y, projectile.target.x, projectile.target.y);
+      newProj.setSize(32, 32);
+      this.projectiles.add(newProj)
+      this.physics.moveTo(newProj, projectile.target.x, projectile.target.y, projectile.speed);
+
+    }
     // add custom functions here as necessary
 }
 

@@ -14,6 +14,7 @@ export default class ClientGameScene extends Phaser.Scene {
 
         this.load.image('isaacImg', './assets/sliced/creatures_24x24/oryx_16bit_fantasy_creatures_04.png');
         this.load.image('isaacBreathe', './assets/sliced/creatures_24x24/oryx_16bit_fantasy_creatures_22.png');
+        this.load.image('fireball', './assets/sliced/fx_32x32/oryx_16bit_fantasy_fx_41.png')
 
         this.load.image('orb', './assets/sliced/fx_24x24/oryx_16bit_fantasy_fx2_42.png');
         this.load.image('movementClick', './assets/sliced/fx_24x24/oryx_16bit_fantasy_fx2_53.png');
@@ -239,6 +240,40 @@ export default class ClientGameScene extends Phaser.Scene {
               player.mage.destroy();
             }
         });
+        //handle projectiles
+        stateA.projectiles.forEach((proj) => {
+          //instantiate the projectile array if it hasn't been
+          if(!this.projectiles) this.projectiles = [];
+          const projectile = this.projectiles.find((p) => {
+            return p.projectileId === proj.projectileId
+          });
+          //if there's no projectile, create it;
+          if(!projectile) {
+            let degAngle = Phaser.Math.RadToDeg(proj.angle)
+            const newProj = this.add.sprite(proj.x, proj.y, 'fireball').setAngle(degAngle)
+            newProj.projectileId = proj.projectileId;
+            this.projectiles.push(newProj);
+          } else {
+            projectile.fromX = proj.x;
+            projectile.fromY = proj.y;
+          }
+        })
+        stateB.projectiles.forEach((proj) => {
+          //we only want to instantiate anything here if its in both stateA and stateB for interpolating
+          if(!this.projectiles) return
+          const projectile = this.projectiles.find((p) => {
+            console.log(proj, p)
+            return p.projectileId === proj.projectileId
+          })
+          //same as above
+          if(!projectile){
+            return
+          } else {
+            projectile.toX = proj.x;
+            projectile.toY = proj.y;
+          }
+
+        })
 
           this.calculateTweens(TICK_RATE);
 
@@ -265,10 +300,9 @@ export default class ClientGameScene extends Phaser.Scene {
         });
 
         this.input.keyboard.on('keyup-SPACE', (keypress) => {
-<<<<<<< HEAD
+
           console.log('shoot fireball!');
-      });
-=======
+
 
           const target = {
             x: this.input.mousePointer.worldX,
@@ -278,7 +312,7 @@ export default class ClientGameScene extends Phaser.Scene {
           this.socket.emit('tryFireball', target)
 
         })
->>>>>>> f4e3e52bea53c219aec34d5c12e72ebeb773c359
+
 
         // toggle follscreen on keypress: F
         this.input.keyboard.on('keyup-F', (keyPress) => {
@@ -447,7 +481,31 @@ export default class ClientGameScene extends Phaser.Scene {
           });
         }
 
-    });
+      });
+      if(this.projectiles) {
+        this.projectiles.forEach((projectile) => {
+          if(projectile.fromX && projectile.fromY && projectile.toX && projectile.toY) {
+            console.log(projectile.toX, projectile.toY)
+            var ex = projectile.toX;
+            var ey = projectile.toY;
+
+            this.tweens.add({
+              targets: projectile,
+                x: {
+                    value: ex,
+                    duration: TICK_RATE
+                },
+                y: {
+                    value: ey,
+                    duration: TICK_RATE
+                }
+            });
+          }
+
+        });
+      }
+
+
 
     }
 
