@@ -106,6 +106,16 @@ class ServerGameScene extends Phaser.Scene {
                 });
                 //append the path to the player's mage object
                 player.mage.path = movementInfo.path;
+
+                const movementInfo1 = {
+                  requesterId: player.id,
+                  location: { x: player.x, y: player.y }, //syntax just for you XD
+                  path: player.mage.path
+                };
+
+                socket.emit('setNewMovement', movementInfo1);
+                socket.broadcast.emit('setNewMovement', movementInfo1);
+
             });
 
             // this is called when a player disconencts
