@@ -45,7 +45,7 @@ export default class ClientGameScene extends Phaser.Scene {
         // Constants //
         ///////////////
 
-        const PLAYER_SPEED = 150; // lower is faster
+        const PLAYER_SPEED = 50; // lower is faster
 
 
         //////////////////
@@ -189,17 +189,13 @@ export default class ClientGameScene extends Phaser.Scene {
                 return player.id == movementInfo.requesterId;
             });
             // if we get more than 2 tiles away on the x or the y, fix it
-            if(Math.abs(requesterPlayer.mage.x/12 - movementInfo.location.x) > 1 ||
-              Math.abs(requesterPlayer.mage.y/12 - movementInfo.location.y) > 1) {
+            if(Math.abs(requesterPlayer.mage.x/12 - movementInfo.location.x) > 3 ||
+              Math.abs(requesterPlayer.mage.y/12 - movementInfo.location.y) > 3) {
                 requesterPlayer.mage.x = movementInfo.location.x * 12;
                 requesterPlayer.mage.y = movementInfo.location.y * 12;
-                this.tweenManager.killTweensOf(requesterPlayer.mage);
-                let tweens = this.calculateTweens(requesterPlayer, movementInfo.path, PLAYER_SPEED);
-                const timeline = this.tweens.createTimeline();
-                tweens.forEach((tween) => {
-                  timeline.add(tween);
-              });
-                  timeline.play();
+
+                this.calculateTweens(requesterPlayer, movementInfo.path, PLAYER_SPEED);
+
               }
             //requesterPlayer.mage.location = {x: movementInfo.location.x * 12, y: movementInfo.location.y * 12}; // this is just a hard location update. can potentially replace this with tweens
 
@@ -207,13 +203,9 @@ export default class ClientGameScene extends Phaser.Scene {
             else if(movementInfo.path.length > 0 && requesterPlayer.mage.path && requesterPlayer.mage.path.length > 0 &&
                     (movementInfo.path[movementInfo.path.length - 1].x !== requesterPlayer.mage.path[requesterPlayer.mage.path.length - 1].x ||
                     movementInfo.path[movementInfo.path.length - 1].y !== requesterPlayer.mage.path[requesterPlayer.mage.path.length - 1].y)) {
-              this.tweenManager.killTweensOf(requesterPlayer.mage);
-              let tweens = this.calculateTweens(requesterPlayer, movementInfo.path, PLAYER_SPEED);
-              const timeline = this.tweens.createTimeline();
-              tweens.forEach((tween) => {
-                timeline.add(tween);
-            });
-                timeline.play();
+
+                      this.calculateTweens(requesterPlayer, movementInfo.path, PLAYER_SPEED);
+
             }
             requesterPlayer.mage.path = movementInfo.path;
 
@@ -389,6 +381,7 @@ export default class ClientGameScene extends Phaser.Scene {
                             requesterId: this.myId, // attach this player's ID to the request
                             path,                   // the easystar path for the mage
                         };
+                        this.calculateTweens(myPlayer, path, PLAYER_SPEED);
                         this.socket.emit('tryNewMovement', movementInfo);
 
 
@@ -483,6 +476,12 @@ export default class ClientGameScene extends Phaser.Scene {
 
     // Calculate tweens here.
     calculateTweens(player, path, PLAYER_SPEED) {
+
+      if(this.timelines && this.timelines[player.id]) {
+        this.timelines[player.id].stop();
+        delete this.timelines[player.id];
+      }
+
       var tweens = [];
       for (var i = 0; i < path.length - 1; i++) {
           var ex = path[i].x;
@@ -499,7 +498,17 @@ export default class ClientGameScene extends Phaser.Scene {
               }
           });
       }
-      return tweens;
+      const timeline = this.tweens.createTimeline();
+      tweens.forEach((tween) => {
+        timeline.add(tween);
+      });
+        timeline.play();
+      if(!this.timelines){
+        this.timelines = {}
+      } else {
+        this.timelines[player.id] = timeline;
+      }
+
     }
 
 
