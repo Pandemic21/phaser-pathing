@@ -55,7 +55,7 @@ class MainMenu extends Phaser.Scene {
         *    Buttons
         */
 
-        console.log("Creating scene");
+        console.log(`Creating scene`);
 
         ///////////////
         // Constants //
@@ -110,7 +110,7 @@ class MainMenu extends Phaser.Scene {
 
             // find which button they clicked
             // Clicked: Play Game
-            if (button.text == "Play Game") {
+            if (button.text == 'Play Game') {
                 console.log('Play button pressed');
                 this.scene.start(this.SCENE_KEY_CLIENT_GAME, {
                     eventEmitter: this.eventEmitter
@@ -118,7 +118,7 @@ class MainMenu extends Phaser.Scene {
             }
 
             // Clicked: Credits
-            if (button.text == "Credits") {
+            if (button.text == 'Credits') {
                 console.log('Credits button pressed');
                 this.scene.start(this.SCENE_KEY_CREDITS);
             }
@@ -165,7 +165,7 @@ class MainMenu extends Phaser.Scene {
 
             // find which button they clicked
             // Clicked: Play Game
-            if (button.text == "Back") {
+            if (button.text == 'Back') {
                 console.log('Back button pressed');
             }
         });
@@ -187,7 +187,7 @@ class MainMenu extends Phaser.Scene {
         //this.cameras.main.backgroundColor.setTo(145, 145, 145);
         UIHelper.setCameraBackgroundColor(this.cameras.main);
 
-        console.log("Created.");
+        console.log(`Created.`);
     }
 
 
