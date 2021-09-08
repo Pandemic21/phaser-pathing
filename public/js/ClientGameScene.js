@@ -3,8 +3,8 @@ export default class ClientGameScene extends Phaser.Scene {
         super();
     }
 
-    init() {
-
+    init(data) {
+        this.eventEmitter = data.eventEmitter;
     }
 
     preload() {
@@ -25,28 +25,44 @@ export default class ClientGameScene extends Phaser.Scene {
         // Audio //
         ///////////
 
-        this.load.audio('movementClickSound', "./assets/sounds/Bluezone_BC0268_switch_button_click_small_005.wav");
-        this.load.audio('movementClickBlip', "./assets/sounds/Blip.mp3");
+        this.load.audio('movementClickSound', './assets/sounds/Bluezone_BC0268_switch_button_click_small_005.wav');
+        this.load.audio('movementClickBlip', './assets/sounds/Blip.mp3');
 
 
         /////////
         // Map //
         /////////
 
-        this.load.image("base_tiles", "../assets/maps/oryx_world.png");
+        this.load.image('base_tiles', '../assets/maps/oryx_world.png');
 
-        //this.load.tilemapTiledJSON("tilemap", "../assets/maps/forest_map_small_v2.json")
-        //this.load.tilemapTiledJSON("tilemap", "../assets/maps/forest_map_100x100_v1.json")
-        this.load.tilemapTiledJSON("tilemap", "../assets/maps/forest_map_100x100_v2.json");
+        //this.load.tilemapTiledJSON('tilemap', '../assets/maps/forest_map_small_v2.json')
+        //this.load.tilemapTiledJSON('tilemap', '../assets/maps/forest_map_100x100_v1.json')
+        this.load.tilemapTiledJSON('tilemap', '../assets/maps/forest_map_100x100_v2.json');
     }
 
     create() {
+        ////////////////////
+        // Scene Launches //
+        ////////////////////
+
+        this.scene.launch('uiScene', {
+            eventEmitter: this.eventEmitter
+        });
+
+
         ///////////////
         // Constants //
         ///////////////
 
         const PLAYER_SPEED = 75; // lower is faster
         const TICK_RATE = 50; // how fast we receive gameState snapshots. this needs to be the same on the server and the client.
+
+
+        ///////////////
+        // Variables //
+        ///////////////
+
+        let easystarArray = [];
 
         //////////////////
         // Map Creation //
@@ -62,10 +78,10 @@ export default class ClientGameScene extends Phaser.Scene {
         // add the tileset image we are using
         const tileset = map.addTilesetImage('oryx_world', 'base_tiles');
 
-        // "Ground" layer will be first
+        // 'Ground' layer will be first
         let ground = map.createLayer('Ground', tileset);
 
-        // "Trees" layer will be second
+        // 'Trees' layer will be second
         let treesLayer = map.createStaticLayer('Trees', tileset);
 
 
@@ -137,7 +153,7 @@ export default class ClientGameScene extends Phaser.Scene {
             ],
             frameRate: 4,
             repeat: -1
-        })
+        });
         //////////////////////
         // Socket.io Config //
         //////////////////////
@@ -146,21 +162,21 @@ export default class ClientGameScene extends Phaser.Scene {
 
         this.players = [];   // this array contains all the player's in the game
         this.myId = '';      // this is the current player's id
-        this.gameStates = [] // this is the array of snapshots we will tween through
+        this.gameStates = []; // this is the array of snapshots we will tween through
 
 
 
         // This is called by server.js when the player first connects
-        // it sends "<array> players", which contains all players in the game
+        // it sends '<array> players', which contains all players in the game
         this.socket.on('initialConnectionConfig', (players) => {
             ////////////
             // Player //
             ////////////
 
-            this.myId = this.socket.id;  // set "this.myId"
-            this.players = players; // set "<array> this.players" equal to what the server has
+            this.myId = this.socket.id;  // set 'this.myId'
+            this.players = players; // set '<array> this.players' equal to what the server has
 
-            // this plucks the current player out of "<array> players" the server sent
+            // this plucks the current player out of '<array> players' the server sent
             let myPlayer = players.find((player) => {
                 return player.id == this.myId;
             });
@@ -175,9 +191,9 @@ export default class ClientGameScene extends Phaser.Scene {
 
         // this is called by server.js whenever a new player joins
         this.socket.on('newPlayerJoined', (newPlayer) => {
-            console.log("New player joined: " + newPlayer.id);
+            console.log('New player joined: ' + newPlayer.id);
 
-            // add the new player to "<array> this.players"
+            // add the new player to '<array> this.players'
             this.players.push(newPlayer);
 
             // draw the new player's mage
@@ -196,44 +212,44 @@ export default class ClientGameScene extends Phaser.Scene {
 
           stateA.players.forEach((player) => {
             const currentPlayer = this.players.find((p) => {
-              return p.id === player.id
-            })
+              return p.id === player.id;
+          });
             if(currentPlayer) {
-              currentPlayer.mage.fromX = player.x
-              currentPlayer.mage.fromY = player.y
+              currentPlayer.mage.fromX = player.x;
+              currentPlayer.mage.fromY = player.y;
             }
 
           });
 
           stateB.players.forEach((player) => {
             const currentPlayer = this.players.find((p) => {
-              return p.id === player.id
-            })
+              return p.id === player.id;
+          });
             if(currentPlayer){
-              currentPlayer.mage.toX = player.x
-              currentPlayer.mage.toY = player.y
-            }
+              currentPlayer.mage.toX = player.x;
+              currentPlayer.mage.toY = player.y;
+          }
           });
           //handle disconnects
           this.players.forEach((player) => {
             const findPlayer = stateB.players.find((p) => {
-              return p.id === player.id
-            })
+              return p.id === player.id;
+          });
             if(!findPlayer) {
               player.mage.destroy();
             }
-          })
+        });
 
           this.calculateTweens(TICK_RATE);
 
 
-        })
+      });
 
         ////////////////////////////////////////////
         // Listener Config (e.g. spacebar, click) //
         ////////////////////////////////////////////
 
-        // spacebar re-centers the camera on "myPlayer.mage"
+        // spacebar re-centers the camera on 'myPlayer.mage'
         this.input.keyboard.on('keyup-T', (keyPress) => {
             // get this player
             // let myPlayer = this.players.find((player) => {
@@ -241,7 +257,7 @@ export default class ClientGameScene extends Phaser.Scene {
             // })
             let myPlayer = this.players.find(player => player.id == this.myId);
 
-            // if "myPlayer" exists, center the camera on "myPlayer.mage"
+            // if 'myPlayer' exists, center the camera on 'myPlayer.mage'
             if (myPlayer) {
                 this.camera.scrollX = myPlayer.mage.x - this.SCREEN_WIDTH / 2;
                 this.camera.scrollY = myPlayer.mage.y - this.SCREEN_HEIGHT / 2;
@@ -249,8 +265,8 @@ export default class ClientGameScene extends Phaser.Scene {
         });
 
         this.input.keyboard.on('keyup-SPACE', (keypress) => {
-          console.log('shoot fireball!')
-        })
+          console.log('shoot fireball!');
+      });
 
         // toggle follscreen on keypress: F
         this.input.keyboard.on('keyup-F', (keyPress) => {
@@ -286,7 +302,7 @@ export default class ClientGameScene extends Phaser.Scene {
 
             // else it's LMB, move the player to the destination
             else {
-                // draw the "click to move" image and debug console logs
+                // draw the 'click to move' image and debug console logs
                 this.drawMovementDestinationImage({
                     x: this.input.mousePointer.x + this.camera.scrollX,
                     y: this.input.mousePointer.y + this.camera.scrollY
@@ -323,10 +339,10 @@ export default class ClientGameScene extends Phaser.Scene {
                 let movementInfo = {
                   requesterId: this.socket.id,
                   destination
-                }
-                this.socket.emit('tryNewMovement', movementInfo)
+              };
+                this.socket.emit('tryNewMovement', movementInfo);
 
-                // draw the "click to move" image and debug console logs
+                // draw the 'click to move' image and debug console logs
                 this.drawMovementDestinationImage({
                     x: this.input.mousePointer.x + this.camera.scrollX,
                     y: this.input.mousePointer.y + this.camera.scrollY
@@ -338,8 +354,6 @@ export default class ClientGameScene extends Phaser.Scene {
         ////////////////////
         // BEGIN EASYSTAR //
         ////////////////////
-
-        let easystarArray = [];
 
         for (let i = 0; i < map.height * 2; i++) { // height*2 to double the times to path on
             let arr = [];
@@ -418,10 +432,10 @@ export default class ClientGameScene extends Phaser.Scene {
                   value: ey,
                   duration: TICK_RATE
               }
-          })
+          });
         }
 
-      })
+    });
 
     }
 
