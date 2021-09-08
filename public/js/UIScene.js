@@ -34,6 +34,8 @@ export default class UIScene extends Phaser.Scene {
         const startY = 300;
         const pixelBuffer = fontSize * 2;
 
+        this.uiHelper = new UIHelper();
+
 
         //////////////////
         // Bar Creation //
@@ -41,35 +43,46 @@ export default class UIScene extends Phaser.Scene {
 
         // rectangle code
         // max hp rectangle, gold outline with a black background
-        let maxHealth = this.add.rectangle(UIHelper.HEALTH_BAR_START_X, UIHelper.HEALTH_BAR_START_Y, UIHelper.HEALTH_BAR_WIDTH, UIHelper.HEALTH_BAR_HEIGHT, UIHelper.COLOR_BLACK);
+
+        let maxHealth = this.add.rectangle(
+            this.uiHelper.HEALTH_BAR.location.x,
+            this.uiHelper.HEALTH_BAR.location.y,
+            this.uiHelper.HEALTH_BAR.size.width,
+            this.uiHelper.HEALTH_BAR.size.height,
+            this.uiHelper.UI_COLORS.BLACK);
+
         maxHealth.setOrigin(0, 0);
-        maxHealth.setStrokeStyle(UIHelper.HEALTH_BAR_STROKE_WIDTH, UIHelper.COLOR_GOLD);
+        maxHealth.setStrokeStyle(this.uiHelper.HEALTH_BAR.strokeWidth, this.uiHelper.UI_COLORS.GOLD);
 
         // current hp rectangle
         this.currentHealthValue = 100;
 
         this.currentHealth = this.add.graphics();
-        this.currentHealth.fillStyle(UIHelper.COLOR_HEALTH, 1);
-        this.currentHealth.fillRect(UIHelper.HEALTH_BAR_START_X, UIHelper.HEALTH_BAR_START_Y + 100 - this.currentHealthValue, UIHelper.HEALTH_BAR_WIDTH, this.currentHealthValue);
+        this.currentHealth.fillStyle(this.uiHelper.UI_COLORS.HEALTH, 1);
+
+        this.currentHealth.fillRect(
+            this.uiHelper.HEALTH_BAR.location.x,
+            this.uiHelper.HEALTH_BAR.location.y + 100 - this.currentHealthValue,
+            this.uiHelper.HEALTH_BAR.size.width,
+            this.currentHealthValue);
+
+
 
 
         ///////////////////////
         // Mana Orb Creation //
         ///////////////////////
 
-        // TODO:
-        //  for now all mana types (each element)
-        //  is hard coded to 3. This can be individually set
-        //  so that the player has more of some mana types.
-        //  To be decided.
         this.MAX_MANA = 3;
+
+        // this array is used when drawing the mana orbs
         this.ELEMENT_COLORS = [
-            UIHelper.COLOR_ELEMENT_FIRE,
-            UIHelper.COLOR_ELEMENT_WATER,
-            UIHelper.COLOR_ELEMENT_EARTH,
-            UIHelper.COLOR_ELEMENT_AIR,
-            UIHelper.COLOR_ELEMENT_LIGHT,
-            UIHelper.COLOR_ELEMENT_DARK,
+            this.uiHelper.MANA_COLORS.FIRE,
+            this.uiHelper.MANA_COLORS.WATER,
+            this.uiHelper.MANA_COLORS.AIR,
+            this.uiHelper.MANA_COLORS.EARTH,
+            this.uiHelper.MANA_COLORS.LIGHT,
+            this.uiHelper.MANA_COLORS.DARK,
         ];
 
         // this hold the last version of the players mana
@@ -119,19 +132,17 @@ export default class UIScene extends Phaser.Scene {
             [] /* Dark     */
         ];
 
-
         // loop through each element color
-        for (let k = 0; k < this.ELEMENT_COLORS.length; k++) {
-
+        for (let k = 0; k < this.currentMana.length; k++) {
             // for each element color, draw a number of circles
             //  equal to the max amount of mana for that element
             //  (right now all elements are hardcoded to MAX_MANA)
             for (let i = 0; i < this.MAX_MANA; i++) {
-                let x = UIHelper.MANA_ORB_START_X + (k * UIHelper.MANA_ORB_BUFFER); // k = outter for loop
-                let y = UIHelper.MANA_ORB_START_Y - (i * UIHelper.MANA_ORB_BUFFER); // i = inner for loop
+                let x = this.uiHelper.MANA_ORB.location.x + (k * this.uiHelper.MANA_ORB.buffer); // k = outter for loop
+                let y = this.uiHelper.MANA_ORB.location.y - (i * this.uiHelper.MANA_ORB.buffer); // i = inner for loop
 
-                this.manaCircles[k].push(this.add.circle(x, y, UIHelper.MANA_ORB_RADIUS));
-                this.manaCircles[k][i].setStrokeStyle(UIHelper.MANA_ORB_STROKE_WIDTH, UIHelper.COLOR_GOLD);
+                this.manaCircles[k].push(this.add.circle(x, y, this.uiHelper.MANA_ORB.circle.radius));
+                this.manaCircles[k][i].setStrokeStyle(this.uiHelper.MANA_ORB_COLORS.strokeWidth, this.uiHelper.MANA_ORB_COLORS.strokeColor);
                 this.manaCircles[k][i].setFillStyle(this.ELEMENT_COLORS[k]);
                 this.manaCircles[k][i].fullMana = true;
             }
@@ -139,12 +150,16 @@ export default class UIScene extends Phaser.Scene {
     }
 
 
+    /////////////////
+    // Update Loop //
+    /////////////////
+
     update() {
         this.eventEmitter.on('changeHp', (health) => {
             if (health !== this.currentHealthValue) {
                 this.currentHealth.clear();
-                this.currentHealth.fillStyle(UIHelper.COLOR_HEALTH, 1);
-                this.currentHealth.fillRect(UIHelper.HEALTH_BAR_START_X, UIHelper.HEALTH_BAR_START_Y + 100 - health, UIHelper.HEALTH_BAR_WIDTH, health);
+                this.currentHealth.fillStyle(this.uiHelper.UI_COLORS.HEALTH, 1);
+                this.currentHealth.fillRect(this.uiHelper.HEALTH_BAR.location.x, this.uiHelper.HEALTH_BAR.location.y + 100 - health, this.uiHelper.HEALTH_BAR.size.width, health);
                 this.currentHealthValue = health;
             }
         });
@@ -155,12 +170,8 @@ export default class UIScene extends Phaser.Scene {
             if (this.redrawMana) {
                 this.redrawManaCircles(currentMana);
             }
-
         });
-
-
     }
-
 
 
     redrawManaCircles(currentMana) {
@@ -178,7 +189,6 @@ export default class UIScene extends Phaser.Scene {
         this.currentMana = currentMana;
         this.oldCurrentMana = currentMana;
 
-
         // loop through each element color
         for (let k = 0; k < this.ELEMENT_COLORS.length; k++) {
             // get the diff between this.oldCurrentMana and currentMana
@@ -191,10 +201,10 @@ export default class UIScene extends Phaser.Scene {
             // for each element color, draw a number of circles
             //  equal to the max amount of mana for that element
             //  (right now all elements are hardcoded to MAX_MANA)
-            let x = UIHelper.MANA_ORB_START_X + (k * UIHelper.MANA_ORB_BUFFER); // k = outter for loop
+            let x = this.uiHelper.MANA_ORB.location.x + (k * this.uiHelper.MANA_ORB.buffer); // k = outter for loop
 
             for (let i = 0; i < this.MAX_MANA; i++) {
-                let y = UIHelper.MANA_ORB_START_Y - (i * UIHelper.MANA_ORB_BUFFER); // i = inner for loop
+                let y = this.uiHelper.MANA_ORB.location.y - (i * this.uiHelper.MANA_ORB_BUFFER); // i = inner for loop
 
                 // determine if the mana orb is full or empty
                 // if the mana orb is full
@@ -205,7 +215,7 @@ export default class UIScene extends Phaser.Scene {
 
                 // else, the mana orb is empty
                 else {
-                    this.manaCircles[k][i].setFillStyle(UIHelper.COLOR_ELEMENT_EMPTY);
+                    this.manaCircles[k][i].setFillStyle(this.uiHelper.MANA_COLORS.EMPTY);
                     this.manaCircles[k][i].fullMana = false;
                 }
 

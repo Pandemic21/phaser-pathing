@@ -1,6 +1,8 @@
 // TODO: verify this import is working
 import Location from './lib/Location.js';
 import Rectangle from './lib/Rectangle.js';
+import Circle from './lib/Circle.js';
+import ColorData from './lib/ColorData.js';
 
 /**
  * UIHelper Constructor. Sets a bunch of local constants, then uses those local constants to create 'this' objects
@@ -8,7 +10,6 @@ import Rectangle from './lib/Rectangle.js';
  */
 class UIHelper {
     constructor() {
-        // FIXME: this should be a properly static class...
         ////////////
         // Screen //
         ////////////
@@ -18,19 +19,12 @@ class UIHelper {
         const PIXEL_BUFFER = 20;
 
         /**
-         * The width of the screen, in pixels.
-         * > Getter: {@link UIHelper.getScreenWidth}
+         * A `Rectangle` representing the screen width/height
          * @const
-         * @type {Number}
+         * @type {Rectangle}
          */
-        this.SCREEN_WIDTH = SCREEN_WIDTH;
-        /**
-         * The height of the screen, in pixels
-         * > Getter: {@link UIHelper.getScreenHeight}
-         * @const
-         * @type {Number}
-         */
-        this.SCREEN_HEIGHT = SCREEN_HEIGHT;
+        this.SCREEN = new Rectangle(SCREEN_WIDTH, SCREEN_HEIGHT);
+
         /**
          * The amount of pixels to put between objects we draw on the screen
          * @const
@@ -83,11 +77,10 @@ class UIHelper {
 
         /**
          * This dictionary stores UI colors
-         * > Getter: {@link UIHelper.getUIColors}
          * @const
          * @type {Object.<string, hex>}
          */
-        this.UIColors = {
+        this.UI_COLORS = {
             BLACK: 0x000000,
             HEALTH: 0xf5112f,
             MANA: 0x1212cc,
@@ -101,7 +94,6 @@ class UIHelper {
 
         /**
          * This dictionary stores mana colors
-         * > Getter: {@link UIHelper.getManaColors}
          * @const
          * @type {Object.<string, hex>}
          */
@@ -115,64 +107,40 @@ class UIHelper {
             EMPTY: 0xbfbcbb,
         };
 
+
         /////////////
         // Buttons //
         /////////////
 
-        const BUTTON_WIDTH = 120;
-        const BUTTON_HEIGHT = 40;
-
-        const BUTTON_START_X = BUTTON_WIDTH / 2;
-        const BUTTON_START_Y = BUTTON_HEIGHT / 2;
+        const BUTTON_RECT = new Rectangle(120, 40);
+        const BUTTON_START_LOC = new Location(BUTTON_RECT.width / 2, BUTTON_RECT.height / 2);
 
         /**
          * This object contains all information required for the client to draw the buttons
-         * > Getter: {@link UIHelper.getButton}
          * @const
          * @type {Object}
-         * @prop {Object} location
-         * @prop {Number} location.x
-         * @prop {Number} location.y
-         * @prop {Object} size
-         * @prop {Number} size.width
-         * @prop {Number} size.height
+         * @prop {Location} location
+         * @prop {Rectangle} size
          */
         this.BUTTON = {
-            'location': {
-                'x': BUTTON_START_X,
-                'y': BUTTON_START_Y
-            },
-            'size': {
-                'width': BUTTON_WIDTH,
-                'height': BUTTON_HEIGHT
-            }
+            'location': BUTTON_START_LOC,
+            'size': BUTTON_RECT
         };
 
         // get the back button (x,y)
-        const BACK_BUTTON_START_X = (SCREEN_WIDTH / 2 - BUTTON_WIDTH - PIXEL_BUFFER);
-        const BACK_BUTTON_START_Y = (SCREEN_HEIGHT - BUTTON_HEIGHT - PIXEL_BUFFER);
+        const BACK_BUTTON_RECT = new Rectangle(120, 40);
+        const BACK_BUTTON_START_LOC = new Location(SCREEN_WIDTH / 2 - BUTTON_RECT.width - PIXEL_BUFFER, SCREEN_HEIGHT - BUTTON_RECT.height - PIXEL_BUFFER);
 
-        /**
-         * This object contains all information required for the client to draw the back button
-         * > Getter: {@link UIHelper.getBackButton}
-         * @const
-         * @type {Object}
-         * @prop {Object} location
-         * @prop {Number} location.x
-         * @prop {Number} location.y
-         * @prop {Object} size
-         * @prop {Number} size.width
-         * @prop {Number} size.height
-         */
+         /**
+          * This object contains all information required for the client to draw the back button
+          * @const
+          * @type {Object}
+          * @prop {Location} location
+          * @prop {Rectangle} size
+          */
         this.BACK_BUTTON = {
-            'location': {
-                'x': BACK_BUTTON_START_X,
-                'y': BACK_BUTTON_START_Y
-            },
-            'size': {
-                'width': BUTTON_WIDTH,
-                'height': BUTTON_HEIGHT
-            }
+            'location': BACK_BUTTON_START_LOC,
+            'size': BACK_BUTTON_RECT
         };
 
 
@@ -182,41 +150,29 @@ class UIHelper {
 
         // these variables are used in creating 'this.HEALTH_BAR'
         const HEALTH_BAR_STROKE_WIDTH = 8;
-        const HEALTH_BAR_BUFFER = 10 + STROKE_WIDTH;
-        const HEALTH_BAR_WIDTH = 100;
-        const HEALTH_BAR_HEIGHT = 100;
+        const HEALTH_BAR_BUFFER = 10 + HEALTH_BAR_STROKE_WIDTH;
+
+        const HEALTH_BAR_RECT = new Rectangle(40, 100);
+
+        // BAR_HEIGHT y coord calculated this way because we setOrigin(0,0) (e.g. Top Left)
         const HEALTH_BAR_START_X = HEALTH_BAR_BUFFER;
-
-        // BAR_HEIGHT because we setOrigin(0,0) (e.g. Top Left)
-        const HEALTH_BAR_START_Y = this.SCREEN_HEIGHT - HEALTH_BAR_BUFFER - HEALTH_BAR_HEIGHT;
-
-        // create 'this.HEALTH_BAR'
+        const HEALTH_BAR_START_Y = this.SCREEN.height - HEALTH_BAR_BUFFER - HEALTH_BAR_RECT.height;
+        const HEALTH_BAR_LOC = new Location(HEALTH_BAR_START_X, HEALTH_BAR_START_Y);
 
         /**
          * This is all the data needed to draw the health bar
-         * > Getter: {@link UIHelper.getHealthBar}
          * @const
          * @type {Object}
          * @prop {Number} strokeWidth
          * @prop {Number} buffer
-         * @prop {Object} size
-         * @prop {Number} size.width
-         * @prop {Number} size.height
-         * @prop {Object} location
-         * @prop {Number} location.x
-         * @prop {Number} location.y
+         * @prop {Rectangle} size
+         * @prop {Location} location
          */
         this.HEALTH_BAR = {
             'strokeWidth': HEALTH_BAR_STROKE_WIDTH,
             'buffer': HEALTH_BAR_BUFFER,
-            'size': {
-                'width': HEALTH_BAR_WIDTH,
-                'height': HEALTH_BAR_HEIGHT
-            },
-            'location': {
-                'x': HEALTH_BAR_BUFFER,
-                'y': HEALTH_BAR_START_Y
-            }
+            'size': HEALTH_BAR_RECT,
+            'location': HEALTH_BAR_LOC
         };
 
 
@@ -225,45 +181,48 @@ class UIHelper {
         ////////////////////////////
 
         const MANA_ORB_STROKE_WIDTH = 3;
-        const MANA_ORB_RADIUS = 10;
-        const MANA_ORB_BUFFER = 20 + MANA_ORB_STROKE_WIDTH + MANA_ORB_RADIUS;
+        const MANA_ORB_CIRC = new Circle(10);
+
+        // const MANA_ORB_RADIUS = 10;
+        const MANA_ORB_BUFFER = 20 + MANA_ORB_STROKE_WIDTH + MANA_ORB_CIRC.radius;
 
         // place X to the right of the health bar
         // place Y to the bottom of the screen, with buffer
-        const MANA_ORB_START_X = HEALTH_BAR_START_X + HEALTH_BAR_WIDTH + HEALTH_BAR_STROKE_WIDTH + HEALTH_BAR_BUFFER;
-        const MANA_ORB_START_Y = SCREEN_HEIGHT - HEALTH_BAR_BUFFER - MANA_ORB_STROKE_WIDTH - MANA_ORB_RADIUS;
+        const MANA_ORB_START_X = HEALTH_BAR_START_X + HEALTH_BAR_RECT.width + HEALTH_BAR_STROKE_WIDTH + HEALTH_BAR_BUFFER;
+        const MANA_ORB_START_Y = SCREEN_HEIGHT - HEALTH_BAR_BUFFER - MANA_ORB_STROKE_WIDTH - MANA_ORB_CIRC.radius;
+
+        const MANA_ORB_START_LOC = new Location(MANA_ORB_START_X, MANA_ORB_START_Y);
 
         /**
          * This object contains all information required for the client to draw the mana orbs
-         * > Getter: {@link UIHelper.getManaColors}
          * @const
          * @type {Object}
-         * @prop {Object} location
-         * @prop {Number} location.x
-         * @prop {Number} location.y
+         * @prop {Location} location
          * @prop {Number} strokeWidth
-         * @prop {Number} radius
+         * @prop {Circle} circle
          * @prop {Number} buffer
          */
         this.MANA_ORB = {
-            'location': {
-                'x': MANA_ORB_START_X,
-                'y': MANA_ORB_START_Y
-            },
+            'location': MANA_ORB_START_LOC,
             'strokeWidth': MANA_ORB_STROKE_WIDTH,
-            'radius': MANA_ORB_RADIUS,
+            'circle': MANA_ORB_CIRC,
             'buffer': MANA_ORB_BUFFER,
         };
+
+        this.MANA_ORB_COLORS = new ColorData(MANA_ORB_STROKE_WIDTH, this.UI_COLORS.GOLD, this.UI_COLORS.GOLD);
 
 
         ////////////////
         // Rune Slots //
         ////////////////
 
-        const RUNE_SLOT_STROKE_COLOR = 0xefc53f;
-        const RUNE_SLOT_FILL_COLOR = 0xbcc947;
+        const RUNE_SLOT_COLORS = new ColorData(0, 0xefc53f, 0xbcc947);
+        // const RUNE_SLOT_STROKE_COLOR = 0xefc53f;
+        // const RUNE_SLOT_FILL_COLOR = 0xbcc947;
+
         const RUNE_SLOT_WIDTH = 50;
         const RUNE_SLOT_HEIGHT = 50;
+        const RUNE_SLOT_RECT = new Rectangle(RUNE_SLOT_WIDTH, RUNE_SLOT_HEIGHT);
 
         // TODO: verify this pixel buffer looks good
         const RUNE_SLOT_BUFFER = 25;
@@ -271,6 +230,8 @@ class UIHelper {
         // *1.5 because there's 3 rune slots, 1.5 is half.
         const RUNE_SLOT_START_X = (this.SCREEN_WIDTH / 2 - RUNE_SLOT_WIDTH * 1.5);
         const RUNE_SLOT_START_Y = (this.SCREEN_HEIGHT - this.PIXEL_BUFFER);
+
+        const RUNE_SLOT_START_LOC = new Location(RUNE_SLOT_START_X, RUNE_SLOT_START_Y);
 
         /**
          * This object contains all information required for the client to draw the rune slots
@@ -281,24 +242,13 @@ class UIHelper {
          * @prop {Hex} fillColor
          * @prop {Number} buffer
          * @prop {Object} size
-         * @prop {Number} size.width
-         * @prop {Number} size.height
-         * @prop {Object} location
-         * @prop {Number} location.x
-         * @prop {Number} location.y
+         * @prop {Location} location
          */
         this.RUNE_SLOT = {
-            'strokeColor': RUNE_SLOT_STROKE_COLOR,
-            'fillColor': RUNE_SLOT_FILL_COLOR,
+            'colors': RUNE_SLOT_COLORS,
             'buffer': RUNE_SLOT_BUFFER,
-            'size': {
-                'width': RUNE_SLOT_WIDTH,
-                'height': RUNE_SLOT_HEIGHT,
-            },
-            'location': {
-                'x': RUNE_SLOT_START_X,
-                'y': RUNE_SLOT_START_Y
-            }
+            'size': RUNE_SLOT_RECT,
+            'location': RUNE_SLOT_START_LOC
         };
     }
 
@@ -308,24 +258,14 @@ class UIHelper {
 
 
     /**
-     * Called by ClientGameScene.js, returns the screen width
-     * @static
+     * Called by ClientGameScene.js, returns the screen as a `Rectangle`
      * @function
-     * @returns {Number} - Returns {@link UIHelper#SCREEN_WIDTH}
+     * @returns {Rectangle} - Returns {@link UIHelper#SCREEN}
      */
-    static get getScreenWidth() {
-        return this.SCREEN_WIDTH;
+    static get SCREEN() {
+        return this.SCREEN;
     }
 
-    /**
-     * Called by ClientGameScene.js, returns the screen height
-     * @static
-     * @function
-     * @returns {Number} - Returns {@link UIHelper#SCREEN_HEIGHT}
-     */
-    static get getScreenHeight() {
-        return this.SCREEN_HEIGHT;
-    }
 
 
     ///////////
@@ -334,11 +274,10 @@ class UIHelper {
 
     /**
      * Called by ClientGameScene.js, returns the font object
-     * @static
      * @function
      * @returns {Object} - Returns {@link UIHelper#FONT}
      */
-    static get getFont() {
+    static get FONT() {
         return this.FONT;
     }
 
@@ -348,21 +287,19 @@ class UIHelper {
 
     /**
      * Called by ClientGameScene.js, returns the UI_COLORS dictionary
-     * @static
      * @function
      * @returns {Object.<string, hex>} - Returns {@link UIHelper#UI_COLORS}
      */
-    static get getUIColors() {
+    static get UI_COLORS() {
         return this.UI_COLORS;
     }
 
     /**
      * Called by ClientGameScene.js, returns the MANA_COLORS dictionary
-     * @static
      * @function
      * @returns {Object.<string, hex>} - Returns {@link UIHelper#MANA_COLORS}
      */
-    static get getManaColors() {
+    static get MANA_COLORS() {
         return this.MANA_COLORS;
     }
 
@@ -373,21 +310,19 @@ class UIHelper {
 
     /**
      * Called by ClientGameScene.js, returns the MANA_COLORS dictionary
-     * @static
      * @function
      * @returns {Object.<string, hex>} - Returns {@link UIHelper#BUTTON}
      */
-    static get getButton() {
+    static get BUTTON() {
         return this.BUTTON;
     }
 
     /**
      * getBackButton - Called by ClientGameScene.js, returns the the back button
-     * @static
      * @function
      * @returns {Object.<string, hex>} - Returns {@link UIHelper#BACK_BUTTON}
      */
-    static get getBackButton() {
+    static get BACK_BUTTON() {
         return this.BACK_BUTTON;
     }
 
@@ -401,7 +336,7 @@ class UIHelper {
      * @function
      * @returns {Object} - Returns {@link UIHelper#HEALTH_BAR}
      */
-    static get getHealthBar() {
+    static get HEALTH_BAR() {
         return this.HEALTH_BAR;
     }
 
@@ -415,7 +350,7 @@ class UIHelper {
      * @function
      * @returns {Object} - Returns {@link UIHelper#MANA_ORB}
      */
-    static get getManaOrb() {
+    static get MANA_ORB() {
         return this.MANA_ORB;
     }
 
@@ -429,7 +364,7 @@ class UIHelper {
      * @function
      * @returns {Object} - Returns {@link UIHelper#RUNE_SLOT}
      */
-    static get getRuneSlot() {
+    static get RUNE_SLOT() {
         return this.RUNE_SLOT;
     }
 
@@ -445,8 +380,8 @@ class UIHelper {
       * @param {Phaser.Camera} cameraMain  the player's main camera
       * @returns {Void}
       */
-    static setCameraBackgroundColor(cameraMain) {
-        cameraMain.backgroundColor.setTo(this.UIColors.BG_COLOR_GREY);
+    setCameraBackgroundColor(cameraMain) {
+        cameraMain.backgroundColor.setTo(this.UI_COLORS.BG_COLOR_GREY);
     }
 
     /**
@@ -455,7 +390,7 @@ class UIHelper {
      * @param {Array} array  the array to shuffle
      * @returns {Array}
      */
-    static shuffle(array) {
+    shuffle(array) {
         var currentIndex = array.length,
             randomIndex;
 
@@ -485,7 +420,7 @@ class UIHelper {
      * @return {String} - What the mouse is doing to the button (e.g. click, out, over, etc...)
      * @see https://rexrainbow.github.io/phaser3-rex-notes/docs/site/ui-buttons/
      */
-    static createBackButton(thisScene, currentSceneKey, backSceneKey) {
+    createBackButton(thisScene, currentSceneKey, backSceneKey) {
         let backButton = thisScene.rexUI.add.buttons({
             x: UIHelper.BUTTON_BACK_START_X,
             y: UIHelper.BUTTON_BACK_START_Y,
@@ -533,11 +468,11 @@ class UIHelper {
      * @return {rexUI.add.label} - Returns a Phaser 3 RexUI label (which the client uses as a button)
      * @see https://rexrainbow.github.io/phaser3-rex-notes/docs/site/ui-label/
      */
-    static createButton(thisScene, text) {
+    createButton(thisScene, text) {
         return thisScene.rexUI.add.label({
             width: UIHelper.BUTTON_WIDTH,
             height: UIHelper.BUTTON_HEIGHT,
-            background: thisScene.rexUI.add.roundRectangle(0, 0, 0, 0, 20, this.UIColors.LIGHT),
+            background: thisScene.rexUI.add.roundRectangle(0, 0, 0, 0, 20, this.UI_COLORS.LIGHT),
             text: thisScene.add.text(0, 0, text, {
                 fontSize: 18
             }),
@@ -554,9 +489,9 @@ class UIHelper {
      * @param  {String } text - The text for the radio button
      * @param  {String } name - The name for the Rex UI radio button group
      * @return {rexUI.add.label } - The radio button as a Rex UI label
-     * @see @see https://rexrainbow.github.io/phaser3-rex-notes/docs/site/ui-label/
+     * @see https://rexrainbow.github.io/phaser3-rex-notes/docs/site/ui-label/
      */
-    static createRadioButton(scene, text, name) {
+    createRadioButton(scene, text, name) {
         if (name === undefined) {
             name = text;
         }
