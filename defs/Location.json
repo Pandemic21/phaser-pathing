@@ -1,0 +1,31 @@
+{
+  "!name": "public/js/lib/Location.js",
+  "Location": {
+    "prototype": {
+      "location": {
+        "[x=0]": "number",
+        "[y=0]": "number",
+        "!span": "642[29:8]-650[29:16]",
+        "!doc": "Returns the location object\n@type {Location}"
+      },
+      "x": {
+        "!type": "number",
+        "!span": "965[50:8]-966[50:9]",
+        "!doc": "Returns the x coordinate\n@type {Number}"
+      },
+      "y": {
+        "!type": "number",
+        "!span": "1146[63:8]-1147[63:9]",
+        "!doc": "Returns the y coordinate\n@type {Number}"
+      },
+      "toString": {
+        "!type": "fn() -> string",
+        "!span": "1410[81:4]-1418[81:12]",
+        "!doc": "Returns a string of the coordinates in the format \"(x, y)\"\n@returns {String}"
+      },
+      "!span": "190[8:0]-1471[84:1]"
+    },
+    "!type": "fn(x?: number, y?: number)",
+    "!span": "196[8:6]-204[8:14]"
+  }
+}
