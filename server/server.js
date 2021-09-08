@@ -134,8 +134,8 @@ class ServerGameScene extends Phaser.Scene {
         this.gameState.gameTime = this.gameTime;
         this.gameState.players = [];
 
-        const PLAYER_SPEED = 50; //this is how many ms should be between each tile movement
-        //this is where we calculate movement and send it to the players;
+        const PLAYER_SPEED = 100; //this is how many ms should be between each tile movement
+        //this is where we calculate movement
         this.players.forEach((player) => {
           player.moveTick += delta;
             //if the player has a path and should move, move them

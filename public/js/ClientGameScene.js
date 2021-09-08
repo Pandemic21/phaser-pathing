@@ -45,7 +45,7 @@ export default class ClientGameScene extends Phaser.Scene {
         // Constants //
         ///////////////
 
-        const PLAYER_SPEED = 50; // lower is faster
+        const PLAYER_SPEED = 100; // lower is faster
         const TICK_RATE = 50; // how fast we receive gameState snapshots. this needs to be the same on the server and the client.
 
 
