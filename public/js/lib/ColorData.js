@@ -63,4 +63,4 @@ class ColorData {
     }
 }
 
-export default Circle;
+export default ColorData;

@@ -15,8 +15,8 @@ class Rectangle {
      * @param {Number} [height=0]  height of the reactangle
      */
     constructor(width = 0, height = 0) {
-        this.width = width;
-        this.height = height;
+        this.privateWidth = width;
+        this.privateHeight = height;
     }
 
 
@@ -30,8 +30,8 @@ class Rectangle {
      */
     get rectangle() {
         return {
-            width: this.width,
-            height: this.height
+            width: this.privateWidth,
+            height: this.privateHeight
         };
     }
 
@@ -39,13 +39,8 @@ class Rectangle {
         width = 0,
         height = 0
     }) {
-        this.width = width;
-        this.height = height;
-
-        return {
-            width: this.width,
-            height: this.height
-        };
+        this.privateWidth = width;
+        this.privateHeight = height;
     }
 
     /**
@@ -53,12 +48,11 @@ class Rectangle {
      * @type {Number}
      */
     get width() {
-        return this.width;
+        return this.privateWidth;
     }
 
     set width(width = 0) {
-        this.width = height;
-        return this.width;
+        this.privateWidth = width;
     }
 
     /**
@@ -66,12 +60,11 @@ class Rectangle {
      * @type {Number}
      */
     get height() {
-        return this.height;
+        return this.privateHeight;
     }
 
     set height(height = 0) {
-        this.height = height;
-        return this.height;
+        this.privateHeight = height;
     }
 
 
@@ -80,11 +73,11 @@ class Rectangle {
     ///////////
 
     /**
-     * Returns a string of the coordinates in the format "Width: `this.width`, Height: `this.height`"
+     * Returns a string of the coordinates in the format "Width: `this.privateWidth`, Height: `this.privateHeight`"
      * @returns {String}
      */
     toString() {
-        return `Width: ${this.width}, Height: ${this.height}`;
+        return `Width: ${this.privateWidth}, Height: ${this.privateHeight}`;
     }
 }
 
