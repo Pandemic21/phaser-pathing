@@ -28,7 +28,7 @@
 
 
     <title>
-      lib/Rectangle.js
+      lib/Status.js
     </title>
 
     <!--[if lt IE 9]>
@@ -95,7 +95,7 @@
     <div id="main" class="main-content">
       
       <h1 id='page-title' class="page-title">
-        lib/Rectangle.js
+        lib/Status.js
       </h1>
       
 
@@ -107,96 +107,93 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>/**
- * A rectangle containing width and height.
+ * Contains all information necessary for the client to draw status information.
  *
- * Commonlheight used bheight buttons, labels, and anheightthing else that has width and height.
- * @memberof Rectangle
- * @typedef {Object} Rectangle
- * @prop {Number} [width=0]  width coordinate on the map
- * @prop {Number} [height=0]  height coordinate on the map
+ * This includes stuns, slows, etc...
+ *
+ * @memberof Status
+ * @typedef {Object} Status
+ * @prop {Number} gameTime     The gameTime in ms the status took effect
+ * @prop {Number} duration     The duration in ms the status lasts
+ * @prop {String} label        The label the client should attach to this status
+ * @prop {ColorData} colors    The colors to use for the status
  */
-class Rectangle {
-    /**
-     * Creates a new rectangle with `width` and `height`
-     * @constructor
-     * @param {Number} [width=0]  width of the reactangle
-     * @param {Number} [height=0]  height of the reactangle
-     */
-    constructor(width = 0, height = 0) {
-        this.width = width;
-        this.height = height;
-    }
 
+
+import ColorData from './ColorData.js';
+
+class Status {
+    /**
+     * Creates a new status effect for the client to visually render
+     * @example
+     * let colors = new ColorData(1, 0xefc53f, 0xbcc947)
+     * let stun = new Status(this.gameTime, 2000, "Stunned", colors)
+     * @param {Number} gameTime     The gameTime in ms the status initially took effect
+     * @param {Number} duration     The duration in ms the status lasts
+     * @param {String} label        The label the client should attach to this status
+     * @param {ColorData} colors    The color data to use for the status
+     */
+    constructor(gameTime, duration, label, colors) {
+        this.privateGameTime = 0; // gameTime the status started
+        this.privateDuration = 0; // duration of status in ms
+        this.privateLabel = ''; // what is the status? (e.g. stun, slow, confused, etc...)
+        this.privateColors = new ColorData();
+    }
 
     /////////////////////////
     // Getters and Setters //
     /////////////////////////
 
     /**
-     * Returns the Rectangle object
-     * @type {Rectangle}
+     * The gameTime in ms the status initially took effect
+     * @return {Number} The gameTime in ms the status initially took effect
      */
-    get rectangle() {
-        return {
-            width: this.width,
-            height: this.height
-        };
+    get gameTime() {
+        return this.privateGameTime;
     }
 
-    set rectangle({
-        width = 0,
-        height = 0
-    }) {
-        this.width = width;
-        this.height = height;
-
-        return {
-            width: this.width,
-            height: this.height
-        };
+    set gameTime(newGameTime) {
+        this.privateGameTime = newGameTime;
     }
 
     /**
-     * Returns the width
-     * @type {Number}
+     * The duration in ms the status lasts
+     * @return {Number} The duration in ms the status lasts
      */
-    get width() {
-        return this.width;
+    get duration() {
+        return this.privateDuration;
     }
 
-    set width(width = 0) {
-        this.width = height;
-        return this.width;
+    set duration(newDuration) {
+        this.privateDuration = newDuration;
     }
 
     /**
-     * Returns the height
-     * @type {Number}
+     * What the status effect is (e.g. stun, slow, confused, etc...)
+     * @return {String} What the status effect is (e.g. stun, slow, confused, etc...)
      */
-    get height() {
-        return this.height;
+    get label() {
+        return this.privateLabel;
     }
 
-    set height(height = 0) {
-        this.height = height;
-        return this.height;
+    set label(newLabel) {
+        this.privateLabel = newLabel;
     }
-
-
-    ///////////
-    // Other //
-    ///////////
 
     /**
-     * Returns a string of the coordinates in the format "Width: `this.width`, Height: `this.height`"
-     * @returns {String}
+     * The color data to use for the status
+     * @return {ColorData} The color data to use for the status
      */
-    toString() {
-        return `Width: ${this.width}, Height: ${this.height}`;
+    get colorData() {
+        return this.privateColors;
+    }
+
+    set colorData(newColors) {
+        this.privateColors = newColors;
     }
 }
 
-export default Rectangle;
+export default Status;
 </code></pre>
         </article>
     </section>
