@@ -300,18 +300,12 @@ export default class ClientGameScene extends Phaser.Scene {
         });
 
         this.input.keyboard.on('keyup-SPACE', (keypress) => {
-
-          console.log('shoot fireball!');
-
-
           const target = {
             x: this.input.mousePointer.worldX,
             y: this.input.mousePointer.worldY
-        };
-
+          };
           this.socket.emit('tryFireball', target);
-
-      });
+        });
 
 
         // toggle follscreen on keypress: F

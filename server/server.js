@@ -2,6 +2,7 @@
 // Authoritative Server //
 //////////////////////////
 
+
 // This is the virtual scene that will hold the truth
 class ServerGameScene extends Phaser.Scene {
     constructor(config) {
