@@ -202,6 +202,20 @@ export default class ClientGameScene extends Phaser.Scene {
                 players[k].mage = this.physics.add.sprite(players[k].mage.x, players[k].mage.y, 'isaacImg');
                 players[k].mage.play('breathe');
             }
+
+            // HACK: this fixes the super-speed glitch at the beginning by just moving the player once at the very start.
+            let destination = {
+                x: Math.floor((myPlayer.mage.x + 0.5) / 12),
+                y: Math.floor((myPlayer.mage.y + 0.5) / 12)
+            };
+            let movementInfo = {
+                requesterId: this.socket.id,
+                destination
+            };
+            setTimeout(() => {
+                this.socket.emit('tryNewMovement', movementInfo);
+            }, 500);
+            // end hack
         });
 
         // this is called by server.js whenever a new player joins
