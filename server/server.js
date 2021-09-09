@@ -131,20 +131,27 @@ class ServerGameScene extends Phaser.Scene {
 
             socket.on('tryFireball', target => {
                 //this will become a cast fireball function, there should just be a tryCast or something for spells
+
+                //find the caster from our this.players[]
                 const owner = this.players.find((player) => {
                     return player.id === socket.id;
                 });
-                const speed = 600;
+                //instantiate this.projectileId if it hasn't been, or assign it then increment it
                 if (!this.projectileId) this.projectileId = 0;
                 const projectileId = this.projectileId;
                 this.projectileId += 1;
+                //projectile config
                 const projectile = {
+                    x: owner.mage.x,
+                    y: owner.mage.y,
                     owner,
                     target,
-                    speed,
                     projectileId
                 };
-                this.createProjectile(projectile);
+                //create the Projectile object
+                const newProj = new window.Projectile(this, projectile);
+                this.projectiles.add(newProj);
+                newProj.shoot()
             });
 
 
