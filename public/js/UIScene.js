@@ -44,8 +44,7 @@ export default class UIScene extends Phaser.Scene {
         // rectangle code
         // max hp rectangle, gold outline with a black background
 
-        let maxHealth = this.add.rectangle(
-            this.uiHelper.HEALTH_BAR.location.x,
+        let maxHealth = this.add.rectangle(this.uiHelper.HEALTH_BAR.location.x,
             this.uiHelper.HEALTH_BAR.location.y,
             this.uiHelper.HEALTH_BAR.size.width,
             this.uiHelper.HEALTH_BAR.size.height,
@@ -60,13 +59,10 @@ export default class UIScene extends Phaser.Scene {
         this.currentHealth = this.add.graphics();
         this.currentHealth.fillStyle(this.uiHelper.UI_COLORS.HEALTH, 1);
 
-        this.currentHealth.fillRect(
-            this.uiHelper.HEALTH_BAR.location.x,
+        this.currentHealth.fillRect(this.uiHelper.HEALTH_BAR.location.x,
             this.uiHelper.HEALTH_BAR.location.y + 100 - this.currentHealthValue,
             this.uiHelper.HEALTH_BAR.size.width,
             this.currentHealthValue);
-
-
 
 
         ///////////////////////
@@ -79,8 +75,8 @@ export default class UIScene extends Phaser.Scene {
         this.ELEMENT_COLORS = [
             this.uiHelper.MANA_COLORS.FIRE,
             this.uiHelper.MANA_COLORS.WATER,
-            this.uiHelper.MANA_COLORS.AIR,
             this.uiHelper.MANA_COLORS.EARTH,
+            this.uiHelper.MANA_COLORS.AIR,
             this.uiHelper.MANA_COLORS.LIGHT,
             this.uiHelper.MANA_COLORS.DARK,
         ];

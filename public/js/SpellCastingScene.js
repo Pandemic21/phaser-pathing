@@ -68,6 +68,7 @@ export default class SpellCastingScene extends Phaser.Scene { // eslint-disable-
         this.manaData.light = 4;
         this.manaData.dark = 5;
 
+
         ////////////////////
         // Event Emitters //
         ////////////////////
@@ -96,6 +97,18 @@ export default class SpellCastingScene extends Phaser.Scene { // eslint-disable-
 
         this.eventEmitter.on('calculateSpell', () => {
             this.calculateSpell();
+            this.clearRuneSlots();
+            this.redrawRunes = true;
+        });
+
+        // returns true if the player has enough mana to cast the spell, false if the player does NOT have enough mana
+        this.eventEmitter.on('checkManaRequirements', ({currentMana, manaRequirements}) => {
+            return this.checkManaRequirements(currentMana, manaRequirements);
+        });
+
+        // this returns the player's new mana in a Number[]
+        this.eventEmitter.on('getNewCurrentMana', ({currentMana, manaRequirements}) => {
+            return this.getNewCurrentMana(currentMana, manaRequirements);
         });
 
 
@@ -195,13 +208,13 @@ export default class SpellCastingScene extends Phaser.Scene { // eslint-disable-
             this.runeSlots[this.activeSlot].element = 'water';
             this.manaRequirements[this.manaData.water] = this.manaRequirements[this.manaData.water] + 1;
         } else if (keyPress.key == 'e') {
-            this.runeSlots[this.activeSlot].fillColor = this.uiHelper.MANA_COLORS.EARTH;
-            this.runeSlots[this.activeSlot].element = 'earth';
-            this.manaRequirements[this.manaData.earth] = this.manaRequirements[this.manaData.earth] + 1;
-        } else if (keyPress.key == 'r') {
             this.runeSlots[this.activeSlot].fillColor = this.uiHelper.MANA_COLORS.AIR;
             this.runeSlots[this.activeSlot].element = 'air';
             this.manaRequirements[this.manaData.air] = this.manaRequirements[this.manaData.air] + 1;
+        } else if (keyPress.key == 'r') {
+            this.runeSlots[this.activeSlot].fillColor = this.uiHelper.MANA_COLORS.EARTH;
+            this.runeSlots[this.activeSlot].element = 'earth';
+            this.manaRequirements[this.manaData.earth] = this.manaRequirements[this.manaData.earth] + 1;
         } else if (keyPress.key == 'd') {
             this.runeSlots[this.activeSlot].fillColor = this.uiHelper.MANA_COLORS.LIGHT;
             this.runeSlots[this.activeSlot].element = 'light';
@@ -257,4 +270,7 @@ export default class SpellCastingScene extends Phaser.Scene { // eslint-disable-
             return false;
         }
     }
+
+
+
 }

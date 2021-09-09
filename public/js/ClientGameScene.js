@@ -207,6 +207,20 @@ export default class ClientGameScene extends Phaser.Scene {
                 players[k].mage.play('breathe');
             }
 
+            // HACK: this fixes the super-speed glitch at the beginning by just moving the player once at the very start.
+            let destination = {
+                x: Math.floor((myPlayer.mage.x + 0.5) / 12),
+                y: Math.floor((myPlayer.mage.y + 0.5) / 12)
+            };
+            let movementInfo = {
+                requesterId: this.socket.id,
+                destination
+            };
+            setTimeout(() => {
+                this.socket.emit('tryNewMovement', movementInfo);
+            }, 250);
+            // end hack
+
             //////////
             // Mana //
             //////////
@@ -254,6 +268,10 @@ export default class ClientGameScene extends Phaser.Scene {
              * @param {Number[]} manaRequirements
              */
             this.eventEmitter.on('primeSpell', (spell, manaRequirements) => {
+                // if we do NOT have the required mana to cast the spell, stop trying.
+                if(!this.hasEnoughMana(this.currentMana, manaRequirements)) return false;
+
+                // find out what spell we got from SpellCastingScene.js and take the appropriate action
                 if (spell == 'fireball') {
                     //this.localCastProjectile(manaRequirements);
 
@@ -261,7 +279,15 @@ export default class ClientGameScene extends Phaser.Scene {
                         x: this.input.mousePointer.worldX,
                         y: this.input.mousePointer.worldY
                     };
+
+                    // tell server.js to start casting the fireball
                     this.socket.emit('tryFireball', target);
+
+                    // update our mana
+                    //this.currentMana = this.eventEmitter.emit('getNewCurrentMana', ({currentMana: this.currentMana, manaRequirements}));
+                    this.currentMana = this.getNewCurrentMana(this.currentMana, manaRequirements);
+                    this.eventEmitter.emit('clearRuneSlots');
+                    this.eventEmitter.emit('redrawManaCircles', this.currentMana);
 
                 } else if (spell == 'air projectile') {
                     // this.localCastProjectile(manaRequirements);
@@ -275,20 +301,6 @@ export default class ClientGameScene extends Phaser.Scene {
                     // this.localCastWall(manaRequirements);
                 }
             });
-
-            // HACK: this fixes the super-speed glitch at the beginning by just moving the player once at the very start.
-            let destination = {
-                x: Math.floor((myPlayer.mage.x + 0.5) / 12),
-                y: Math.floor((myPlayer.mage.y + 0.5) / 12)
-            };
-            let movementInfo = {
-                requesterId: this.socket.id,
-                destination
-            };
-            setTimeout(() => {
-                this.socket.emit('tryNewMovement', movementInfo);
-            }, 500);
-            // end hack
         });
 
         // this is called by server.js whenever a new player joins
@@ -755,5 +767,33 @@ export default class ClientGameScene extends Phaser.Scene {
         setTimeout(() => {
             clickImg.destroy();
         }, DURATION);
+    }
+
+
+    ////////////////////
+    // Mana functions //
+    ////////////////////
+
+    hasEnoughMana(currentMana, manaRequirements) {
+        // go through each of the mana types (fire, water, etc...)
+        for(let k=0; k<manaRequirements.length; k++) {
+            // get what would be the new current mana for that element, after casting the spell
+            let newManaValue = currentMana[k] - manaRequirements[k];
+
+            // if the new mana is <0, checkManaRequirements failed.
+            if(newManaValue < 0) return false;
+        }
+        // if we got here then we're good.
+        return true;
+    }
+
+    getNewCurrentMana(currentMana, manaRequirements) {
+        let newCurrentMana = currentMana;
+
+        for(let k=0; k<manaRequirements.length; k++) {
+            newCurrentMana[k] = currentMana[k] - manaRequirements[k];
+        }
+
+        return newCurrentMana;
     }
 }
