@@ -2,7 +2,6 @@
 // Authoritative Server //
 //////////////////////////
 
-
 // This is the virtual scene that will hold the truth
 class ServerGameScene extends Phaser.Scene {
     constructor(config) {
@@ -138,7 +137,6 @@ class ServerGameScene extends Phaser.Scene {
                 const speed = 600;
                 if (!this.projectileId) this.projectileId = 0;
                 const projectileId = this.projectileId;
-                console.log('projectileId: ' + projectileId);
                 this.projectileId += 1;
                 const projectile = {
                     owner,
@@ -258,7 +256,8 @@ class ServerGameScene extends Phaser.Scene {
                 projectileId: projectile.projectileId,
                 angle: projectile.angle,
                 x: projectile.x,
-                y: projectile.y
+                y: projectile.y,
+                target: projectile.target
             });
         });
 
@@ -279,12 +278,15 @@ class ServerGameScene extends Phaser.Scene {
         //   speed,
         //   projectileId
         // }
+        config = {
+          x: projectile.owner.mage.x,
+          y: projectile.owner.mage.y,
+          projectileId: projectile.projectileId,
+          target: projectile.target,
+          owner: projectile.owner
+        }
 
-        const newProj = this.physics.add.sprite(projectile.owner.mage.x, projectile.owner.mage.y);
-        newProj.owner = projectile.owner.id;
-        newProj.projectileId = projectile.projectileId;
-        newProj.angle = Phaser.Math.Angle.Between(newProj.x, newProj.y, projectile.target.x, projectile.target.y);
-        newProj.setSize(32, 32);
+        const newProj = new window.Projectile(this, config);
         this.projectiles.add(newProj);
         this.physics.moveTo(newProj, projectile.target.x, projectile.target.y, projectile.speed);
 

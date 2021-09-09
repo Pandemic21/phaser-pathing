@@ -1,3 +1,6 @@
+
+import Projectile from '/js/lib/Projectile.js'
+
 export default class ClientGameScene extends Phaser.Scene {
     constructor() {
         super();
@@ -277,9 +280,15 @@ export default class ClientGameScene extends Phaser.Scene {
                 });
                 //if there's no projectile, create it;
                 if (!projectile) {
-                    let degAngle = Phaser.Math.RadToDeg(proj.angle);
-                    const newProj = this.add.sprite(proj.x, proj.y, 'fireball').setAngle(degAngle);
-                    newProj.projectileId = proj.projectileId;
+                    const config = {
+                      owner: proj.owner,
+                      x: proj.x,
+                      y: proj.y,
+                      target: proj.target,
+                      projectileId: proj.projectileId
+                    }
+                    const newProj = new Projectile(this, config);
+                    console.log(newProj.x, newProj.y)
                     this.projectiles.push(newProj);
                 } else {
                     projectile.fromX = proj.x;
@@ -290,7 +299,6 @@ export default class ClientGameScene extends Phaser.Scene {
                 //we only want to instantiate anything here if its in both stateA and stateB for interpolating
                 if (!this.projectiles) return;
                 const projectile = this.projectiles.find((p) => {
-                    console.log(proj, p);
                     return p.projectileId === proj.projectileId;
                 });
                 //same as above
@@ -328,17 +336,16 @@ export default class ClientGameScene extends Phaser.Scene {
         });
 
         // disabling 8/9/21 since i'm implementing proper spellcasting
-        //
-        //
-        // this.input.keyboard.on('keyup-SPACE', (keypress) => {
-        //     console.log('shoot fireball!');
-        //
-        //     const target = {
-        //         x: this.input.mousePointer.worldX,
-        //         y: this.input.mousePointer.worldY
-        //     };
-        //     this.socket.emit('tryFireball', target);
-        // // });
+
+
+        this.input.keyboard.on('keyup-SPACE', (keypress) => {
+
+            const target = {
+                x: this.input.mousePointer.worldX,
+                y: this.input.mousePointer.worldY
+            };
+            this.socket.emit('tryFireball', target);
+        });
         //
         //
         // // toggle follscreen on keypress: F
@@ -426,13 +433,13 @@ export default class ClientGameScene extends Phaser.Scene {
         //1qaz
         // Mana and element input
         // spacebar - primes the current spell
-        this.input.keyboard.on('keydown-SPACE', (keyPress) => {
-            // tell UIScene.js to redraw the mana circles
-            this.eventEmitter.emit('redrawManaCircles', this.currentMana);
-
-            // get the spell they've queued with their runes
-            this.spellPrimed = this.eventEmitter.emit('calculateSpell');
-        });
+        // this.input.keyboard.on('keydown-SPACE', (keyPress) => {
+        //     // tell UIScene.js to redraw the mana circles
+        //     this.eventEmitter.emit('redrawManaCircles', this.currentMana);
+        //
+        //     // get the spell they've queued with their runes
+        //     this.spellPrimed = this.eventEmitter.emit('calculateSpell');
+        // });
 
         // q - fire
         this.input.keyboard.on('keyup-Q', (keyPress) => {
@@ -553,7 +560,6 @@ export default class ClientGameScene extends Phaser.Scene {
         if (this.projectiles) {
             this.projectiles.forEach((projectile) => {
                 if (projectile.fromX && projectile.fromY && projectile.toX && projectile.toY) {
-                    console.log(projectile.toX, projectile.toY);
                     var ex = projectile.toX;
                     var ey = projectile.toY;
 

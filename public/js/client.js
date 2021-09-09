@@ -11,8 +11,6 @@ let uiScene = new UIScene();
 import SpellCastingScene from './SpellCastingScene.js';
 let spellCastingScene = new SpellCastingScene();
 
-let easystar = new EasyStar.js();
-
 /////////////////
 // Phaser Init //
 /////////////////

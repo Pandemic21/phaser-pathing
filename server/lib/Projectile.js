@@ -24,4 +24,4 @@
       scene.add.existing(this);
   }
 }
-export default Projectile
+window.Projectile = Projectile
