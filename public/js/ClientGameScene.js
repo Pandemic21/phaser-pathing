@@ -38,7 +38,8 @@ export default class ClientGameScene extends Phaser.Scene {
 
         //this.load.tilemapTiledJSON('tilemap', '../assets/maps/forest_map_small_v2.json')
         //this.load.tilemapTiledJSON('tilemap', '../assets/maps/forest_map_100x100_v1.json')
-        this.load.tilemapTiledJSON('tilemap', '../assets/maps/forest_map_100x100_v2.json');
+        //this.load.tilemapTiledJSON('tilemap', '../assets/maps/forest_map_100x100_v2.json');
+        this.load.tilemapTiledJSON('tilemap', '../assets/maps/ForestSwirl_50x50_v1.json');
     }
 
     create() {

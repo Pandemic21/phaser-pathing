@@ -14,7 +14,8 @@ class ServerGameScene extends Phaser.Scene {
 
         //this.load.tilemapTiledJSON('tilemap', 'file:///' + __dirname + '/public/assets/maps/forest_map_small.json');
         //this.load.tilemapTiledJSON('tilemap', 'file:///' + __dirname + '/public/assets/maps/forest_map_small_v2.json');
-        this.load.tilemapTiledJSON('tilemap', 'file:///' + __dirname + '/public/assets/maps/forest_map_100x100_v2.json');
+        //this.load.tilemapTiledJSON('tilemap', 'file:///' + __dirname + '/public/assets/maps/forest_map_100x100_v2.json');
+        this.load.tilemapTiledJSON('tilemap', 'file:///' + __dirname + '/public/assets/maps/ForestSwirl_50x50_v1.json');
     }
 
     create() {
