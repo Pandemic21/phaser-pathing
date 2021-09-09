@@ -131,13 +131,13 @@ class UIHelper {
         const BACK_BUTTON_RECT = new Rectangle(120, 40);
         const BACK_BUTTON_START_LOC = new Location(SCREEN_WIDTH / 2 - BUTTON_RECT.width - PIXEL_BUFFER, SCREEN_HEIGHT - BUTTON_RECT.height - PIXEL_BUFFER);
 
-         /**
-          * This object contains all information required for the client to draw the back button
-          * @const
-          * @type {Object}
-          * @prop {Location} location
-          * @prop {Rectangle} size
-          */
+        /**
+         * This object contains all information required for the client to draw the back button
+         * @const
+         * @type {Object}
+         * @prop {Location} location
+         * @prop {Rectangle} size
+         */
         this.BACK_BUTTON = {
             'location': BACK_BUTTON_START_LOC,
             'size': BACK_BUTTON_RECT
@@ -217,6 +217,12 @@ class UIHelper {
         ////////////////
 
         const RUNE_SLOT_COLORS = new ColorData(0, 0xefc53f, 0xbcc947);
+
+        /**
+         * Holds color data for the rune slots
+         * @type {ColorData}
+         */
+        this.RUNE_SLOT_COLORS = RUNE_SLOT_COLORS;
         // const RUNE_SLOT_STROKE_COLOR = 0xefc53f;
         // const RUNE_SLOT_FILL_COLOR = 0xbcc947;
 
@@ -374,12 +380,12 @@ class UIHelper {
     //////////////////////
     // FIXME: come up with a better name for this section
 
-     /**
-      * This sets the background color based on BG_COLOR_GREY in {@link UIHelper#UI_COLORS}
-      * @function
-      * @param {Phaser.Camera} cameraMain  the player's main camera
-      * @returns {Void}
-      */
+    /**
+     * This sets the background color based on BG_COLOR_GREY in {@link UIHelper#UI_COLORS}
+     * @function
+     * @param {Phaser.Camera} cameraMain  the player's main camera
+     * @returns {Void}
+     */
     setCameraBackgroundColor(cameraMain) {
         cameraMain.backgroundColor.setTo(this.UI_COLORS.BG_COLOR_GREY);
     }

@@ -38,7 +38,8 @@ export default class ClientGameScene extends Phaser.Scene {
 
         //this.load.tilemapTiledJSON('tilemap', '../assets/maps/forest_map_small_v2.json')
         //this.load.tilemapTiledJSON('tilemap', '../assets/maps/forest_map_100x100_v1.json')
-        this.load.tilemapTiledJSON('tilemap', '../assets/maps/forest_map_100x100_v2.json');
+        //this.load.tilemapTiledJSON('tilemap', '../assets/maps/forest_map_100x100_v2.json');
+        this.load.tilemapTiledJSON('tilemap', '../assets/maps/ForestSwirl_50x50_v1.json');
     }
 
     create() {
@@ -47,6 +48,10 @@ export default class ClientGameScene extends Phaser.Scene {
         ////////////////////
 
         this.scene.launch('uiScene', {
+            eventEmitter: this.eventEmitter
+        });
+
+        this.scene.launch('spellCastingScene', {
             eventEmitter: this.eventEmitter
         });
 
@@ -95,26 +100,35 @@ export default class ClientGameScene extends Phaser.Scene {
         // Camera //
         ////////////
 
+        // disabling because i'm implementing spellcasting 9/8/21
         // setup camera config
-        const cursors = this.input.keyboard.createCursorKeys();
+        // const cursors = this.input.keyboard.createCursorKeys();
+        //
+        // const controlConfig = {
+        //     camera: this.cameras.main,
+        //     left: cursors.left,
+        //     right: cursors.right,
+        //     up: cursors.up,
+        //     down: cursors.down,
+        //     zoomIn: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q),
+        //     zoomOut: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E),
+        //     acceleration: 0.06,
+        //     drag: 0.0005,
+        //     maxSpeed: 1.0
+        // };
+        //
+        // // declare the camera
+        // this.controls = new Phaser.Cameras.Controls.SmoothedKeyControl(controlConfig);
 
-        const controlConfig = {
-            camera: this.cameras.main,
-            left: cursors.left,
-            right: cursors.right,
-            up: cursors.up,
-            down: cursors.down,
-            zoomIn: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q),
-            zoomOut: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E),
-            acceleration: 0.06,
-            drag: 0.0005,
-            maxSpeed: 1.0
-        };
-
-        // declare the camera
-        this.controls = new Phaser.Cameras.Controls.SmoothedKeyControl(controlConfig);
+        /**
+         * How far (in pixels) the user can scroll/pan with their camera outside of the map.
+         *
+         * This allows the player to pan the camera so the UI isn't blocking what they want to see.
+         * @type {Number}
+         */
+        const OVERSCROLL = 150; //IDEA: make this configurable in the web front end
         this.camera = this.cameras.main;
-        this.camera.setBounds(0, 0, this.MAP_WIDTH_PIXELS, this.MAP_HEIGHT_PIXELS);
+        this.camera.setBounds(OVERSCROLL * -1, OVERSCROLL * -1, this.MAP_WIDTH_PIXELS + OVERSCROLL * 2, this.MAP_HEIGHT_PIXELS + OVERSCROLL * 2);
 
 
         /////////////
@@ -133,10 +147,10 @@ export default class ClientGameScene extends Phaser.Scene {
 
         // declare this.minimap
         this.minimap = this.cameras.add(
-            this.MINIMAP_X,
-            this.MINIMAP_Y,
-            this.MINIMAP_WIDTH,
-            this.MINIMAP_HEIGHT)
+                this.MINIMAP_X,
+                this.MINIMAP_Y,
+                this.MINIMAP_WIDTH,
+                this.MINIMAP_HEIGHT)
             .setZoom(0.2)
             .setName('mini')
             .setBackgroundColor(0x002244);
@@ -161,8 +175,8 @@ export default class ClientGameScene extends Phaser.Scene {
 
         this.socket = io();
 
-        this.players = [];   // this array contains all the player's in the game
-        this.myId = '';      // this is the current player's id
+        this.players = []; // this array contains all the player's in the game
+        this.myId = ''; // this is the current player's id
         this.gameStates = []; // this is the array of snapshots we will tween through
 
 
@@ -174,7 +188,7 @@ export default class ClientGameScene extends Phaser.Scene {
             // Player //
             ////////////
 
-            this.myId = this.socket.id;  // set 'this.myId'
+            this.myId = this.socket.id; // set 'this.myId'
             this.players = players; // set '<array> this.players' equal to what the server has
 
             // this plucks the current player out of '<array> players' the server sent
@@ -184,10 +198,24 @@ export default class ClientGameScene extends Phaser.Scene {
 
             // create sprite graphics for all player's mages
             for (let k = 0; k < players.length; k++) {
-              console.log(players[k].id);
-              players[k].mage = this.physics.add.sprite(players[k].mage.x, players[k].mage.y, 'isaacImg');
-              players[k].mage.play('breathe');
+                console.log(players[k].id);
+                players[k].mage = this.physics.add.sprite(players[k].mage.x, players[k].mage.y, 'isaacImg');
+                players[k].mage.play('breathe');
             }
+
+            // HACK: this fixes the super-speed glitch at the beginning by just moving the player once at the very start.
+            let destination = {
+                x: Math.floor((myPlayer.mage.x + 0.5) / 12),
+                y: Math.floor((myPlayer.mage.y + 0.5) / 12)
+            };
+            let movementInfo = {
+                requesterId: this.socket.id,
+                destination
+            };
+            setTimeout(() => {
+                this.socket.emit('tryNewMovement', movementInfo);
+            }, 500);
+            // end hack
         });
 
         // this is called by server.js whenever a new player joins
@@ -202,83 +230,83 @@ export default class ClientGameScene extends Phaser.Scene {
         });
 
         this.socket.on('setUpdate', (gameState) => {
-          //add the new snapshot to our gameStates array
-          this.gameStates.push(gameState);
+            //add the new snapshot to our gameStates array
+            this.gameStates.push(gameState);
 
-          //nothing to tween if theres not at least two snapshots
-          if(this.gameStates.length < 2) return;
+            //nothing to tween if theres not at least two snapshots
+            if (this.gameStates.length < 2) return;
 
-          const stateA = this.gameStates[this.gameStates.length-2];
-          const stateB = this.gameStates[this.gameStates.length-1];
+            const stateA = this.gameStates[this.gameStates.length - 2];
+            const stateB = this.gameStates[this.gameStates.length - 1];
 
-          stateA.players.forEach((player) => {
-            const currentPlayer = this.players.find((p) => {
-              return p.id === player.id;
-          });
-            if(currentPlayer) {
-              currentPlayer.mage.fromX = player.x;
-              currentPlayer.mage.fromY = player.y;
-            }
+            stateA.players.forEach((player) => {
+                const currentPlayer = this.players.find((p) => {
+                    return p.id === player.id;
+                });
+                if (currentPlayer) {
+                    currentPlayer.mage.fromX = player.x;
+                    currentPlayer.mage.fromY = player.y;
+                }
 
-          });
+            });
 
-          stateB.players.forEach((player) => {
-            const currentPlayer = this.players.find((p) => {
-              return p.id === player.id;
-          });
-            if(currentPlayer){
-              currentPlayer.mage.toX = player.x;
-              currentPlayer.mage.toY = player.y;
-          }
-          });
-          //check for and handle disconnects here
-          this.players.forEach((player) => {
-            const findPlayer = stateB.players.find((p) => {
-              return p.id === player.id;
-          });
-            if(!findPlayer) {
-              player.mage.destroy();
-            }
+            stateB.players.forEach((player) => {
+                const currentPlayer = this.players.find((p) => {
+                    return p.id === player.id;
+                });
+                if (currentPlayer) {
+                    currentPlayer.mage.toX = player.x;
+                    currentPlayer.mage.toY = player.y;
+                }
+            });
+            //check for and handle disconnects here
+            this.players.forEach((player) => {
+                const findPlayer = stateB.players.find((p) => {
+                    return p.id === player.id;
+                });
+                if (!findPlayer) {
+                    player.mage.destroy();
+                }
+            });
+            //handle projectiles
+            stateA.projectiles.forEach((proj) => {
+                //instantiate the projectile array if it hasn't been
+                if (!this.projectiles) this.projectiles = [];
+                const projectile = this.projectiles.find((p) => {
+                    return p.projectileId === proj.projectileId;
+                });
+                //if there's no projectile, create it;
+                if (!projectile) {
+                    let degAngle = Phaser.Math.RadToDeg(proj.angle);
+                    const newProj = this.add.sprite(proj.x, proj.y, 'fireball').setAngle(degAngle);
+                    newProj.projectileId = proj.projectileId;
+                    this.projectiles.push(newProj);
+                } else {
+                    projectile.fromX = proj.x;
+                    projectile.fromY = proj.y;
+                }
+            });
+            stateB.projectiles.forEach((proj) => {
+                //we only want to instantiate anything here if its in both stateA and stateB for interpolating
+                if (!this.projectiles) return;
+                const projectile = this.projectiles.find((p) => {
+                    console.log(proj, p);
+                    return p.projectileId === proj.projectileId;
+                });
+                //same as above
+                if (!projectile) {
+                    return;
+                } else {
+                    projectile.toX = proj.x;
+                    projectile.toY = proj.y;
+                }
+
+            });
+
+            this.calculateTweens(TICK_RATE);
+
+
         });
-        //handle projectiles
-        stateA.projectiles.forEach((proj) => {
-          //instantiate the projectile array if it hasn't been
-          if(!this.projectiles) this.projectiles = [];
-          const projectile = this.projectiles.find((p) => {
-            return p.projectileId === proj.projectileId;
-          });
-          //if there's no projectile, create it;
-          if(!projectile) {
-            let degAngle = Phaser.Math.RadToDeg(proj.angle);
-            const newProj = this.add.sprite(proj.x, proj.y, 'fireball').setAngle(degAngle);
-            newProj.projectileId = proj.projectileId;
-            this.projectiles.push(newProj);
-          } else {
-            projectile.fromX = proj.x;
-            projectile.fromY = proj.y;
-          }
-      });
-        stateB.projectiles.forEach((proj) => {
-          //we only want to instantiate anything here if its in both stateA and stateB for interpolating
-          if(!this.projectiles) return;
-          const projectile = this.projectiles.find((p) => {
-            console.log(proj, p);
-            return p.projectileId === proj.projectileId;
-        });
-          //same as above
-          if(!projectile){
-            return;
-          } else {
-            projectile.toX = proj.x;
-            projectile.toY = proj.y;
-          }
-
-      });
-
-          this.calculateTweens(TICK_RATE);
-
-
-      });
 
         ////////////////////////////////////////////
         // Listener Config (e.g. spacebar, click) //
@@ -299,26 +327,31 @@ export default class ClientGameScene extends Phaser.Scene {
             }
         });
 
-        this.input.keyboard.on('keyup-SPACE', (keypress) => {
-          const target = {
-            x: this.input.mousePointer.worldX,
-            y: this.input.mousePointer.worldY
-          };
-          this.socket.emit('tryFireball', target);
-        });
-
-
-        // toggle follscreen on keypress: F
-        this.input.keyboard.on('keyup-F', (keyPress) => {
-            // if it's fullscreen already, toggle fullscreen off
-            if (this.scale.isFullscreen) {
-                this.scale.stopFullscreen();
-            }
-            // if it's not fullscreen, toggle fullscreen on
-            else {
-                this.scale.startFullscreen();
-            }
-        });
+        // disabling 8/9/21 since i'm implementing proper spellcasting
+        //
+        //
+        // this.input.keyboard.on('keyup-SPACE', (keypress) => {
+        //     console.log('shoot fireball!');
+        //
+        //     const target = {
+        //         x: this.input.mousePointer.worldX,
+        //         y: this.input.mousePointer.worldY
+        //     };
+        //     this.socket.emit('tryFireball', target);
+        // // });
+        //
+        //
+        // // toggle follscreen on keypress: F
+        // this.input.keyboard.on('keyup-F', (keyPress) => {
+        //     // if it's fullscreen already, toggle fullscreen off
+        //     if (this.scale.isFullscreen) {
+        //         this.scale.stopFullscreen();
+        //     }
+        //     // if it's not fullscreen, toggle fullscreen on
+        //     else {
+        //         this.scale.startFullscreen();
+        //     }
+        // });
 
         // pan the camera around with the mouse
         this.input.on('pointermove', (pointer) => {
@@ -377,9 +410,9 @@ export default class ClientGameScene extends Phaser.Scene {
                     }
                 }
                 let movementInfo = {
-                  requesterId: this.socket.id,
-                  destination
-              };
+                    requesterId: this.socket.id,
+                    destination
+                };
                 this.socket.emit('tryNewMovement', movementInfo);
 
                 // draw the 'click to move' image and debug console logs
@@ -387,8 +420,49 @@ export default class ClientGameScene extends Phaser.Scene {
                     x: this.input.mousePointer.x + this.camera.scrollX,
                     y: this.input.mousePointer.y + this.camera.scrollY
                 });
-             }
+            }
         }, this);
+
+        //1qaz
+        // Mana and element input
+        // spacebar - primes the current spell
+        this.input.keyboard.on('keydown-SPACE', (keyPress) => {
+            // tell UIScene.js to redraw the mana circles
+            this.eventEmitter.emit('redrawManaCircles', this.currentMana);
+
+            // get the spell they've queued with their runes
+            this.spellPrimed = this.eventEmitter.emit('calculateSpell');
+        });
+
+        // q - fire
+        this.input.keyboard.on('keyup-Q', (keyPress) => {
+            this.eventEmitter.emit('drawRuneSlots', keyPress);
+        });
+
+        // w - water
+        this.input.keyboard.on('keyup-W', (keyPress) => {
+            this.eventEmitter.emit('drawRuneSlots', keyPress);
+        });
+
+        // e - earth
+        this.input.keyboard.on('keyup-E', (keyPress) => {
+            this.eventEmitter.emit('drawRuneSlots', keyPress);
+        });
+
+        // r - air
+        this.input.keyboard.on('keyup-R', (keyPress) => {
+            this.eventEmitter.emit('drawRuneSlots', keyPress);
+        });
+
+        // d - light
+        this.input.keyboard.on('keyup-D', (keyPress) => {
+            this.eventEmitter.emit('drawRuneSlots', keyPress);
+        });
+
+        // f - dark
+        this.input.keyboard.on('keyup-F', (keyPress) => {
+            this.eventEmitter.emit('drawRuneSlots', keyPress);
+        });
 
 
         ////////////////////
@@ -427,8 +501,9 @@ export default class ClientGameScene extends Phaser.Scene {
 
     update(time, delta) {
 
+        // commenting this out because i'm implementing spellcasting
         // camera arrow keys update
-        this.controls.update(delta);
+        // this.controls.update(delta);
 
         // get this player
         let myPlayer = this.players.find((player) => {
@@ -454,50 +529,49 @@ export default class ClientGameScene extends Phaser.Scene {
 
     // Calculate tweens here.
     calculateTweens(TICK_RATE) {
+        this.players.forEach((player) => {
+            if (player.mage.fromX && player.mage.fromY && player.mage.toX && player.mage.toY) {
+                if (player.mage.fromX < player.mage.toX) player.mage.setFlipX(true);
+                if (player.mage.fromX > player.mage.toX) player.mage.setFlipX(false);
+                var ex = player.mage.toX;
+                var ey = player.mage.toY;
 
-      this.players.forEach((player) => {
-        if(player.mage.fromX && player.mage.fromY && player.mage.toX && player.mage.toY) {
-          if(player.mage.fromX < player.mage.toX) player.mage.setFlipX(true);
-          if(player.mage.fromX > player.mage.toX) player.mage.setFlipX(false);
-          var ex = player.mage.toX;
-          var ey = player.mage.toY;
-
-          this.tweens.add({
-            targets: player.mage,
-              x: {
-                  value: ex,
-                  duration: TICK_RATE
-              },
-              y: {
-                  value: ey,
-                  duration: TICK_RATE
-              }
-          });
-        }
-
-      });
-      if(this.projectiles) {
-        this.projectiles.forEach((projectile) => {
-          if(projectile.fromX && projectile.fromY && projectile.toX && projectile.toY) {
-            console.log(projectile.toX, projectile.toY);
-            var ex = projectile.toX;
-            var ey = projectile.toY;
-
-            this.tweens.add({
-              targets: projectile,
-                x: {
-                    value: ex,
-                    duration: TICK_RATE
-                },
-                y: {
-                    value: ey,
-                    duration: TICK_RATE
-                }
-            });
-          }
+                this.tweens.add({
+                    targets: player.mage,
+                    x: {
+                        value: ex,
+                        duration: TICK_RATE
+                    },
+                    y: {
+                        value: ey,
+                        duration: TICK_RATE
+                    }
+                });
+            }
 
         });
-      }
+        if (this.projectiles) {
+            this.projectiles.forEach((projectile) => {
+                if (projectile.fromX && projectile.fromY && projectile.toX && projectile.toY) {
+                    console.log(projectile.toX, projectile.toY);
+                    var ex = projectile.toX;
+                    var ey = projectile.toY;
+
+                    this.tweens.add({
+                        targets: projectile,
+                        x: {
+                            value: ex,
+                            duration: TICK_RATE
+                        },
+                        y: {
+                            value: ey,
+                            duration: TICK_RATE
+                        }
+                    });
+                }
+
+            });
+        }
 
 
 

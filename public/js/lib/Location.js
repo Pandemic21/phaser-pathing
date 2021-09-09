@@ -34,7 +34,10 @@ class Location {
         };
     }
 
-    set location({x=0, y=0}) {
+    set location({
+        x = 0,
+        y = 0
+    }) {
         this.privateX = x;
         this.privateY = y;
 
@@ -52,7 +55,7 @@ class Location {
         return this.privateX;
     }
 
-    set x(x=0) {
+    set x(x = 0) {
         this.privateX = x;
     }
 
@@ -64,7 +67,7 @@ class Location {
         return this.privateY;
     }
 
-    set y(y=0) {
+    set y(y = 0) {
         this.privateY = y;
     }
 
