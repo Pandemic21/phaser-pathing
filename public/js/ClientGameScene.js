@@ -119,8 +119,16 @@ export default class ClientGameScene extends Phaser.Scene {
         //
         // // declare the camera
         // this.controls = new Phaser.Cameras.Controls.SmoothedKeyControl(controlConfig);
+
+        /**
+         * How far (in pixels) the user can scroll/pan with their camera outside of the map.
+         *
+         * This allows the player to pan the camera so the UI isn't blocking what they want to see.
+         * @type {Number}
+         */
+        const OVERSCROLL = 150; //IDEA: make this configurable in the web front end
         this.camera = this.cameras.main;
-        this.camera.setBounds(0, 0, this.MAP_WIDTH_PIXELS, this.MAP_HEIGHT_PIXELS);
+        this.camera.setBounds(OVERSCROLL * -1, OVERSCROLL * -1, this.MAP_WIDTH_PIXELS + OVERSCROLL * 2, this.MAP_HEIGHT_PIXELS + OVERSCROLL * 2);
 
 
         /////////////
