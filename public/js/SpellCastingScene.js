@@ -1,6 +1,14 @@
 import UIHelper from './UIHelper.js';
 
 export default class SpellCastingScene extends Phaser.Scene {
+    /**
+     * Creates a new SpellCastingScene.
+     *
+     * This is called by {@link ClientGameScene}
+     *
+     * This class handles spell keyboard input (qwerdf, etc...), drawing runes, and other spell calculations.
+     * @constructor
+     */
     constructor() {
         super();
     }
@@ -13,7 +21,7 @@ export default class SpellCastingScene extends Phaser.Scene {
         // this allows us to get the screen height/width for formulaic UI creation
         this.canvas = this.sys.game.canvas;
 
-        this.load.json('spells', './js/spells.json');
+        this.load.json('spells', './js/lib/spells.json');
 
         /* From Rex UI
          *    Source:
@@ -46,6 +54,9 @@ export default class SpellCastingScene extends Phaser.Scene {
 
         this.SCENE_KEY_CURRENT = 'spellCastingScene'; // current scene key (from 'client.js')
         this.SPELLS = this.cache.json.get('spells');
+
+        this.uiHelper = new UIHelper();
+
         // map each element to a name (for readability only)
         // for example:
         //  this.currentMana[this.manaData.fire] = this.currentMana[this.manaData.fire] - 3
@@ -65,6 +76,11 @@ export default class SpellCastingScene extends Phaser.Scene {
             Triggered:
                 - when player pressed q
         */
+        /**
+         * drawRuneSlots - This draws the runeslots
+         * @function
+         * @type {Phaser.Keypress}
+         */
         this.eventEmitter.on('drawRuneSlots', (keyPress) => {
             this.drawRuneSlots(keyPress);
         });
@@ -82,6 +98,8 @@ export default class SpellCastingScene extends Phaser.Scene {
             this.calculateSpell();
         });
 
+        console.log('here');
+
 
         ////////////////
         // Rune Slots //
@@ -94,14 +112,26 @@ export default class SpellCastingScene extends Phaser.Scene {
         this.manaRequirements = [0, 0, 0, 0, 0, 0]; // this is passed to ClientGameScene.js and eventually server.js
 
         for (let k = 0; k < 3; k++) {
-            this.runeSlots.push(this.add.rectangle(UIHelper.RUNE_SLOT_START_X + ((k + 1) * UIHelper.RUNE_SLOT_WIDTH), UIHelper.RUNE_SLOT_START_Y, UIHelper.RUNE_SLOT_WIDTH, UIHelper.RUNE_SLOT_HEIGHT, UIHelper.RUNE_SLOT_FILL_COLOR));
+            this.runeSlots.push(
+                this.add.rectangle(
+                    this.uiHelper.RUNE_SLOT.location.x + ((k + 1) * this.uiHelper.RUNE_SLOT.size.width),
+                    this.uiHelper.RUNE_SLOT.location.y,
+                    this.uiHelper.RUNE_SLOT.size.width,
+                    this.uiHelper.RUNE_SLOT.size.height,
+                    this.uiHelper.RUNE_SLOT_COLORS.fillColor));
 
-            this.runeSlots[k].setStrokeStyle(5, UIHelper.RUNE_SLOT_STROKE_COLOR);
-            this.runeSlots[k].fillColor = UIHelper.RUNE_SLOT_FILL_COLOR;
+            this.runeSlots[k].setStrokeStyle(5, this.uiHelper.RUNE_SLOT_COLORS.strokeColor);
+            this.runeSlots[k].fillColor = this.uiHelper.RUNE_SLOT_COLORS.fillColor;
             this.runeSlots[k].element = '';
         }
+
+        console.log('there');
+        console.log(this.runeSlots);
     }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     ////////////
     // Update //
@@ -131,6 +161,12 @@ export default class SpellCastingScene extends Phaser.Scene {
         Trigged:
             by ClientGameScene when the user presses a key
     */
+
+    /**
+     * drawRuneSlots - Redraws the runeslots on the player UI
+     * @param  {Phaser.Keypress } keyPress               The key that was pressed (Phaser object)
+     * @return {Boolean }          Returns `false` if the runes did not redraw (already being redrawn)
+     */
     drawRuneSlots(keyPress) {
         // if we're already drawing another rune, return false.
         if (this.isDrawingRune) {

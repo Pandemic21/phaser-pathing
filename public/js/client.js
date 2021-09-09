@@ -8,6 +8,9 @@ let clientGameScene = new ClientGameScene();
 import UIScene from './UIScene.js';
 let uiScene = new UIScene();
 
+import SpellCastingScene from './SpellCastingScene.js';
+let spellCastingScene = new SpellCastingScene();
+
 let easystar = new EasyStar.js();
 
 /////////////////
@@ -42,6 +45,7 @@ game.canvas.oncontextmenu = function(e) {
 
 game.scene.add('clientGameScene', clientGameScene);
 game.scene.add('uiScene', uiScene);
+game.scene.add('spellCastingScene', spellCastingScene);
 
 game.scene.start('clientGameScene', {
     eventEmitter

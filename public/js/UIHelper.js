@@ -217,6 +217,12 @@ class UIHelper {
         ////////////////
 
         const RUNE_SLOT_COLORS = new ColorData(0, 0xefc53f, 0xbcc947);
+
+        /**
+         * Holds color data for the rune slots
+         * @type {ColorData}
+         */
+        this.RUNE_SLOT_COLORS = RUNE_SLOT_COLORS;
         // const RUNE_SLOT_STROKE_COLOR = 0xefc53f;
         // const RUNE_SLOT_FILL_COLOR = 0xbcc947;
 
