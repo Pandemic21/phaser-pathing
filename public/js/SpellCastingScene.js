@@ -220,7 +220,7 @@ export default class SpellCastingScene extends Phaser.Scene { // eslint-disable-
 
     clearRuneSlots() {
         this.runeSlots.forEach((runeSlot) => {
-            runeSlot.fillColor = UIHelper.RUNE_SLOT_FILL_COLOR;
+            runeSlot.fillColor = this.uiHelper.RUNE_SLOT_COLORS.fillColor;
             runeSlot.element = '';
         });
 
@@ -244,6 +244,8 @@ export default class SpellCastingScene extends Phaser.Scene { // eslint-disable-
         // reset the current spell the player is casting
         // this looks at 'spells.json'
         this.spell = this.SPELLS[this.runeSlots[0].element][this.runeSlots[1].element][this.runeSlots[2].element];
+
+        console.log(`Got spell: ${this.spell}`);
 
         // tell the client if they cast a valid spell or not
         if (this.spell != '') {

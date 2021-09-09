@@ -1,4 +1,3 @@
-
 import Location from './lib/Location.js';
 import Projectile from './lib/Projectile.js';
 
@@ -150,14 +149,13 @@ export default class ClientGameScene extends Phaser.Scene {
         this.MINIMAP_Y = this.SCREEN_HEIGHT - this.MINIMAP_HEIGHT; // bottom of the screen
 
         // declare this.minimap
-        this.minimap = this.cameras.add(
-                this.MINIMAP_X,
-                this.MINIMAP_Y,
-                this.MINIMAP_WIDTH,
-                this.MINIMAP_HEIGHT)
-            .setZoom(0.2)
-            .setName('mini')
-            .setBackgroundColor(0x002244);
+        this.minimap = this.cameras.add(this.MINIMAP_X,
+            this.MINIMAP_Y,
+            this.MINIMAP_WIDTH,
+            this.MINIMAP_HEIGHT);
+        this.minimap.setZoom(0.2);
+        this.minimap.setName('mini');
+        this.minimap.setBackgroundColor(0x002244);
 
 
         ////////////////
@@ -166,12 +164,11 @@ export default class ClientGameScene extends Phaser.Scene {
         this.anims.create({
             key: 'breathe',
             frames: [{
-                    key: 'isaacBreathe'
-                },
-                {
-                    key: 'isaacImg'
-                }
-            ],
+                key: 'isaacBreathe'
+            },
+            {
+                key: 'isaacImg'
+            }],
             frameRate: 4,
             repeat: -1
         });
@@ -189,6 +186,7 @@ export default class ClientGameScene extends Phaser.Scene {
 
         // This is called by server.js when the player first connects
         // it sends '<array> players', which contains all players in the game
+        // this function is very, very important
         this.socket.on('initialConnectionConfig', (players) => {
             ////////////
             // Player //
@@ -208,6 +206,75 @@ export default class ClientGameScene extends Phaser.Scene {
                 players[k].mage = this.physics.add.sprite(players[k].mage.x, players[k].mage.y, 'isaacImg');
                 players[k].mage.play('breathe');
             }
+
+            //////////
+            // Mana //
+            //////////
+
+            // maximum mana
+            this.MAX_MANA = 3;
+            this.currentMana = [
+                3, /* Fire     */
+                3, /* Water    */
+                3, /* Earth    */
+                3, /* Air      */
+                3, /* Light    */
+                3 /*  Dark    */
+            ];
+
+            // map each element to a name (for readability only)
+            // for example:
+            //  this.currentMana[this.manaData.fire] = this.currentMana[this.manaData.fire] - 3
+            //  this.manaRequirements[this.manaData.FIRE]
+            this.manaData = new Map();
+            this.manaData.FIRE = 0;
+            this.manaData.WATER = 1;
+            this.manaData.EARTH = 2;
+            this.manaData.AIR = 3;
+            this.manaData.LIGHT = 4;
+            this.manaData.DARK = 4;
+
+            // is a spell primed and ready to cast?
+            this.spellPrimed = false;
+
+            // what is the input priority?
+            this.inputPriority = 'movement';
+
+            this.spellPositions = {
+                startX: 0,
+                startY: 0,
+                endX: 0,
+                endY: 0
+            };
+
+            /**
+             * This is called by `SpellCastingScene.js`, which is called after the player hits 'spacebar
+             * @function
+             * @param {String} spell
+             * @param {Number[]} manaRequirements
+             */
+            this.eventEmitter.on('primeSpell', (spell, manaRequirements) => {
+                if (spell == 'fireball') {
+                    //this.localCastProjectile(manaRequirements);
+
+                    const target = {
+                        x: this.input.mousePointer.worldX,
+                        y: this.input.mousePointer.worldY
+                    };
+                    this.socket.emit('tryFireball', target);
+
+                } else if (spell == 'air projectile') {
+                    // this.localCastProjectile(manaRequirements);
+                } else if (spell == 'explosion') {
+                    // this.localCastExplosion(manaRequirements);
+                } else if (spell == 'air explosion') {
+                    // this.localCastExplosion(manaRequirements);
+                } else if (spell == 'burn') {
+                    // this.localCastBurn();
+                } else if (spell == 'wall') {
+                    // this.localCastWall(manaRequirements);
+                }
+            });
 
             // HACK: this fixes the super-speed glitch at the beginning by just moving the player once at the very start.
             let destination = {
@@ -295,14 +362,14 @@ export default class ClientGameScene extends Phaser.Scene {
                 //if there's no projectile, create it;
                 if (!projectile) {
                     const config = {
-                      owner: proj.owner,
-                      x: proj.x,
-                      y: proj.y,
-                      target: proj.target,
-                      projectileId: proj.projectileId
-                    }
+                        owner: proj.owner,
+                        x: proj.x,
+                        y: proj.y,
+                        target: proj.target,
+                        projectileId: proj.projectileId
+                    };
                     const newProj = new Projectile(this, config);
-                    console.log(newProj.x, newProj.y)
+                    console.log(newProj.x, newProj.y);
                     this.projectiles.push(newProj);
                 } else {
                     projectile.fromX = proj.x;
@@ -334,7 +401,7 @@ export default class ClientGameScene extends Phaser.Scene {
         // Listener Config (e.g. spacebar, click) //
         ////////////////////////////////////////////
 
-        // spacebar re-centers the camera on 'myPlayer.mage'
+        // 'T' re-centers the camera on 'myPlayer.mage'
         this.input.keyboard.on('keyup-T', (keyPress) => {
             // get this player
             // let myPlayer = this.players.find((player) => {
@@ -352,14 +419,14 @@ export default class ClientGameScene extends Phaser.Scene {
         // disabling 8/9/21 since i'm implementing proper spellcasting
 
 
-        this.input.keyboard.on('keyup-SPACE', (keypress) => {
-
-            const target = {
-                x: this.input.mousePointer.worldX,
-                y: this.input.mousePointer.worldY
-            };
-            this.socket.emit('tryFireball', target);
-        });
+        // this.input.keyboard.on('keyup-SPACE', (keypress) => {
+        //
+        //     const target = {
+        //         x: this.input.mousePointer.worldX,
+        //         y: this.input.mousePointer.worldY
+        //     };
+        //     this.socket.emit('tryFireball', target);
+        // });
         //
         //
         // // toggle follscreen on keypress: F
@@ -444,16 +511,15 @@ export default class ClientGameScene extends Phaser.Scene {
             }
         }, this);
 
-        //1qaz
         // Mana and element input
         // spacebar - primes the current spell
-        // this.input.keyboard.on('keydown-SPACE', (keyPress) => {
-        //     // tell UIScene.js to redraw the mana circles
-        //     this.eventEmitter.emit('redrawManaCircles', this.currentMana);
-        //
-        //     // get the spell they've queued with their runes
-        //     this.spellPrimed = this.eventEmitter.emit('calculateSpell');
-        // });
+        this.input.keyboard.on('keydown-SPACE', (keyPress) => {
+            // tell UIScene.js to redraw the mana circles
+            this.eventEmitter.emit('redrawManaCircles', this.currentMana);
+
+            // get the spell they've queued with their runes
+            this.spellPrimed = this.eventEmitter.emit('calculateSpell');
+        });
 
         // q - fire
         this.input.keyboard.on('keyup-Q', (keyPress) => {
@@ -639,22 +705,26 @@ export default class ClientGameScene extends Phaser.Scene {
                 return destLook;
             }
             destLook = destVec.clone();
-            destLookArr.push(destLook.add(Phaser.Math.Vector2.UP).add(Phaser.Math.Vector2.RIGHT));
+            destLookArr.push(destLook.add(Phaser.Math.Vector2.UP)
+                .add(Phaser.Math.Vector2.RIGHT));
             if (easystarArray[destLook.y][destLook.x] === 0) {
                 return destLook;
             }
             destLook = destVec.clone();
-            destLookArr.push(destLook.add(Phaser.Math.Vector2.UP).add(Phaser.Math.Vector2.RIGHT));
+            destLookArr.push(destLook.add(Phaser.Math.Vector2.UP)
+                .add(Phaser.Math.Vector2.RIGHT));
             if (easystarArray[destLook.y][destLook.x] === 0) {
                 return destLook;
             }
             destLook = destVec.clone();
-            destLookArr.push(destLook.add(Phaser.Math.Vector2.UP).add(Phaser.Math.Vector2.RIGHT));
+            destLookArr.push(destLook.add(Phaser.Math.Vector2.UP)
+                .add(Phaser.Math.Vector2.RIGHT));
             if (easystarArray[destLook.y][destLook.x] === 0) {
                 return destLook;
             }
             destLook = destVec.clone();
-            destLookArr.push(destLook.add(Phaser.Math.Vector2.UP).add(Phaser.Math.Vector2.RIGHT));
+            destLookArr.push(destLook.add(Phaser.Math.Vector2.UP)
+                .add(Phaser.Math.Vector2.RIGHT));
             if (easystarArray[destLook.y][destLook.x] === 0) {
                 return destLook;
             }
