@@ -105,19 +105,19 @@ class ServerGameScene extends Phaser.Scene {
             console.log('user connected: ' + socket.id);
 
             // set the (x,y) spawn location for the new player's mage
-            const SPAWN_X = 24*5;
-            const SPAWN_Y = 24*5;
+            const SPAWN_X = 24 * 5;
+            const SPAWN_Y = 24 * 5;
 
             // add a new mage physics object
             let mage = this.physics.add.sprite(SPAWN_X, SPAWN_Y);
 
             // set the newPlayer's config parameters
             let newPlayer = {
-                id: socket.id,          // this is the player's ID, used to ID the player in update()
-                playerName: socket.id,  // TODO: change this to a user configurable setting
-                mage: mage,             // i know this can be shortened to just 'mage' but long form helps me understand better
-                moveTick: 0,            // these will be used to know when to move the character
-                lastMoveTick: 0         //
+                id: socket.id, // this is the player's ID, used to ID the player in update()
+                playerName: socket.id, // TODO: change this to a user configurable setting
+                mage: mage, // i know this can be shortened to just 'mage' but long form helps me understand better
+                moveTick: 0, // these will be used to know when to move the character
+                lastMoveTick: 0 //
             };
 
             // add newPlayer to this.players, which is iterated thru in update()
@@ -130,23 +130,23 @@ class ServerGameScene extends Phaser.Scene {
             socket.broadcast.emit('newPlayerJoined', newPlayer);
 
             socket.on('tryFireball', target => {
-              //this will become a cast fireball function, there should just be a tryCast or something for spells
-              const owner = this.players.find((player) => {
-                return player.id === socket.id;
+                //this will become a cast fireball function, there should just be a tryCast or something for spells
+                const owner = this.players.find((player) => {
+                    return player.id === socket.id;
+                });
+                const speed = 600;
+                if (!this.projectileId) this.projectileId = 0;
+                const projectileId = this.projectileId;
+                console.log('projectileId: ' + projectileId);
+                this.projectileId += 1;
+                const projectile = {
+                    owner,
+                    target,
+                    speed,
+                    projectileId
+                };
+                this.createProjectile(projectile);
             });
-              const speed = 600;
-              if(!this.projectileId) this.projectileId = 0;
-              const projectileId = this.projectileId;
-              console.log('projectileId: '  + projectileId);
-              this.projectileId += 1;
-              const projectile = {
-                owner,
-                target,
-                speed,
-                projectileId
-            };
-              this.createProjectile(projectile);
-          });
 
 
             /* this is called by ClientGameScene.js when the player orders their mage to move
@@ -164,12 +164,12 @@ class ServerGameScene extends Phaser.Scene {
                 let destination = movementInfo.destination;
                 // find the current player
                 const player = this.players.find((player) => {
-                  return player.id === socket.id;
+                    return player.id === socket.id;
                 });
                 let tmpPlayerPosition = {
-                  x: Math.floor((player.mage.x + 0.5) / 12), //convert World x to minitile x,
-                  y: Math.floor((player.mage.y + 0.5) / 12) //convert World y to minitile y
-              };
+                    x: Math.floor((player.mage.x + 0.5) / 12), //convert World x to minitile x,
+                    y: Math.floor((player.mage.y + 0.5) / 12) //convert World y to minitile y
+                };
 
                 this.easystar.findPath(tmpPlayerPosition.x, tmpPlayerPosition.y, destination.x, destination.y, (path) => {
                     if (path === null) {
@@ -185,8 +185,8 @@ class ServerGameScene extends Phaser.Scene {
             socket.on('disconnect', (() => {
                 console.log('user disconnected: ' + socket.id);
                 let playerIndex = this.players.findIndex((player) => {
-                  return player.id === socket.id;
-              });
+                    return player.id === socket.id;
+                });
                 this.players.splice(playerIndex, 1);
                 // TODO: remove the client from the array
                 // TODO: tell connected players to stop rendering the player
@@ -215,52 +215,54 @@ class ServerGameScene extends Phaser.Scene {
         const PLAYER_SPEED = 75; //this is how many ms should be between each tile movement, lower = faster
         //this is where we calculate movement
         this.players.forEach((player) => {
-          player.moveTick += delta;
+            player.moveTick += delta;
             //if the player has a path and should move, move them
-            if(player.mage.path && player.moveTick - player.lastMoveTick > PLAYER_SPEED) {
-              //default to current location
-              let location = {
-                x: player.mage.x/12,
-                y: player.mage.y/12,
-              };
-              //if there's an active path, move to the next node and remove it
-              if(player.mage.path.length > 0){
-                //this finds the current location in the path if it exists, to make sure we are starting from our current location
-                let currentLocIndex = player.mage.path.findIndex((loc) => {
-                  return location.x === loc.x && location.y === loc.y;
-              });
-                //if the current location is not found currentLocIndex = -1, and therefore we pick up at the beginning of the path
-                location = player.mage.path[currentLocIndex + 1];
-                //splice the path to the next point
-                player.mage.path.splice(0, currentLocIndex + 2);
-              }
+            if (player.mage.path && player.moveTick - player.lastMoveTick > PLAYER_SPEED) {
+                //default to current location
+                let location = {
+                    x: player.mage.x / 12,
+                    y: player.mage.y / 12,
+                };
+                //if there's an active path, move to the next node and remove it
+                if (player.mage.path.length > 0) {
+                    //this finds the current location in the path if it exists, to make sure we are starting from our current location
+                    let currentLocIndex = player.mage.path.findIndex((loc) => {
+                        return location.x === loc.x && location.y === loc.y;
+                    });
+                    //if the current location is not found currentLocIndex = -1, and therefore we pick up at the beginning of the path
+                    location = player.mage.path[currentLocIndex + 1];
+                    //splice the path to the next point
+                    player.mage.path.splice(0, currentLocIndex + 2);
+                }
 
-              //move one tile, and reset lastMoveTick to the appropriate time
-              player.mage.x = location.x * 12;
-              player.mage.y = location.y * 12;
+                //move one tile, and reset lastMoveTick to the appropriate time
+                player.mage.x = location.x * 12;
+                player.mage.y = location.y * 12;
 
 
-              //make sure we are updating every tick evenly;
-              player.lastMoveTick += PLAYER_SPEED;
-          }
-        //append the mage's location to gameState
-        this.gameState.players.push({id: player.id, x: player.mage.x, y: player.mage.y});
-    }, this);
+                //make sure we are updating every tick evenly;
+                player.lastMoveTick += PLAYER_SPEED;
+            }
+            //append the mage's location to gameState
+            this.gameState.players.push({
+                id: player.id,
+                x: player.mage.x,
+                y: player.mage.y
+            });
+        }, this);
 
         this.projectiles.getChildren().forEach((projectile) => {
-          this.gameState.projectiles.push({
-            owner: projectile.owner,
-            projectileId: projectile.projectileId,
-            angle: projectile.angle,
-            x: projectile.x,
-            y: projectile.y
+            this.gameState.projectiles.push({
+                owner: projectile.owner,
+                projectileId: projectile.projectileId,
+                angle: projectile.angle,
+                x: projectile.x,
+                y: projectile.y
+            });
         });
-    });
 
         const TICK_RATE = 50; // this is how often we send setUpdate.
         socket.emit('setUpdate', this.gameState);
-
-
     }
 
 
@@ -270,20 +272,20 @@ class ServerGameScene extends Phaser.Scene {
 
 
     createProjectile(projectile) {
-      // projectile = {
-      //   owner,
-      //   target,
-      //   speed,
-      //   projectileId
-      // }
+        // projectile = {
+        //   owner,
+        //   target,
+        //   speed,
+        //   projectileId
+        // }
 
-      const newProj = this.physics.add.sprite(projectile.owner.mage.x, projectile.owner.mage.y);
-      newProj.owner = projectile.owner.id;
-      newProj.projectileId = projectile.projectileId;
-      newProj.angle = Phaser.Math.Angle.Between(newProj.x, newProj.y, projectile.target.x, projectile.target.y);
-      newProj.setSize(32, 32);
-      this.projectiles.add(newProj);
-      this.physics.moveTo(newProj, projectile.target.x, projectile.target.y, projectile.speed);
+        const newProj = this.physics.add.sprite(projectile.owner.mage.x, projectile.owner.mage.y);
+        newProj.owner = projectile.owner.id;
+        newProj.projectileId = projectile.projectileId;
+        newProj.angle = Phaser.Math.Angle.Between(newProj.x, newProj.y, projectile.target.x, projectile.target.y);
+        newProj.setSize(32, 32);
+        this.projectiles.add(newProj);
+        this.physics.moveTo(newProj, projectile.target.x, projectile.target.y, projectile.speed);
 
     }
     // add custom functions here as necessary

@@ -49,11 +49,11 @@ class MainMenu extends Phaser.Scene {
      */
     create() {
         /* Contains:
-        *    Constants
-        *    Buttons
-        *    Camera
-        *    Buttons
-        */
+         *    Constants
+         *    Buttons
+         *    Camera
+         *    Buttons
+         */
 
         console.log(`Creating scene`);
 

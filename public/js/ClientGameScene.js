@@ -515,7 +515,6 @@ export default class ClientGameScene extends Phaser.Scene {
 
     // Calculate tweens here.
     calculateTweens(TICK_RATE) {
-
         this.players.forEach((player) => {
             if (player.mage.fromX && player.mage.fromY && player.mage.toX && player.mage.toY) {
                 if (player.mage.fromX < player.mage.toX) player.mage.setFlipX(true);
