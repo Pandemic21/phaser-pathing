@@ -17,9 +17,9 @@ class ColorData {
      * @param {Hex} [fillColor = 0xbcc947] The shape fill color
      */
     constructor(strokeWidth = 5, strokeColor = 0xefc53f, fillColor = 0xbcc947) {
-        this.privateStrokeWidth = strokeWidth;
-        this.privateStrokeColor = strokeColor;
-        this.privateFillColor = fillColor;
+        this._strokeWidth = strokeWidth;
+        this._strokeColor = strokeColor;
+        this._fillColor = fillColor;
     }
 
     /////////////////////////
@@ -31,11 +31,12 @@ class ColorData {
      * @type {Number}
      */
     get strokeWidth() {
-        return this.privateStrokeWidth;
+        let strokeWidth = this._strokeWidth;
+        return strokeWidth;
     }
 
     set strokeWidth(strokeWidth) {
-        this.privateStrokeWidth = strokeWidth;
+        this._strokeWidth = strokeWidth;
     }
 
     /**
@@ -43,11 +44,12 @@ class ColorData {
      * @type {Hex}
      */
     get strokeColor() {
-        return this.privateStrokeColor;
+        let strokeColor = this._strokeColor;
+        return strokeColor;
     }
 
     set strokeColor(strokeColor) {
-        this.privateStrokeColor = strokeColor;
+        this._strokeColor = strokeColor;
     }
 
     /**
@@ -55,11 +57,12 @@ class ColorData {
      * @type {Hex}
      */
     get fillColor() {
-        return this.privateFillColor;
+        let fillColor = this._fillColor;
+        return fillColor;
     }
 
     set fillColor(fillColor) {
-        this.privateFillColor = fillColor;
+        this._fillColor = fillColor;
     }
 }
 

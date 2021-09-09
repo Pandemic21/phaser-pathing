@@ -1,3 +1,5 @@
+import Location from './lib/Location.js';
+
 export default class ClientGameScene extends Phaser.Scene {
     constructor() {
         super();
@@ -154,6 +156,8 @@ export default class ClientGameScene extends Phaser.Scene {
             .setZoom(0.2)
             .setName('mini')
             .setBackgroundColor(0x002244);
+
+
         ////////////////
         // Animations //
         ////////////////
@@ -229,6 +233,17 @@ export default class ClientGameScene extends Phaser.Scene {
             newPlayer.mage = this.physics.add.sprite(newPlayer.mage.x, newPlayer.mage.y, 'isaacImg');
         });
 
+        /**
+         * setUpdate is called by `server.js`.
+         *
+         * Once `ClientGameScene.js` has two GameStates it adds tweens to all objects in the GameState between the two states.
+         *
+         * For example, if in stateA the mage is at (0,0) and in stateB the mage is at (0,10), this function draws a visual
+         * animation tween for the mage between the two game states. This simulates the mage "moving" from his position in
+         * the old GameState to his position in the new GameState. 
+         * @function
+         * @param {GameState} gameState
+         */
         this.socket.on('setUpdate', (gameState) => {
             //add the new snapshot to our gameStates array
             this.gameStates.push(gameState);

@@ -38,11 +38,11 @@ class UIHelper {
         ///////////
 
         const FONT_SIZE = 30;
-        const FONT_SIZE_PX = FONT_SIZE + 'px';
+        // const FONT_SIZE_PX = FONT_SIZE + 'px';
         const FONT_START_X = 230;
         const FONT_START_Y = 130;
-        const FONT_PIXEL_BUFFER = FONT_SIZE * 2;
-        const FONT_FILL_COLOR = '#0f0';
+        // const FONT_PIXEL_BUFFER = FONT_SIZE * 2;
+        // const FONT_FILL_COLOR = '#0f0';
 
         /**
          * This object contains all information required for the client use/draw fonts
@@ -234,8 +234,8 @@ class UIHelper {
         const RUNE_SLOT_BUFFER = 25;
 
         // *1.5 because there's 3 rune slots, 1.5 is half.
-        const RUNE_SLOT_START_X = (this.SCREEN_WIDTH / 2 - RUNE_SLOT_WIDTH * 1.5);
-        const RUNE_SLOT_START_Y = (this.SCREEN_HEIGHT - this.PIXEL_BUFFER);
+        const RUNE_SLOT_START_X = (SCREEN_WIDTH / 2 - RUNE_SLOT_WIDTH * 1.5);
+        const RUNE_SLOT_START_Y = (SCREEN_HEIGHT - PIXEL_BUFFER * 2.5);
 
         const RUNE_SLOT_START_LOC = new Location(RUNE_SLOT_START_X, RUNE_SLOT_START_Y);
 
