@@ -11,7 +11,8 @@
   })
   {
       super(scene, x, y, texture)
-      this.speed = 600
+      this.scene = scene
+      this.speed = speed
       this.target = target
       this.owner = owner
       this.projectileId = projectileId
@@ -24,4 +25,9 @@
       scene.add.existing(this);
   }
 }
+
+Projectile.prototype.shoot = function() {
+  this.scene.physics.moveTo(this, this.target.x, this.target.y, this.speed);
+}
+
 window.Projectile = Projectile
