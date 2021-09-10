@@ -194,10 +194,9 @@ export default class UIScene extends Phaser.Scene {
     /////////////////
 
     update() {
-        // update the casting bar if necessary
-        if(this.resetSmallCastingBar) {
-            this.resetSmallCastingBar = false;
-
+        // if the casting bar has tweened all the way to 'maxWidth', it's time to reset it
+        if(this.smallCastingBar.width == this.smallCastingBar.maxWidth){
+            // add a new tween, setting alpha from 1 --> 0 over 200 ms
             this.tweens.add({
                 targets: this.smallCastingBar,
                 alpha: {
@@ -207,19 +206,11 @@ export default class UIScene extends Phaser.Scene {
 
             });
 
+            // after slightly longer than the tween (important for UX), reset the width and alpha of the small casting bar
             setTimeout(() => {
                 this.smallCastingBar.width = 0;
                 this.smallCastingBar.alpha = 1;
             }, 300);
-        }
-
-        // i know this could be in the above if() statement as an OR condition
-        // the reason this is a separate if statement is purely cosmetic
-        //
-        if(this.smallCastingBar.width == this.smallCastingBar.maxWidth){
-            //this.smallCastingBar.fillColor = this.uiHelper.MANA_COLORS.AIR;
-
-            this.resetSmallCastingBar = true;
         }
     }
 
@@ -280,18 +271,12 @@ export default class UIScene extends Phaser.Scene {
     }
 
     startCastingBar(duration) {
-        /**
-         * This adds a flat number to the casting duration.
-         *
-         * Without this buffer it looks bad.
-         * @const
-         * @type {Number}
-         */
-        const DURATION_BUFFER = 500;
+        // stop redrawing the casting bar
         this.resetSmallCastingBar = false;
 
-        // reset the alpha, it's set to 0 when the last spell completed
+        // reset the alpha and width, it's set to 0 and maxWidth respectively when the last spell completed
         this.smallCastingBar.alpha = 1;
+        this.smallCastingBar.width = 0;
 
         // add the 'progress bar' tween
         this.tweens.add({
