@@ -104,7 +104,7 @@ export default class UIScene extends Phaser.Scene {
             3 /*  Dark    */
         ];
 
-        // should we redraw the mana in the update() loop?
+        // should we redraw the mana in the update loop?
         this.redrawMana = true;
 
         // map each element to a name (for readability only)
@@ -195,9 +195,31 @@ export default class UIScene extends Phaser.Scene {
 
     update() {
         // update the casting bar if necessary
-        if(this.resetSmallCastingBar || this.smallCastingBar.width == this.smallCastingBar.maxWidth) {
-            this.smallCastingBar.width = 0;
+        if(this.resetSmallCastingBar) {
             this.resetSmallCastingBar = false;
+
+            this.tweens.add({
+                targets: this.smallCastingBar,
+                alpha: {
+                    value: 0,
+                    duration: 225
+                }
+
+            });
+
+            setTimeout(() => {
+                this.smallCastingBar.width = 0;
+                this.smallCastingBar.alpha = 1;
+            }, 300);
+        }
+
+        // i know this could be in the above if() statement as an OR condition
+        // the reason this is a separate if statement is purely cosmetic
+        //
+        if(this.smallCastingBar.width == this.smallCastingBar.maxWidth){
+            //this.smallCastingBar.fillColor = this.uiHelper.MANA_COLORS.AIR;
+
+            this.resetSmallCastingBar = true;
         }
     }
 
@@ -268,6 +290,10 @@ export default class UIScene extends Phaser.Scene {
         const DURATION_BUFFER = 500;
         this.resetSmallCastingBar = false;
 
+        // reset the alpha, it's set to 0 when the last spell completed
+        this.smallCastingBar.alpha = 1;
+
+        // add the 'progress bar' tween
         this.tweens.add({
             targets: this.smallCastingBar,
             width: {
@@ -275,9 +301,5 @@ export default class UIScene extends Phaser.Scene {
                 duration: duration
             }
         });
-
-        setTimeout(() => {
-            this.resetSmallCastingBar = true;
-        }, duration + DURATION_BUFFER);
     }
 }

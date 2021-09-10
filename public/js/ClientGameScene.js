@@ -297,12 +297,14 @@ export default class ClientGameScene extends Phaser.Scene {
                 } else if (spell == 'explosion') {
                     // this.localCastExplosion(manaRequirements);
 
-                    //1qaz
                     // run the casting animation
                     this.eventEmitter.emit('startCastingBar', 1000);
-                    
+
                 } else if (spell == 'air explosion') {
-                    // this.localCastExplosion(manaRequirements);
+                    // run the casting animation
+
+                    const CAST_TIME = 2500;
+                    this.eventEmitter.emit('startCastingBar', 2500);
                 } else if (spell == 'burn') {
                     // this.localCastBurn();
                 } else if (spell == 'wall') {
