@@ -268,6 +268,9 @@ export default class ClientGameScene extends Phaser.Scene {
              * @param {Number[]} manaRequirements
              */
             this.eventEmitter.on('primeSpell', (spell, manaRequirements) => {
+                // redraw the mana circles
+                this.eventEmitter.emit('redrawManaCircles', this.currentMana);
+
                 // if we do NOT have the required mana to cast the spell, stop trying.
                 if(!this.hasEnoughMana(this.currentMana, manaRequirements)) return false;
 
@@ -293,6 +296,11 @@ export default class ClientGameScene extends Phaser.Scene {
                     // this.localCastProjectile(manaRequirements);
                 } else if (spell == 'explosion') {
                     // this.localCastExplosion(manaRequirements);
+
+                    //1qaz
+                    // run the casting animation
+                    this.eventEmitter.emit('startCastingBar', 1000);
+                    
                 } else if (spell == 'air explosion') {
                     // this.localCastExplosion(manaRequirements);
                 } else if (spell == 'burn') {

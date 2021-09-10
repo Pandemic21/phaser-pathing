@@ -143,14 +143,29 @@ export default class UIScene extends Phaser.Scene {
                 this.manaCircles[k][i].fullMana = true;
             }
         }
-    }
+
+        /////////////////
+        // Casting Bar //
+        /////////////////
+
+        this.bigCastingBar = this.add.rectangle(this.uiHelper.CASTING_BAR.x,
+            this.uiHelper.CASTING_BAR.y,
+            this.uiHelper.CASTING_BAR.bigSize.width,
+            this.uiHelper.CASTING_BAR.bigSize.height,
+            this.uiHelper.MANA_COLORS.EMPTY);
+        this.bigCastingBar.setStrokeStyle(this.uiHelper.CASTING_BAR.colors.strokeWidth, this.uiHelper.CASTING_BAR.colors.strokeColor);
+
+        this.smallCastingBar = this.add.rectangle(this.uiHelper.CASTING_BAR.x,
+            this.uiHelper.CASTING_BAR.y,
+            this.uiHelper.CASTING_BAR.smallSize.width,
+            this.uiHelper.CASTING_BAR.smallSize.height,
+            this.uiHelper.CASTING_BAR.colors.fillColor);
+
+        // this is the maximum amount we will tween to, to animate the casting bar
+        this.smallCastingBar.maxWidth = this.smallCastingBar.width;
+        this.smallCastingBar.width = 0;
 
 
-    /////////////////
-    // Update Loop //
-    /////////////////
-
-    update() {
         this.eventEmitter.on('changeHp', (health) => {
             if (health !== this.currentHealthValue) {
                 this.currentHealth.clear();
@@ -167,6 +182,23 @@ export default class UIScene extends Phaser.Scene {
                 this.redrawManaCircles(currentMana);
             }
         });
+
+        this.eventEmitter.on('startCastingBar', (duration) => {
+            this.startCastingBar(duration);
+        });
+    }
+
+
+    /////////////////
+    // Update Loop //
+    /////////////////
+
+    update() {
+        // update the casting bar if necessary
+        if(this.resetSmallCastingBar || this.smallCastingBar.width == this.smallCastingBar.maxWidth) {
+            this.smallCastingBar.width = 0;
+            this.resetSmallCastingBar = false;
+        }
     }
 
 
@@ -223,5 +255,29 @@ export default class UIScene extends Phaser.Scene {
 
         // tell update() to redraw mana if necessary
         this.redrawMana = true;
+    }
+
+    startCastingBar(duration) {
+        /**
+         * This adds a flat number to the casting duration.
+         *
+         * Without this buffer it looks bad.
+         * @const
+         * @type {Number}
+         */
+        const DURATION_BUFFER = 500;
+        this.resetSmallCastingBar = false;
+
+        this.tweens.add({
+            targets: this.smallCastingBar,
+            width: {
+                value: this.smallCastingBar.maxWidth,
+                duration: duration
+            }
+        });
+
+        setTimeout(() => {
+            this.resetSmallCastingBar = true;
+        }, duration + DURATION_BUFFER);
     }
 }

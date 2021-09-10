@@ -103,8 +103,9 @@ class UIHelper {
             AIR: 0x37d115,
             EARTH: 0x873905,
             LIGHT: 0xf7e811,
-            DARK: 0x000000,
-            EMPTY: 0xbfbcbb,
+            //DARK: 0x000000,
+            DARK: 0x14002b,
+            EMPTY: 0x333333
         };
 
 
@@ -216,7 +217,8 @@ class UIHelper {
         // Rune Slots //
         ////////////////
 
-        const RUNE_SLOT_COLORS = new ColorData(0, 0xefc53f, 0xbcc947);
+        //const RUNE_SLOT_COLORS = new ColorData(0, 0xefc53f, 0xbcc947);
+        const RUNE_SLOT_COLORS = new ColorData(0, 0xefc53f, this.MANA_COLORS.EMPTY);
 
         /**
          * Holds color data for the rune slots
@@ -255,6 +257,26 @@ class UIHelper {
             'buffer': RUNE_SLOT_BUFFER,
             'size': RUNE_SLOT_RECT,
             'location': RUNE_SLOT_START_LOC
+        };
+
+
+        /////////////////
+        // Casting Bar //
+        /////////////////
+
+        const CASTING_BAR_BIG_RECT = new Rectangle(150, 20);
+        const CASTING_BAR_SMALL_RECT = new Rectangle(150, 20);
+        const CASTING_BAR_X = RUNE_SLOT_START_X + 100;
+        const CASTING_BAR_Y = SCREEN_HEIGHT - CASTING_BAR_BIG_RECT.height - 75;
+        //const CASTING_BAR_COLORS = new ColorData(5, 0x7f19da, 0x5118bb);
+        const CASTING_BAR_COLORS = new ColorData(5, 0x973bff, 0x973bff);
+
+        this.CASTING_BAR = {
+            'bigSize': CASTING_BAR_BIG_RECT,
+            'smallSize': CASTING_BAR_SMALL_RECT,
+            'x': CASTING_BAR_X,
+            'y': CASTING_BAR_Y,
+            'colors': CASTING_BAR_COLORS
         };
     }
 
